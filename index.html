@@ -627,6 +627,74 @@
             }
         }
 
+        .roi-section {
+            margin-top: 28px;
+            animation: rise .55s ease both;
+            animation-delay: .32s;
+        }
+
+        .roi-card {
+            padding: 28px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow);
+        }
+
+        .roi-head {
+            margin-bottom: 24px;
+        }
+
+        .roi-head-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 4px;
+        }
+
+        .roi-head h2 {
+            margin: 0;
+            font-size: 18px;
+            letter-spacing: -.04em;
+        }
+
+        .roi-head p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .roi-grid-label {
+            color: var(--muted);
+            font: 10px 'DM Mono', monospace;
+            letter-spacing: .05em;
+        }
+
+        .roi-wrap {
+            position: relative;
+            width: min(100%, 480px);
+            margin: 0 auto;
+            border: 2px solid var(--ink);
+            background: #fff;
+            box-shadow: 6px 6px 0 rgba(30, 35, 40, .10);
+        }
+
+        .roi-wrap canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .roi-mask {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-content: center;
+            background: rgba(246, 247, 243, .85);
+            color: var(--muted);
+            font: 12px 'DM Mono', monospace;
+            text-align: center;
+        }
+
         @media (max-width: 900px) {
             .workspace {
                 grid-template-columns: 1fr;
@@ -771,15 +839,15 @@
                         </div>
                         <div class="control-row">
                             <div class="control-label"><span>缩放</span><output id="imageScaleOut">100%</output></div>
-                            <input id="imageScale" type="range" min="50" max="150" value="100">
+                            <input id="imageScale" type="range" min="0" max="300" value="100">
                         </div>
                         <div class="control-row">
-                            <div class="control-label"><span>X 偏移</span><output id="shiftXOut">0.0</output></div><input
-                                id="shiftX" type="range" min="-20" max="20" step=".1" value="0" aria-label="横向偏移">
+                            <div class="control-label"><span>中心 X 偏移</span><output id="shiftXOut">0.0</output></div><input
+                                id="shiftX" type="range" min="-100" max="100" step=".1" value="0" aria-label="横向偏移">
                         </div>
                         <div class="control-row">
-                            <div class="control-label"><span>Y 偏移</span><output id="shiftYOut">0.0</output></div><input
-                                id="shiftY" type="range" min="-20" max="20" step=".1" value="0" aria-label="纵向偏移">
+                            <div class="control-label"><span>中心 Y 偏移</span><output id="shiftYOut">0.0</output></div><input
+                                id="shiftY" type="range" min="-100" max="100" step=".1" value="0" aria-label="纵向偏移">
                         </div>
                     </div>
 
@@ -847,6 +915,32 @@
 
             </aside>
         </section>
+
+            <section class="roi-section">
+                <div class="roi-card">
+                    <div class="roi-head">
+                        <div>
+                            <p class="eyebrow">ROI SNAPSHOT</p>
+                            <div class="roi-head-row">
+                                <h2>采样预览</h2>
+                                <span class="roi-grid-label" id="roiGridInfo">44 × 44 网格</span>
+                            </div>
+                            <p>显示当前变换后的源区域与采样网格，反映旋转/缩放/偏移/灰度化/反相化后的 ROI</p>
+                        </div>
+                    </div>
+                    <div class="roi-wrap">
+                        <canvas id="roiPreview" width="440" height="440"></canvas>
+                        <div class="viewport-tools" data-viewport-tools>
+                            <button data-zoom="out" type="button" aria-label="缩小">−</button>
+                            <output data-zoom-label>100%</output>
+                            <button data-zoom="in" type="button" aria-label="放大">+</button>
+                            <button data-zoom="reset" type="button" aria-label="重置视图">↺</button>
+                        </div>
+                        <div class="roi-mask" id="roiMask" hidden></div>
+                    </div>
+                </div>
+            </section>
+
     </main>
 
     <script>
@@ -867,6 +961,7 @@
         for (let level = 1; level <= 21; level += 1) elements.wallLevel.insertAdjacentHTML('beforeend', `<option value="${level}"${level === 12 ? ' selected' : ''}>${level} 级</option>`);
         const state = { image: null, limit: 325, walls: [], demoWalls: null, dimWalls: new Set(), wallLevel: 12, mode: 'text' };
         const mainView = { zoom: 1, defaultZoom: 1, minZoom: 1, panX: 0, panY: 0 };
+        const roiView = { zoom: 1, defaultZoom: 1, minZoom: 1, panX: 0, panY: 0 };
         const previewViews = new Map();
 
         function updateViewportLabel(canvasElement, view) { const label = canvasElement.parentElement.querySelector('[data-zoom-label]'); if (label) label.textContent = `${Math.round(view.zoom * 100)}%`; }
@@ -998,7 +1093,7 @@
 
         function projectionMetrics() { return { width: canvas.width * Number(elements.projectionX.value) / backgroundSize.width, height: canvas.height * Number(elements.projectionY.value) / backgroundSize.height }; }
 
-        function gridToCanvas(column, row) { const projection = projectionMetrics(), centerX = canvas.width * Number(elements.centerX.value) / 100 + Number(elements.shiftX.value) * canvas.width / backgroundSize.width, centerY = canvas.height * Number(elements.centerY.value) / 100 + Number(elements.shiftY.value) * canvas.height / backgroundSize.height; return { x: centerX + (column - row) * projection.width / 2 / (gridSize - 1), y: centerY + (column + row - (gridSize - 1)) * projection.height / 2 / (gridSize - 1) }; }
+        function gridToCanvas(column, row) { const projection = projectionMetrics(), centerX = canvas.width * Number(elements.centerX.value) / 100, centerY = canvas.height * Number(elements.centerY.value) / 100; return { x: centerX + (column - row) * projection.width / 2 / (gridSize - 1), y: centerY + (column + row - (gridSize - 1)) * projection.height / 2 / (gridSize - 1) }; }
 
         function connectionAsset(walls, row, column) {
             const occupied = new Set(walls.map(wall => `${wall.column},${wall.row}`));
@@ -1143,6 +1238,167 @@
             context.restore();
             const count = state.walls.length, percentage = count / (gridSize * gridSize) * 100;
             elements.wallCount.textContent = count; elements.statLimit.textContent = state.limit; elements.densityLabel.textContent = `${percentage.toFixed(1)}% FILLED`;
+            drawRoiPreview();
+        }
+
+        function drawRoiPreview() {
+            const roiCanvas = document.getElementById('roiPreview');
+            const roiCtx = roiCanvas.getContext('2d', { willReadFrequently: true });
+            const w = roiCanvas.width, h = roiCanvas.height;
+            roiCtx.clearRect(0, 0, w, h);
+            roiCtx.save();
+            roiCtx.translate(w / 2 + roiView.panX, h / 2 + roiView.panY);
+            roiCtx.scale(roiView.zoom, roiView.zoom);
+            roiCtx.translate(-w / 2, -h / 2);
+
+            const mask = document.getElementById('roiMask');
+            const gridInfo = document.getElementById('roiGridInfo');
+
+            if (state.mode === 'test') {
+                mask.hidden = false;
+                mask.textContent = '测试模式不适用 ROI 预览';
+                roiCtx.restore();
+                return;
+            }
+            mask.hidden = true;
+
+            if (state.mode === 'text') {
+                // --- 文字模式：渲染 440x440 文字栅格，网格覆盖全画布 ---
+                const raster = document.createElement('canvas');
+                raster.width = 440;
+                raster.height = 440;
+                const rCtx = raster.getContext('2d', { willReadFrequently: true });
+
+                rCtx.fillStyle = '#fff';
+                rCtx.fillRect(0, 0, 440, 440);
+                rCtx.fillStyle = '#111';
+                rCtx.textAlign = 'center';
+                rCtx.textBaseline = 'middle';
+
+                const value = [...(elements.textInput.value || 'COC')].slice(0, 8).join('');
+                let fontSize = 180;
+                rCtx.font = `900 ${fontSize}px Arial, "Microsoft YaHei", "Noto Sans CJK SC", sans-serif`;
+                while (rCtx.measureText(value).width > 400 && fontSize > 42) {
+                    fontSize -= 4;
+                    rCtx.font = `900 ${fontSize}px Arial, "Microsoft YaHei", "Noto Sans CJK SC", sans-serif"`;
+                }
+
+                rCtx.save();
+                rCtx.translate(220, 220);
+                rCtx.rotate(Number(elements.imageRotation.value) * Math.PI / 180);
+                rCtx.fillText(value, 0, 0);
+                rCtx.restore();
+
+                // 绘制到 ROI 画布
+                roiCtx.drawImage(raster, 0, 0, w, h);
+
+                // 44x44 网格线（覆盖全画布，与图片模式一致）
+                roiCtx.strokeStyle = 'rgba(244,111,84,0.35)';
+                roiCtx.lineWidth = 0.5;
+                for (let i = 0; i <= gridSize; i++) {
+                    const gx = (i / gridSize) * w;
+                    const gy = (i / gridSize) * h;
+                    roiCtx.beginPath();
+                    roiCtx.moveTo(gx, 0);
+                    roiCtx.lineTo(gx, h);
+                    roiCtx.stroke();
+                    roiCtx.beginPath();
+                    roiCtx.moveTo(0, gy);
+                    roiCtx.lineTo(w, gy);
+                    roiCtx.stroke();
+                }
+
+                // 计算采样区域参数，用红色边框标记
+                const scale = Number(elements.imageScale.value) / 100;
+                const shiftX = Number(elements.shiftX.value);
+                const shiftY = Number(elements.shiftY.value);
+                const sampleSize = 440 * scale;
+                const offsetX = 220 + shiftX * 10;
+                const offsetY = 220 + shiftY * 10;
+                const startX = Math.max(0, offsetX - sampleSize / 2);
+                const startY = Math.max(0, offsetY - sampleSize / 2);
+                const endX = Math.min(440, offsetX + sampleSize / 2);
+                const endY = Math.min(440, offsetY + sampleSize / 2);
+                const actualSizeX = endX - startX;
+                const actualSizeY = endY - startY;
+
+                const sx = (startX / 440) * w;
+                const sy = (startY / 440) * h;
+                const sw = (actualSizeX / 440) * w;
+                const sh = (actualSizeY / 440) * h;
+
+                // 采样区域红色边框（仅标记，不遮罩）
+                roiCtx.strokeStyle = '#f46f54';
+                roiCtx.lineWidth = 2;
+                roiCtx.strokeRect(sx, sy, sw, sh);
+
+                gridInfo.textContent = `${gridSize} × ${gridSize} 网格  |  采样 ${Math.round(actualSizeX)}×${Math.round(actualSizeY)}px`;
+
+            } else if (state.mode === 'image' && state.image) {
+                // --- 图片模式：显示灰度化/反相化后的源图像 + 44x44 网格 ---
+                const side = Math.max(state.image.naturalWidth, state.image.naturalHeight);
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = 400;
+                tempCanvas.height = 400;
+                const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
+
+                tempCtx.fillStyle = '#000000';
+                tempCtx.fillRect(0, 0, 400, 400);
+                tempCtx.save();
+                tempCtx.translate(200, 200);
+                tempCtx.translate(Number(elements.shiftX.value) * 10, Number(elements.shiftY.value) * 10);
+                tempCtx.rotate(Number(elements.imageRotation.value) * Math.PI / 180);
+                tempCtx.scale(Number(elements.imageScale.value) / 100, Number(elements.imageScale.value) / 100);
+                tempCtx.drawImage(state.image, -side / 2, -side / 2, side, side);
+                tempCtx.restore();
+
+                // 应用灰度化和反相化
+                const imageData = tempCtx.getImageData(0, 0, 400, 400);
+                const data = imageData.data;
+                const red = Number(elements.redWeight.value);
+                const green = Number(elements.greenWeight.value);
+                const blue = Number(elements.blueWeight.value);
+                const threshold = Number(elements.threshold.value);
+                const invert = elements.invert.checked;
+
+                for (let i = 0; i < data.length; i += 4) {
+                    const gray = data[i] * red + data[i + 1] * green + data[i + 2] * blue;
+                    const val = invert ? (gray >= threshold ? 255 : 0) : (gray < threshold ? 255 : 0);
+                    data[i] = data[i + 1] = data[i + 2] = val;
+                }
+                tempCtx.putImageData(imageData, 0, 0);
+
+                // 绘制到 ROI 画布
+                roiCtx.drawImage(tempCanvas, 0, 0, w, h);
+
+                // 44x44 网格线
+                roiCtx.strokeStyle = 'rgba(244,111,84,0.35)';
+                roiCtx.lineWidth = 0.5;
+                for (let i = 0; i <= gridSize; i++) {
+                    const gx = (i / gridSize) * w;
+                    const gy = (i / gridSize) * h;
+                    roiCtx.beginPath();
+                    roiCtx.moveTo(gx, 0);
+                    roiCtx.lineTo(gx, h);
+                    roiCtx.stroke();
+                    roiCtx.beginPath();
+                    roiCtx.moveTo(0, gy);
+                    roiCtx.lineTo(w, gy);
+                    roiCtx.stroke();
+                }
+
+                gridInfo.textContent = `${gridSize} × ${gridSize} 网格  |  ${invert ? '反相' : '正常'} 阈值=${threshold}`;
+                mask.hidden = true;
+                mask.textContent = '';
+
+            } else {
+                // 无源数据
+                mask.hidden = false;
+                mask.textContent = '暂无源数据';
+                gridInfo.textContent = `${gridSize} × ${gridSize} 网格`;
+            }
+
+            roiCtx.restore();
         }
 
         function hexToRgb(hex) { return { r: parseInt(hex.slice(1, 3), 16), g: parseInt(hex.slice(3, 5), 16), b: parseInt(hex.slice(5, 7), 16) }; }
@@ -1186,6 +1442,7 @@
         selectMode('text');
         drawConnectionPreviews();
         setupViewport(canvas, mainView, draw);
+        setupViewport(document.getElementById('roiPreview'), roiView, drawRoiPreview);
     </script>
 </body>
 
