@@ -9,15 +9,17 @@
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
         :root {
-            --ink: #1e2328;
-            --muted: #737b83;
-            --line: #d9ddd9;
-            --paper: #f6f7f3;
+            --ink: #1a1f24;
+            --muted: #6d767e;
+            --line: #d5dad5;
+            --paper: #f2f4ef;
             --panel: #ffffff;
             --acid: #d8f44e;
             --coral: #f46f54;
             --blue: #3575d3;
-            --shadow: 0 18px 45px rgba(38, 43, 41, .10);
+            --shadow: 0 12px 40px rgba(38, 43, 41, .08);
+            --radius: 10px;
+            --radius-sm: 6px;
         }
 
         * {
@@ -28,8 +30,9 @@
             margin: 0;
             color: var(--ink);
             background: var(--paper);
-            font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+            font-family: 'Space Grotesk', 'Segoe UI', system-ui, -apple-system, sans-serif;
             min-width: 320px;
+            -webkit-font-smoothing: antialiased;
         }
 
         button,
@@ -42,9 +45,9 @@
         }
 
         .shell {
-            max-width: 1380px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 26px 34px 44px;
+            padding: 24px 32px 48px;
         }
 
         .topbar,
@@ -61,23 +64,30 @@
             justify-content: space-between;
             align-items: center;
             gap: 24px;
-            margin-bottom: 28px;
+            margin-bottom: 32px;
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 13px;
+            gap: 14px;
         }
 
         .brand-mark {
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             display: grid;
             place-items: center;
             background: var(--acid);
             border: 2px solid var(--ink);
-            font-size: 22px;
+            font-size: 24px;
+            border-radius: var(--radius-sm);
+            box-shadow: 3px 3px 0 var(--ink);
+            transition: transform .2s ease;
+        }
+
+        .brand-mark:hover {
+            transform: translate(-1px, -1px);
             box-shadow: 4px 4px 0 var(--ink);
         }
 
@@ -119,16 +129,17 @@
 
         .workspace {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 390px;
-            gap: 28px;
+            grid-template-columns: minmax(0, 1fr) 380px;
+            gap: 24px;
             align-items: start;
         }
 
         .canvas-card {
             position: relative;
             min-height: 760px;
-            padding: 28px;
+            padding: 24px;
             background: #e8ebe5;
+            border-radius: var(--radius);
             box-shadow: var(--shadow);
             overflow: hidden;
         }
@@ -176,8 +187,10 @@
             aspect-ratio: 4 / 3;
             margin: 0 auto;
             border: 2px solid var(--ink);
+            border-radius: var(--radius-sm);
             background: #fff url('./images/base/base4.webp') center / cover no-repeat;
-            box-shadow: 9px 9px 0 rgba(30, 35, 40, .13);
+            box-shadow: 6px 6px 0 rgba(30, 35, 40, .10);
+            overflow: hidden;
         }
 
         canvas {
@@ -198,11 +211,18 @@
         .viewport-tools button {
             width: 28px;
             height: 28px;
-            border: 1px solid rgba(30, 35, 40, .45);
-            background: rgba(255, 255, 255, .88);
+            border: 1px solid rgba(30, 35, 40, .35);
+            background: rgba(255, 255, 255, .92);
             color: var(--ink);
             font-weight: 700;
             line-height: 1;
+            border-radius: 4px;
+            transition: background .15s, border-color .15s;
+        }
+
+        .viewport-tools button:hover {
+            background: #fff;
+            border-color: var(--ink);
         }
 
         .viewport-tools output {
@@ -234,6 +254,7 @@
             text-align: center;
             padding: 30px;
             background: rgba(246, 247, 243, .26);
+            backdrop-filter: blur(2px);
         }
 
         .empty-state[hidden] {
@@ -241,27 +262,36 @@
         }
 
         .empty-icon {
-            margin: 0 auto 13px;
-            font-size: 33px;
+            margin: 0 auto 16px;
+            font-size: 36px;
+            opacity: .7;
         }
 
         .empty-state strong {
             display: block;
             font-size: 18px;
+            font-weight: 600;
         }
 
         .empty-state p {
-            margin: 8px 0 18px;
+            margin: 8px 0 20px;
             color: var(--muted);
-            font-size: 12px;
-            line-height: 1.6;
+            font-size: 13px;
+            line-height: 1.7;
         }
 
         .ghost-btn {
             border: 1px solid var(--ink);
             background: #fff;
-            padding: 10px 14px;
+            padding: 10px 18px;
             font-weight: 600;
+            border-radius: var(--radius-sm);
+            transition: background .15s, transform .15s;
+        }
+
+        .ghost-btn:hover {
+            background: var(--acid);
+            transform: translateY(-1px);
         }
 
         .corner-note {
@@ -274,20 +304,21 @@
 
         .controls {
             display: grid;
-            gap: 14px;
+            gap: 16px;
         }
 
         .panel {
             background: var(--panel);
             border: 1px solid var(--line);
-            padding: 21px;
+            border-radius: var(--radius);
+            padding: 20px;
         }
 
         .panel h3 {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 0 0 19px;
+            margin: 0 0 18px;
             font-size: 14px;
             letter-spacing: -.02em;
         }
@@ -299,9 +330,16 @@
         }
 
         .upload-zone {
-            border: 1px dashed #aeb5ad;
-            padding: 17px;
+            border: 1px dashed #b5bcb5;
+            border-radius: var(--radius-sm);
+            padding: 16px;
             background: #fbfcf9;
+            transition: background .2s, border-color .2s;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--muted);
+            background: #f8faf6;
         }
 
         .upload-zone label {
@@ -362,10 +400,13 @@
 
         select {
             border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
             background: #fff;
             color: var(--ink);
-            padding: 7px 9px;
-            font-size: 11px;
+            padding: 6px 10px;
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
         }
 
         .rgb-row {
@@ -488,8 +529,8 @@
         .mode-tabs {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-            margin-bottom: 12px;
+            gap: 6px;
+            margin-bottom: 14px;
         }
 
         .mode-tab {
@@ -498,6 +539,13 @@
             padding: 9px 4px;
             color: var(--muted);
             font-size: 10px;
+            border-radius: var(--radius-sm);
+            transition: all .15s;
+        }
+
+        .mode-tab:hover {
+            border-color: var(--muted);
+            color: var(--ink);
         }
 
         .mode-tab.active {
@@ -510,10 +558,17 @@
         .mode-input {
             width: 100%;
             border: 1px solid var(--line);
-            padding: 10px;
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
             color: var(--ink);
             background: #fff;
-            font-size: 12px;
+            font-size: 13px;
+            transition: border-color .2s;
+            outline: none;
+        }
+
+        .mode-input:focus {
+            border-color: var(--ink);
         }
 
         .mode-input::placeholder {
@@ -542,13 +597,14 @@
         .connection-preview {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            gap: 10px;
         }
 
         .connection-tile {
             min-width: 0;
-            padding: 7px;
+            padding: 8px;
             border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
             background: #fbfcf9;
             text-align: center;
         }
@@ -599,7 +655,7 @@
         .actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 9px;
+            gap: 8px;
         }
 
         .action {
@@ -608,11 +664,22 @@
             background: #fff;
             font-size: 12px;
             font-weight: 600;
+            border-radius: var(--radius-sm);
+            transition: all .15s;
+        }
+
+        .action:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0,0,0,.08);
         }
 
         .action.primary {
             color: #fff;
             background: var(--ink);
+        }
+
+        .action.primary:hover {
+            background: #2a323a;
         }
 
         @keyframes rise {
@@ -628,26 +695,27 @@
         }
 
         .roi-section {
-            margin-top: 28px;
+            margin-top: 24px;
             animation: rise .55s ease both;
             animation-delay: .32s;
         }
 
         .roi-card {
-            padding: 28px;
+            padding: 24px;
             background: var(--panel);
             border: 1px solid var(--line);
+            border-radius: var(--radius);
             box-shadow: var(--shadow);
         }
 
         .roi-head {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .roi-head-row {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
             margin-bottom: 4px;
         }
 
@@ -695,14 +763,97 @@
             text-align: center;
         }
 
+        .brush-toggle {
+            width: 28px;
+            height: 28px;
+            border: 1px solid rgba(30, 35, 40, .35);
+            background: rgba(255, 255, 255, .92);
+            color: var(--ink);
+            font-weight: 700;
+            line-height: 1;
+            border-radius: 4px;
+            transition: background .15s, border-color .15s;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+            font-size: 14px;
+        }
+
+        .brush-toggle:hover {
+            background: #fff;
+            border-color: var(--ink);
+        }
+
+        .brush-toggle.active {
+            background: var(--acid);
+            border-color: var(--ink);
+        }
+
+        .brush-toggle.hidden-mode {
+            display: none;
+        }
+
+        .draw-panel {
+            display: grid;
+            gap: 12px;
+        }
+
+        .draw-panel[hidden] {
+            display: none;
+        }
+
+        .draw-toolbar {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .draw-tool-btn {
+            border: 1px solid var(--line);
+            background: #fff;
+            padding: 10px 8px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: var(--radius-sm);
+            transition: all .15s;
+            text-align: center;
+            cursor: pointer;
+        }
+
+        .draw-tool-btn:hover {
+            border-color: var(--muted);
+        }
+
+        .draw-tool-btn.active {
+            border-color: var(--ink);
+            background: var(--acid);
+            font-weight: 600;
+        }
+
+        .draw-tool-btn.danger {
+            color: var(--coral);
+            border-color: var(--coral);
+        }
+
+        .draw-tool-btn.danger:hover {
+            background: #fef0ec;
+        }
+
+        .draw-tool-btn:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
         @media (max-width: 900px) {
             .workspace {
                 grid-template-columns: 1fr;
+                gap: 20px;
             }
 
             .canvas-card {
                 min-height: auto;
-                padding-bottom: 58px;
+                padding-bottom: 56px;
             }
 
             .controls {
@@ -717,7 +868,7 @@
 
         @media (max-width: 580px) {
             .shell {
-                padding: 20px 16px 32px;
+                padding: 18px 14px 28px;
             }
 
             .top-actions {
@@ -726,16 +877,16 @@
             }
 
             .canvas-card {
-                padding: 17px;
+                padding: 14px;
             }
 
             .canvas-head {
-                margin-bottom: 17px;
+                margin-bottom: 14px;
             }
 
             .corner-note {
-                left: 17px;
-                bottom: 16px;
+                left: 14px;
+                bottom: 14px;
             }
 
             .controls {
@@ -749,40 +900,40 @@
     <main class="shell">
         <header class="topbar">
             <div class="brand">
-                <div class="brand-mark">▦</div>
-                <div>
-                    <p class="eyebrow">Dale Demo / 03</p>
-                    <h1>CoC Wall Crafter</h1>
+                    <div class="brand-mark">▦</div>
+                    <div>
+                        <p class="eyebrow">CoC 城墙布局工具</p>
+                        <h1>Wall Crafter</h1>
+                    </div>
                 </div>
-            </div>
-            <div class="top-actions">
-                <div class="status"><i class="status-dot"></i><span id="statusText">READY TO CRAFT</span></div>
-            </div>
+                <div class="top-actions">
+                    <div class="status"><i class="status-dot"></i><span id="statusText">就绪</span></div>
+                </div>
         </header>
         <section class="workspace">
             <section class="canvas-card">
                 <div class="canvas-head">
                     <div>
-                        <p class="eyebrow"><span id="densityLabel">0.0% FILLED</span></p>
-                        <div class="stat"><strong id="wallCount">0</strong><span>/ <b id="statLimit">325</b>
-                                WALLS</span></div>
-                        <p>点击墙段可暂时降低透明度，方便手动校准</p>
-                    </div><span class="grid-label">GRID / 1936 CELLS</span>
+                        <p class="eyebrow"><span id="densityLabel">0.0% 填充率</span></p>
+                        <div class="stat"><strong id="wallCount">0</strong><span>/ <b id="statLimit">325</b> 墙段</span></div>
+                        <p>点击墙段可临时降低透明度，方便手动校准</p>
+                    </div><span class="grid-label">网格 / 1936 格</span>
                 </div>
                 <div class="canvas-wrap"><canvas id="preview" width="1600" height="1200" aria-label="城墙布局预览"></canvas>
-                    <div class="viewport-tools" data-viewport-tools><button data-zoom="out" type="button"
+                    <div class="viewport-tools" data-viewport-tools><button class="brush-toggle hidden-mode" id="brushToggle"
+                            type="button" aria-label="画笔模式" title="画笔模式">✏️</button><button data-zoom="out" type="button"
                             aria-label="缩小">−</button><output data-zoom-label>100%</output><button data-zoom="in"
                             type="button" aria-label="放大">+</button><button data-zoom="reset" type="button"
                             aria-label="重置视图">↺</button></div>
                     <div class="empty-state" id="emptyState">
                         <div>
-                            <div class="empty-icon">⌁</div><strong>Drop an image to begin</strong>
-                            <p>把你的阵型草图或截图放进来<br>自动转换为城墙布局</p><button class="ghost-btn" id="emptyUpload"
+                            <div class="empty-icon">⌁</div><strong>拖入图片开始编辑</strong>
+                            <p>将阵型草图或截图拖入此处<br>自动转换为 44×44 城墙布局</p><button class="ghost-btn" id="emptyUpload"
                                 type="button">选择图片</button>
                         </div>
                     </div>
                 </div>
-                <span class="corner-note" id="imageNote">NO SOURCE IMAGE / AWAITING INPUT</span>
+                <span class="corner-note" id="imageNote">暂无源图片 / 等待输入</span>
             </section>
 
             <aside class="controls">
@@ -790,23 +941,21 @@
                         class="action primary" id="exportButton" type="button">导出预览 ↓</button></div>
 
                 <section class="panel">
-                    <h3><span>01</span>布局来源 <span>INPUT MODE</span></h3>
+                    <h3><span>01</span>布局来源 <span>输入模式</span></h3>
                     <div class="mode-tabs" role="tablist"><button class="mode-tab active" data-mode="text"
                             type="button">文字</button><button class="mode-tab" data-mode="image"
-                            type="button">图片</button><button class="mode-tab" data-mode="test" type="button">测试</button>
+                            type="button">图片</button><button class="mode-tab" data-mode="test" type="button">测试</button><button class="mode-tab" data-mode="draw" type="button">绘制</button>
                     </div><input class="mode-input" id="textInput" type="text" value="" maxlength="8"
                         aria-label="文字排版内容" placeholder="COC（默认图案）">
                     <div class="upload-zone" id="dropZone"><label
-                            for="fileInput"><span>拖放图片到这里</span><b>选择文件</b></label><input id="fileInput" type="file"
+                            for="fileInput"><span>拖放图片到此处</span><b>选择文件</b></label><input id="fileInput" type="file"
                             accept="image/png,image/jpeg">
-                        <p class="drop-hint">图片模式：上传草图后按像素识别</p>
+                        <p class="drop-hint">图片模式：上传阵型草图后按像素识别</p>
                     </div>
                     <p class="drop-hint" id="modeHint">文字模式：留空使用默认 COC 图案</p>
                 </section>
 
-                <section class="panel">
-
-                    <h3><span>02</span>参数调整 <span>CONTEXTUAL CONTROLS</span></h3>
+                <section class="panel" id="paramsPanel">
                     <div class="param-group" id="testParams" hidden>
                         <div class="control-row">
                             <div class="control-label"><span>菱形宽度</span><output id="projectionXOut">657px / 82%</output>
@@ -817,16 +966,16 @@
                             </div><input id="projectionY" type="range" min="300" max="580" value="489">
                         </div>
                         <div class="control-row">
-                            <div class="control-label"><span>中心 X</span><output id="centerXOut">50.4%</output></div>
+                            <div class="control-label"><span>中心点 X</span><output id="centerXOut">50.4%</output></div>
                             <input id="centerX" type="range" min="35" max="65" step=".1" value="50.4">
                         </div>
                         <div class="control-row">
-                            <div class="control-label"><span>中心 Y</span><output id="centerYOut">48.8%</output></div>
+                            <div class="control-label"><span>中心点 Y</span><output id="centerYOut">48.8%</output></div>
                             <input id="centerY" type="range" min="35" max="65" step=".1" value="48.8">
                         </div>
                     </div>
-                    <div class="control-row">
-                        <div class="control-label"><span>城墙数量</span><output id="capacityOut">325</output></div><input
+                    <div class="control-row" id="capacityControl">
+                        <div class="control-label"><span>墙段数量上限</span><output id="capacityOut">325</output></div><input
                             id="capacity" type="range" min="1" max="1936" value="325">
                     </div>
                     <div class="color-row"><span>城墙等级</span><select id="wallLevel" aria-label="城墙等级"></select></div>
@@ -834,19 +983,19 @@
                                 checked><i class="slider"></i></label></div>
                     <div class="param-group" id="sourceParams">
                         <div class="control-row">
-                            <div class="control-label"><span>旋转</span><output id="imageRotationOut">-45°</output></div>
+                            <div class="control-label"><span>旋转角度</span><output id="imageRotationOut">-45°</output></div>
                             <input id="imageRotation" type="range" min="-180" max="180" value="-45">
                         </div>
                         <div class="control-row">
-                            <div class="control-label"><span>缩放</span><output id="imageScaleOut">100%</output></div>
+                            <div class="control-label"><span>缩放比例</span><output id="imageScaleOut">100%</output></div>
                             <input id="imageScale" type="range" min="0" max="300" value="100">
                         </div>
                         <div class="control-row">
-                            <div class="control-label"><span>中心 X 偏移</span><output id="shiftXOut">0.0</output></div><input
+                            <div class="control-label"><span>横向偏移</span><output id="shiftXOut">0.0</output></div><input
                                 id="shiftX" type="range" min="-100" max="100" step=".1" value="0" aria-label="横向偏移">
                         </div>
                         <div class="control-row">
-                            <div class="control-label"><span>中心 Y 偏移</span><output id="shiftYOut">0.0</output></div><input
+                            <div class="control-label"><span>纵向偏移</span><output id="shiftYOut">0.0</output></div><input
                                 id="shiftY" type="range" min="-100" max="100" step=".1" value="0" aria-label="纵向偏移">
                         </div>
                     </div>
@@ -867,48 +1016,72 @@
                     </div>
                 </section>
 
+                <section class="panel" id="drawPanel" hidden>
+                    <h3><span>02</span>绘制工具 <span>画笔</span></h3>
+                    <div class="draw-panel">
+                        <div class="color-row"><span>城墙等级</span><select id="drawWallLevel" aria-label="城墙等级"></select></div>
+                       
+                        <div class="mode-tabs" id="drawModeToggle" style="grid-template-columns:1fr 1fr;margin-bottom:14px;">
+                            <button class="mode-tab active" id="drawToggleBrush" type="button">✏️ 绘制城墙</button>
+                            <button class="mode-tab" id="drawToggleView" type="button">👁️ 调整画面</button>
+                        </div>
+                         <div class="draw-toolbar">
+                            <button class="draw-tool-btn active" id="drawBrushBtn" type="button" data-draw-tool="brush">✏️ 画笔</button>
+                            <button class="draw-tool-btn" id="drawEraserBtn" type="button" data-draw-tool="eraser">🧹 橡皮擦</button>
+                            <button class="draw-tool-btn" id="drawSelectBtn" type="button" data-draw-tool="select">🔲 选择</button>
+                            <button class="draw-tool-btn danger" id="drawClearBtn" type="button">🗑️ 清空</button>
+                        </div>
+                        <div class="draw-toolbar" id="clipboardTools" hidden>
+                            <button class="draw-tool-btn" id="drawCopyBtn" type="button">📋 复制</button>
+                            <button class="draw-tool-btn" id="drawCutBtn" type="button">✂️ 剪切</button>
+                            <button class="draw-tool-btn" id="drawPasteBtn" type="button">📄 粘贴</button>
+                            <button class="draw-tool-btn" id="drawDeselectBtn" type="button">取消选择</button>
+                        </div>
+                    </div>
+                </section>
+
                 <section class="panel" id="connectionPanel">
-                    <h3><span>03</span>连接预览 <span>WALL STATES</span></h3>
+                    <h3><span>03</span>连接预览 <span>墙段状态</span></h3>
                     <div class="connection-preview">
                         <div class="connection-tile"><canvas data-connection="single" width="800" height="600"></canvas>
                             <div class="viewport-tools" data-viewport-tools><button data-zoom="out"
                                     type="button">−</button><output data-zoom-label>1000%</output><button data-zoom="in"
                                     type="button">+</button><button data-zoom="reset" type="button">↺</button></div>
-                            <span>单独</span>
+                            <span>单段</span>
                         </div>
                         <div class="connection-tile"><canvas data-connection="vertical" width="800"
                                 height="600"></canvas>
                             <div class="viewport-tools" data-viewport-tools><button data-zoom="out"
                                     type="button">−</button><output data-zoom-label>1000%</output><button data-zoom="in"
                                     type="button">+</button><button data-zoom="reset" type="button">↺</button></div>
-                            <span>竖列两个</span>
+                            <span>纵向双段</span>
                         </div>
                         <div class="connection-tile"><canvas data-connection="horizontal" width="800"
                                 height="600"></canvas>
                             <div class="viewport-tools" data-viewport-tools><button data-zoom="out"
                                     type="button">−</button><output data-zoom-label>1000%</output><button data-zoom="in"
                                     type="button">+</button><button data-zoom="reset" type="button">↺</button></div>
-                            <span>横列两个</span>
+                            <span>横向双段</span>
                         </div>
                         <div class="connection-tile"><canvas data-connection="upTriangle" width="800"
                                 height="600"></canvas>
                             <div class="viewport-tools" data-viewport-tools><button data-zoom="out"
                                     type="button">−</button><output data-zoom-label>1000%</output><button data-zoom="in"
                                     type="button">+</button><button data-zoom="reset" type="button">↺</button></div>
-                            <span>正三角</span>
+                            <span>上三角</span>
                         </div>
                         <div class="connection-tile"><canvas data-connection="downTriangle" width="800"
                                 height="600"></canvas>
                             <div class="viewport-tools" data-viewport-tools><button data-zoom="out"
                                     type="button">−</button><output data-zoom-label>1000%</output><button data-zoom="in"
                                     type="button">+</button><button data-zoom="reset" type="button">↺</button></div>
-                            <span>倒三角</span>
+                            <span>下三角</span>
                         </div>
                         <div class="connection-tile"><canvas data-connection="cross" width="800" height="600"></canvas>
                             <div class="viewport-tools" data-viewport-tools><button data-zoom="out"
                                     type="button">−</button><output data-zoom-label>1000%</output><button data-zoom="in"
                                     type="button">+</button><button data-zoom="reset" type="button">↺</button></div>
-                            <span>井字</span>
+                            <span>十字</span>
                         </div>
                     </div>
                 </section>
@@ -920,12 +1093,12 @@
                 <div class="roi-card">
                     <div class="roi-head">
                         <div>
-                            <p class="eyebrow">ROI SNAPSHOT</p>
+                            <p class="eyebrow">采样预览</p>
                             <div class="roi-head-row">
-                                <h2>采样预览</h2>
+                                <h2>ROI 分析</h2>
                                 <span class="roi-grid-label" id="roiGridInfo">44 × 44 网格</span>
                             </div>
-                            <p>显示当前变换后的源区域与采样网格，反映旋转/缩放/偏移/灰度化/反相化后的 ROI</p>
+                            <p>显示当前变换后的采样区域与网格，反映旋转、缩放、偏移及灰度化处理后的 ROI</p>
                         </div>
                     </div>
                     <div class="roi-wrap">
@@ -959,22 +1132,43 @@
         for (let level = 1; level <= 21; level += 1) { wallSprites[level] = {}; wallAssetNames.forEach(style => { const image = new Image(); image.onload = () => { if (level === 12) drawConnectionPreviews(); draw(); }; image.src = `./images/walls/${level}/${level}${style}.webp`; wallSprites[level][style] = image; }); }
         const backgroundImage = new Image(); backgroundImage.src = './images/base/base4.webp'; backgroundImage.onload = () => draw();
         for (let level = 1; level <= 21; level += 1) elements.wallLevel.insertAdjacentHTML('beforeend', `<option value="${level}"${level === 12 ? ' selected' : ''}>${level} 级</option>`);
-        const state = { image: null, limit: 325, walls: [], demoWalls: null, dimWalls: new Set(), wallLevel: 12, mode: 'text' };
+        for (let level = 1; level <= 21; level += 1) document.getElementById('drawWallLevel').insertAdjacentHTML('beforeend', `<option value="${level}"${level === 12 ? ' selected' : ''}>${level} 级</option>`);
+        const state = { image: null, limit: 325, walls: [], demoWalls: null, dimWalls: new Set(), wallLevel: 12, mode: 'text', drawWalls: [], drawMode: 'draw', interactionMode: 'zoom', selectedWalls: [], clipboard: null, isErasing: false, selectionStart: null, selectionEnd: null, isSelecting: false, hoveredCell: null };
         const mainView = { zoom: 1, defaultZoom: 1, minZoom: 1, panX: 0, panY: 0 };
         const roiView = { zoom: 1, defaultZoom: 1, minZoom: 1, panX: 0, panY: 0 };
         const previewViews = new Map();
+
+        function applyPanConstraints(view) {
+            const maxPanX = canvas.width / 2 * (view.zoom - 1);
+            const maxPanY = canvas.height / 2 * (view.zoom - 1);
+            view.panX = Math.max(-maxPanX, Math.min(maxPanX, view.panX));
+            view.panY = Math.max(-maxPanY, Math.min(maxPanY, view.panY));
+            if (view.zoom <= 1.001) { view.panX = 0; view.panY = 0; }
+        }
 
         function updateViewportLabel(canvasElement, view) { const label = canvasElement.parentElement.querySelector('[data-zoom-label]'); if (label) label.textContent = `${Math.round(view.zoom * 100)}%`; }
 
         function setupViewport(canvasElement, view, redraw) {
             const tools = canvasElement.parentElement.querySelector('[data-viewport-tools]');
             let dragging = false, startX = 0, startY = 0;
-            const setZoom = nextZoom => { view.zoom = Math.max(view.minZoom || .5, Math.min(20, nextZoom)); updateViewportLabel(canvasElement, view); redraw(); };
-            tools?.addEventListener('click', event => { const action = event.target.dataset.zoom; if (action === 'in') setZoom(view.zoom * 1.25); if (action === 'out') setZoom(view.zoom / 1.25); if (action === 'reset') { view.zoom = view.defaultZoom || 1; view.panX = 0; view.panY = 0; updateViewportLabel(canvasElement, view); redraw(); } });
+            const setZoom = nextZoom => { view.zoom = Math.max(view.minZoom || .5, Math.min(20, nextZoom)); applyPanConstraints(view); updateViewportLabel(canvasElement, view); redraw(); };
+            tools?.addEventListener('click', event => { if (event.target === document.getElementById('brushToggle')) return; const action = event.target.dataset.zoom; if (action === 'in') setZoom(view.zoom * 1.25); if (action === 'out') setZoom(view.zoom / 1.25); if (action === 'reset') { view.zoom = view.defaultZoom || 1; view.panX = 0; view.panY = 0; updateViewportLabel(canvasElement, view); redraw(); } });
             canvasElement.addEventListener('wheel', event => { event.preventDefault(); setZoom(view.zoom * (event.deltaY < 0 ? 1.12 : .89)); }, { passive: false });
-            canvasElement.addEventListener('pointerdown', event => { dragging = true; startX = event.clientX - view.panX; startY = event.clientY - view.panY; canvasElement.setPointerCapture(event.pointerId); canvasElement.style.cursor = 'grabbing'; });
-            canvasElement.addEventListener('pointermove', event => { if (!dragging) return; view.panX = event.clientX - startX; view.panY = event.clientY - startY; redraw(); });
-            canvasElement.addEventListener('pointerup', event => { dragging = false; canvasElement.releasePointerCapture(event.pointerId); canvasElement.style.cursor = 'grab'; });
+            canvasElement.addEventListener('pointerdown', event => {
+                if (state.mode === 'draw' && state.interactionMode === 'brush') return;
+                if (view.zoom <= 1.001) return;
+                dragging = true; startX = event.clientX - view.panX; startY = event.clientY - view.panY;
+                canvasElement.setPointerCapture(event.pointerId); canvasElement.style.cursor = 'grabbing';
+            });
+            canvasElement.addEventListener('pointermove', event => {
+                if (!dragging) return;
+                view.panX = event.clientX - startX; view.panY = event.clientY - startY;
+                applyPanConstraints(view); redraw();
+            });
+            canvasElement.addEventListener('pointerup', event => {
+                dragging = false; canvasElement.releasePointerCapture(event.pointerId);
+                canvasElement.style.cursor = state.mode === 'draw' && state.interactionMode === 'brush' ? 'crosshair' : 'grab';
+            });
             canvasElement.style.cursor = 'grab'; updateViewportLabel(canvasElement, view);
         }
 
@@ -1157,6 +1351,7 @@
             // The uploaded image is used only as a hidden sampling source. The final canvas contains the village and walls.
             const red = Number(elements.redWeight.value), green = Number(elements.greenWeight.value), blue = Number(elements.blueWeight.value), threshold = Number(elements.threshold.value), invert = elements.invert.checked;
             state.walls = state.demoWalls ? state.demoWalls.slice(0, state.limit) : [];
+            if (state.mode === 'draw') { state.walls = state.drawWalls.slice().sort((a, b) => a.row - b.row || a.column - b.column); }
             if (state.image && !state.demoWalls) {
                 renderSourceImage();
                 const pixels = sourceContext.getImageData(0, 0, sourceCanvas.width, sourceCanvas.height).data;
@@ -1226,7 +1421,7 @@
                     context.closePath();
                     context.fill();
                 });
-                context.globalAlpha = 1; context.restore(); const count = state.walls.length, percentage = count / (gridSize * gridSize) * 100; elements.wallCount.textContent = count; elements.statLimit.textContent = state.limit; elements.densityLabel.textContent = `${percentage.toFixed(1)}% FILLED`; return;
+                context.globalAlpha = 1; context.restore(); const count = state.walls.length, percentage = count / (gridSize * gridSize) * 100; elements.wallCount.textContent = count; elements.statLimit.textContent = state.limit; elements.densityLabel.textContent = `${percentage.toFixed(1)}% 填充率`; return;
             }
             state.walls.forEach(({ row, column }) => {
                 const sprite = wallSprites[state.wallLevel][wallAssetFor(row, column)];
@@ -1235,9 +1430,54 @@
                 } else { const { x, y } = gridToCanvas(column, row); context.globalAlpha = state.dimWalls.has(`${column},${row}`) ? .2 : 1; context.fillStyle = '#f46f54'; context.fillRect(x - wallWidth / 2, y - wallHeight / 2, wallWidth, wallHeight); }
             });
             context.globalAlpha = 1;
+            // Draw mode: hover highlight
+            if (state.mode === 'draw' && state.hoveredCell && state.interactionMode === 'brush') {
+                const { row, column } = state.hoveredCell;
+                if (row >= 0 && row < gridSize && column >= 0 && column < gridSize) {
+                    const { x, y } = gridToCanvas(column, row);
+                    const projection = projectionMetrics();
+                    const dx = projection.width / 2 / (gridSize - 1) / 2;
+                    const dy = projection.height / 2 / (gridSize - 1) / 2;
+                    context.save();
+                    context.strokeStyle = state.isErasing ? 'rgba(244,111,84,0.7)' : 'rgba(216,244,78,0.7)';
+                    context.lineWidth = 3;
+                    context.strokeRect(x - dx, y - dy, dx * 2, dy * 2);
+                    context.restore();
+                }
+            }
+            // Draw mode: selection overlay
+            if (state.mode === 'draw' && state.selectionStart && state.selectionEnd) {
+                const minRow = Math.min(state.selectionStart.row, state.selectionEnd.row);
+                const maxRow = Math.max(state.selectionStart.row, state.selectionEnd.row);
+                const minCol = Math.min(state.selectionStart.column, state.selectionEnd.column);
+                const maxCol = Math.max(state.selectionStart.column, state.selectionEnd.column);
+                const projection = projectionMetrics();
+                const dx = projection.width / 2 / (gridSize - 1) / 2;
+                const dy = projection.height / 2 / (gridSize - 1) / 2;
+                context.save();
+                context.fillStyle = 'rgba(244,111,84,0.12)';
+                context.strokeStyle = 'rgba(244,111,84,0.7)';
+                context.lineWidth = 2;
+                context.setLineDash([5, 5]);
+                for (let r = minRow; r <= maxRow; r++) {
+                    for (let c = minCol; c <= maxCol; c++) {
+                        const { x, y } = gridToCanvas(c, r);
+                        context.beginPath();
+                        context.moveTo(x, y - dy);
+                        context.lineTo(x + dx, y);
+                        context.lineTo(x, y + dy);
+                        context.lineTo(x - dx, y);
+                        context.closePath();
+                        context.fill();
+                        context.stroke();
+                    }
+                }
+                context.setLineDash([]);
+                context.restore();
+            }
             context.restore();
             const count = state.walls.length, percentage = count / (gridSize * gridSize) * 100;
-            elements.wallCount.textContent = count; elements.statLimit.textContent = state.limit; elements.densityLabel.textContent = `${percentage.toFixed(1)}% FILLED`;
+            elements.wallCount.textContent = count; elements.statLimit.textContent = state.limit; elements.densityLabel.textContent = `${percentage.toFixed(1)}% 填充率`;
             drawRoiPreview();
         }
 
@@ -1256,7 +1496,7 @@
 
             if (state.mode === 'test') {
                 mask.hidden = false;
-                mask.textContent = '测试模式不适用 ROI 预览';
+                mask.textContent = '测试模式不支持 ROI 预览';
                 roiCtx.restore();
                 return;
             }
@@ -1403,31 +1643,172 @@
 
         function hexToRgb(hex) { return { r: parseInt(hex.slice(1, 3), 16), g: parseInt(hex.slice(3, 5), 16), b: parseInt(hex.slice(5, 7), 16) }; }
 
-        function loadImage(file) {
-            if (!file || !file.type.startsWith('image/')) return;
-            const image = new Image(); image.onload = () => { state.image = image; state.demoWalls = null; state.dimWalls.clear(); elements.emptyState.hidden = true; elements.statusText.textContent = 'IMAGE LOADED / LIVE'; elements.imageNote.textContent = `${image.naturalWidth} × ${image.naturalHeight} / ${file.name}`; draw(); URL.revokeObjectURL(image.src); }; image.src = URL.createObjectURL(file);
+        function screenToGrid(clientX, clientY) {
+            const bounds = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / bounds.width;
+            const scaleY = canvas.height / bounds.height;
+            const screenX = (clientX - bounds.left) * scaleX;
+            const screenY = (clientY - bounds.top) * scaleY;
+            const canvasX = (screenX - canvas.width / 2 - mainView.panX) / mainView.zoom + canvas.width / 2;
+            const canvasY = (screenY - canvas.height / 2 - mainView.panY) / mainView.zoom + canvas.height / 2;
+            let closest = null, minDist = Infinity;
+            for (let row = 0; row < gridSize; row++) {
+                for (let column = 0; column < gridSize; column++) {
+                    const pt = gridToCanvas(column, row);
+                    const dist = Math.hypot(pt.x - canvasX, pt.y - canvasY);
+                    if (dist < minDist) { minDist = dist; closest = { row, column }; }
+                }
+            }
+            const projection = projectionMetrics();
+            const cellHalf = projection.width / 2 / (gridSize - 1) / 2;
+            if (minDist < cellHalf * 1.5) return closest;
+            return null;
         }
 
-        function loadCocDemo() { state.mode = 'coc'; state.image = null; state.demoWalls = createTextWalls('COC'); state.dimWalls.clear(); state.wallLevel = 12; elements.wallLevel.value = '12'; elements.emptyState.hidden = true; elements.statusText.textContent = 'COC DEMO / 12 WALL'; elements.imageNote.textContent = 'DEFAULT COC PATTERN / LOGICAL GRID'; draw(); }
+        function loadImage(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+            const image = new Image(); image.onload = () => { state.image = image; state.demoWalls = null; state.dimWalls.clear(); elements.emptyState.hidden = true; elements.statusText.textContent = '图片已加载 / 实时'; elements.imageNote.textContent = `${image.naturalWidth} × ${image.naturalHeight} / ${file.name}`; draw(); URL.revokeObjectURL(image.src); }; image.src = URL.createObjectURL(file);
+        }
+
+        function loadCocDemo() { state.mode = 'coc'; state.image = null; state.demoWalls = createTextWalls('COC'); state.dimWalls.clear(); state.wallLevel = 12; elements.wallLevel.value = '12'; elements.emptyState.hidden = true; elements.statusText.textContent = 'COC 演示 / 12 级墙'; elements.imageNote.textContent = '默认 COC 图案 / 逻辑网格'; draw(); }
 
         function selectMode(mode) {
             state.mode = mode; state.image = null; state.dimWalls.clear();
             elements.modeTabs.forEach(tab => tab.classList.toggle('active', tab.dataset.mode === mode));
-            if (mode === 'coc') { mode = 'text'; state.mode = 'text'; state.demoWalls = createTextWalls(''); elements.modeHint.textContent = '默认 COC 图案，可直接调节菱形尺寸'; elements.statusText.textContent = 'COC PATTERN / READY'; }
-            if (mode === 'text') { state.demoWalls = createTextWalls(elements.textInput.value); elements.modeHint.textContent = '输入文字后自动排版到 44×44 网格'; elements.statusText.textContent = 'TEXT LAYOUT / READY'; }
-            if (mode === 'test') { state.demoWalls = createTestWalls(); elements.modeHint.textContent = '四角 + 交替边框 + 随机二连/三连，用于校准菱形'; elements.statusText.textContent = '44×44 TEST / READY'; }
-            if (mode === 'image') { state.demoWalls = null; elements.modeHint.textContent = '图片模式：上传草图后按像素识别'; elements.statusText.textContent = 'IMAGE MODE / AWAITING INPUT'; }
+            if (mode === 'coc') { mode = 'text'; state.mode = 'text'; state.demoWalls = createTextWalls(''); elements.modeHint.textContent = '默认 COC 图案，可直接调节菱形尺寸'; elements.statusText.textContent = 'COC 图案 / 就绪'; }
+            if (mode === 'text') { state.demoWalls = createTextWalls(elements.textInput.value); elements.modeHint.textContent = '输入文字后自动排版到 44×44 网格'; elements.statusText.textContent = '文字排版 / 就绪'; }
+            if (mode === 'test') { state.demoWalls = createTestWalls(); elements.modeHint.textContent = '四角 + 交替边框 + 随机二连/三连，用于校准菱形'; elements.statusText.textContent = '测试模式 / 就绪'; }
+            if (mode === 'image') { state.demoWalls = null; elements.modeHint.textContent = '图片模式：上传阵型草图后按像素识别'; elements.statusText.textContent = '图片模式 / 等待输入'; }
+            if (mode === 'draw') {
+                state.demoWalls = null;
+                state.interactionMode = 'brush';
+                state.drawMode = 'draw';
+                state.isErasing = false;
+                document.getElementById('brushToggle').classList.add('active');
+                document.getElementById('brushToggle').classList.remove('hidden-mode');
+                document.getElementById('drawToggleBrush').classList.add('active');
+                document.getElementById('drawToggleView').classList.remove('active');
+                setDrawToolsEnabled(true);
+                elements.modeHint.textContent = '绘制模式：点击网格绘制/擦除城墙，拖动鼠标连续绘制';
+                elements.statusText.textContent = '绘制模式 / 就绪';
+            }
+            // Reset draw state when leaving draw mode
+            if (mode !== 'draw') {
+                state.interactionMode = 'zoom';
+                state.hoveredCell = null;
+                state.selectionStart = null;
+                state.selectionEnd = null;
+                state.selectedWalls = [];
+                state.isSelecting = false;
+                document.getElementById('brushToggle').classList.remove('active');
+                document.getElementById('brushToggle').classList.add('hidden-mode');
+                document.getElementById('clipboardTools').hidden = true;
+                canvas.style.cursor = 'grab';
+            }
             elements.dropZone.hidden = mode !== 'image';
             elements.textInput.hidden = mode !== 'text';
-            elements.sourceParams.hidden = mode === 'test';
+            elements.sourceParams.hidden = mode === 'test' || mode === 'draw';
             elements.testParams.hidden = mode !== 'test';
             elements.imageParams.hidden = mode !== 'image';
             elements.connectionPanel.hidden = mode !== 'test';
+            document.getElementById('drawPanel').hidden = mode !== 'draw';
+            document.getElementById('paramsPanel').hidden = mode === 'draw';
+            document.getElementById('capacityControl').hidden = mode === 'draw';
             elements.emptyState.hidden = mode !== 'image'; draw();
         }
 
         elements.fileInput.addEventListener('change', event => { selectMode('image'); loadImage(event.target.files[0]); });
-        canvas.addEventListener('click', event => { const bounds = canvas.getBoundingClientRect(), scaleX = canvas.width / bounds.width, scaleY = canvas.height / bounds.height, clickX = (event.clientX - bounds.left) * scaleX, clickY = (event.clientY - bounds.top) * scaleY; let closest = null, distance = Infinity; state.walls.forEach(wall => { const point = gridToCanvas(wall.column, wall.row), currentDistance = Math.hypot(point.x - clickX, point.y - clickY); if (currentDistance < distance) { closest = wall; distance = currentDistance; } }); if (closest && distance < 34) { const key = `${closest.column},${closest.row}`; state.dimWalls.has(key) ? state.dimWalls.delete(key) : state.dimWalls.add(key); draw(); } });
+
+        // Draw mode: drawing variables
+        let isDrawing = false;
+        let lastDrawnCell = null;
+
+        // Draw mode: pointer events for draw/erase/select
+        canvas.addEventListener('pointerdown', event => {
+            if (state.mode !== 'draw' || state.interactionMode !== 'brush') return;
+            if (state.drawMode === 'select') {
+                const cell = screenToGrid(event.clientX, event.clientY);
+                if (cell) { state.selectionStart = cell; state.selectionEnd = cell; state.isSelecting = true; }
+                return;
+            }
+            isDrawing = true;
+            lastDrawnCell = null;
+            const cell = screenToGrid(event.clientX, event.clientY);
+            if (cell) {
+                const key = `${cell.column},${cell.row}`;
+                const existing = state.drawWalls.find(w => w.row === cell.row && w.column === cell.column);
+                const level = Number(document.getElementById('drawWallLevel').value);
+                state.wallLevel = level;
+                elements.wallLevel.value = level;
+                if (state.isErasing) {
+                    if (existing) { state.drawWalls = state.drawWalls.filter(w => !(w.row === cell.row && w.column === cell.column)); lastDrawnCell = key; }
+                } else {
+                    if (!existing) { state.drawWalls.push({ row: cell.row, column: cell.column }); lastDrawnCell = key; }
+                }
+                state.hoveredCell = cell;
+                draw();
+            }
+        });
+
+        canvas.addEventListener('pointermove', event => {
+            if (state.mode !== 'draw') return;
+            const cell = screenToGrid(event.clientX, event.clientY);
+
+            if (state.interactionMode === 'brush') {
+                state.hoveredCell = cell;
+                if (state.drawMode === 'select' && state.isSelecting) {
+                    state.selectionEnd = cell;
+                    draw();
+                    return;
+                }
+                if (isDrawing && cell) {
+                    const key = `${cell.column},${cell.row}`;
+                    if (key !== lastDrawnCell) {
+                        const existing = state.drawWalls.find(w => w.row === cell.row && w.column === cell.column);
+                        const level = Number(document.getElementById('drawWallLevel').value);
+                        state.wallLevel = level;
+                        elements.wallLevel.value = level;
+                        if (state.isErasing) {
+                            if (existing) { state.drawWalls = state.drawWalls.filter(w => !(w.row === cell.row && w.column === cell.column)); lastDrawnCell = key; }
+                        } else {
+                            if (!existing) { state.drawWalls.push({ row: cell.row, column: cell.column }); lastDrawnCell = key; }
+                        }
+                        draw();
+                    }
+                } else if (cell) {
+                    draw();
+                }
+            } else {
+                state.hoveredCell = null;
+            }
+        });
+
+        canvas.addEventListener('pointerup', event => {
+            if (state.mode === 'draw' && state.isSelecting) {
+                state.isSelecting = false;
+                state.selectedWalls = [];
+                const minRow = Math.min(state.selectionStart.row, state.selectionEnd.row);
+                const maxRow = Math.max(state.selectionStart.row, state.selectionEnd.row);
+                const minCol = Math.min(state.selectionStart.column, state.selectionEnd.column);
+                const maxCol = Math.max(state.selectionStart.column, state.selectionEnd.column);
+                state.drawWalls.forEach(w => {
+                    if (w.row >= minRow && w.row <= maxRow && w.column >= minCol && w.column <= maxCol) {
+                        state.selectedWalls.push(w);
+                    }
+                });
+                document.getElementById('clipboardTools').hidden = state.selectedWalls.length === 0;
+                draw();
+                return;
+            }
+            isDrawing = false;
+            lastDrawnCell = null;
+        });
+
+        // Non-draw mode click handler (dim wall)
+        canvas.addEventListener('click', event => {
+            if (state.mode === 'draw') return;
+            const bounds = canvas.getBoundingClientRect(), scaleX = canvas.width / bounds.width, scaleY = canvas.height / bounds.height, clickX = (event.clientX - bounds.left) * scaleX, clickY = (event.clientY - bounds.top) * scaleY; let closest = null, distance = Infinity; state.walls.forEach(wall => { const point = gridToCanvas(wall.column, wall.row), currentDistance = Math.hypot(point.x - clickX, point.y - clickY); if (currentDistance < distance) { closest = wall; distance = currentDistance; } }); if (closest && distance < 34) { const key = `${closest.column},${closest.row}`; state.dimWalls.has(key) ? state.dimWalls.delete(key) : state.dimWalls.add(key); draw(); }
+        });
         document.getElementById('emptyUpload').addEventListener('click', () => elements.fileInput.click());
         elements.modeTabs.forEach(tab => tab.addEventListener('click', () => selectMode(tab.dataset.mode)));
         elements.textInput.addEventListener('input', () => { if (state.mode === 'text') { state.demoWalls = createTextWalls(elements.textInput.value); draw(); } });
@@ -1437,7 +1818,125 @@
         [elements.threshold, elements.imageScale, elements.imageRotation, elements.shiftX, elements.shiftY, elements.projectionX, elements.projectionY, elements.centerX, elements.centerY, elements.invert, elements.showWalls, elements.redWeight, elements.greenWeight, elements.blueWeight].forEach(input => input.addEventListener('input', () => { elements.thresholdOut.textContent = elements.threshold.value; elements.imageScaleOut.textContent = `${elements.imageScale.value}%`; elements.imageRotationOut.textContent = `${elements.imageRotation.value}°`; elements.shiftXOut.textContent = Number(elements.shiftX.value).toFixed(1); elements.shiftYOut.textContent = Number(elements.shiftY.value).toFixed(1); elements.projectionXOut.textContent = `${elements.projectionX.value}px / ${Math.round(Number(elements.projectionX.value) / backgroundSize.width * 100)}%`; elements.projectionYOut.textContent = `${elements.projectionY.value}px / ${Math.round(Number(elements.projectionY.value) / backgroundSize.height * 100)}%`; elements.centerXOut.textContent = `${Number(elements.centerX.value).toFixed(1)}%`; elements.centerYOut.textContent = `${Number(elements.centerY.value).toFixed(1)}%`; elements.redOut.textContent = Number(elements.redWeight.value).toFixed(3); elements.greenOut.textContent = Number(elements.greenWeight.value).toFixed(3); elements.blueOut.textContent = Number(elements.blueWeight.value).toFixed(3); if (state.mode === 'text') state.demoWalls = createTextWalls(elements.textInput.value); draw(); }));
         elements.wallLevel.addEventListener('change', () => { state.wallLevel = Number(elements.wallLevel.value); draw(); });
         elements.capacity.addEventListener('input', () => { state.limit = Number(elements.capacity.value); elements.capacityOut.textContent = state.limit; draw(); });
-        document.getElementById('clearButton').addEventListener('click', () => { state.image = null; state.demoWalls = null; state.dimWalls.clear(); elements.fileInput.value = ''; selectMode('image'); elements.imageNote.textContent = 'NO SOURCE IMAGE / AWAITING INPUT'; });
+
+        // Draw mode control events
+        document.getElementById('brushToggle').addEventListener('click', () => {
+            const btn = document.getElementById('brushToggle');
+            if (state.interactionMode === 'brush') {
+                state.interactionMode = 'zoom';
+                btn.classList.remove('active');
+                document.getElementById('drawToggleBrush').classList.remove('active');
+                document.getElementById('drawToggleView').classList.add('active');
+                canvas.style.cursor = 'grab';
+                setDrawToolsEnabled(false);
+            } else {
+                if (state.mode !== 'draw') return;
+                state.interactionMode = 'brush';
+                btn.classList.add('active');
+                document.getElementById('drawToggleView').classList.remove('active');
+                document.getElementById('drawToggleBrush').classList.add('active');
+                canvas.style.cursor = 'crosshair';
+                setDrawToolsEnabled(true);
+            }
+            state.selectionStart = null; state.selectionEnd = null; state.selectedWalls = [];
+            document.getElementById('clipboardTools').hidden = true;
+            draw();
+        });
+
+        document.getElementById('drawWallLevel').addEventListener('change', function() {
+            const level = Number(this.value);
+            state.wallLevel = level;
+            elements.wallLevel.value = level;
+            draw();
+        });
+
+        // Draw mode toggle (绘制城墙 ↔ 调整画面)
+        function setDrawToolsEnabled(enabled) {
+            document.querySelectorAll('[data-draw-tool]').forEach(btn => btn.disabled = !enabled);
+            document.querySelectorAll('#clipboardTools .draw-tool-btn').forEach(btn => btn.disabled = !enabled);
+        }
+
+        document.getElementById('drawToggleBrush').addEventListener('click', () => {
+            state.interactionMode = 'brush';
+            document.getElementById('drawToggleBrush').classList.add('active');
+            document.getElementById('drawToggleView').classList.remove('active');
+            document.getElementById('brushToggle').classList.add('active');
+            canvas.style.cursor = 'crosshair';
+            setDrawToolsEnabled(true);
+            draw();
+        });
+        document.getElementById('drawToggleView').addEventListener('click', () => {
+            state.interactionMode = 'zoom';
+            document.getElementById('drawToggleView').classList.add('active');
+            document.getElementById('drawToggleBrush').classList.remove('active');
+            document.getElementById('brushToggle').classList.remove('active');
+            canvas.style.cursor = 'grab';
+            setDrawToolsEnabled(false);
+            draw();
+        });
+
+        document.querySelectorAll('[data-draw-tool]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tool = this.dataset.drawTool;
+                document.querySelectorAll('[data-draw-tool]').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                if (tool === 'brush') { state.drawMode = 'draw'; state.isErasing = false; state.selectionStart = null; state.selectionEnd = null; state.selectedWalls = []; document.getElementById('clipboardTools').hidden = true; }
+                if (tool === 'eraser') { state.drawMode = 'erase'; state.isErasing = true; state.selectionStart = null; state.selectionEnd = null; state.selectedWalls = []; document.getElementById('clipboardTools').hidden = true; }
+                if (tool === 'select') { state.drawMode = 'select'; state.isErasing = false; state.interactionMode = 'brush'; document.getElementById('brushToggle').classList.add('active'); }
+                draw();
+            });
+        });
+
+        document.getElementById('drawClearBtn').addEventListener('click', () => {
+            if (state.drawWalls.length === 0) return;
+            if (confirm('确定要清空所有绘制的城墙吗？')) {
+                state.drawWalls = []; state.selectedWalls = []; state.selectionStart = null; state.selectionEnd = null;
+                document.getElementById('clipboardTools').hidden = true;
+                draw();
+            }
+        });
+
+        document.getElementById('drawCopyBtn').addEventListener('click', () => {
+            if (state.selectedWalls.length === 0) return;
+            const minRow = Math.min(...state.selectedWalls.map(w => w.row));
+            const minCol = Math.min(...state.selectedWalls.map(w => w.column));
+            state.clipboard = { walls: state.selectedWalls.map(w => ({ row: w.row - minRow, column: w.column - minCol })), offsetRow: minRow, offsetColumn: minCol, level: state.wallLevel };
+            elements.statusText.textContent = `已复制 ${state.clipboard.walls.length} 个墙段`;
+        });
+
+        document.getElementById('drawCutBtn').addEventListener('click', () => {
+            if (state.selectedWalls.length === 0) return;
+            const minRow = Math.min(...state.selectedWalls.map(w => w.row));
+            const minCol = Math.min(...state.selectedWalls.map(w => w.column));
+            state.clipboard = { walls: state.selectedWalls.map(w => ({ row: w.row - minRow, column: w.column - minCol })), offsetRow: minRow, offsetColumn: minCol, level: state.wallLevel };
+            const selectedSet = new Set(state.selectedWalls.map(w => `${w.column},${w.row}`));
+            state.drawWalls = state.drawWalls.filter(w => !selectedSet.has(`${w.column},${w.row}`));
+            state.selectedWalls = []; state.selectionStart = null; state.selectionEnd = null;
+            document.getElementById('clipboardTools').hidden = true;
+            elements.statusText.textContent = `已剪切 ${state.clipboard.walls.length} 个墙段`;
+            draw();
+        });
+
+        document.getElementById('drawPasteBtn').addEventListener('click', () => {
+            if (!state.clipboard || state.clipboard.walls.length === 0) return;
+            const pasteOffsetRow = state.clipboard.offsetRow + 5;
+            const pasteOffsetCol = state.clipboard.offsetColumn + 5;
+            const newWalls = state.clipboard.walls.map(w => ({ row: Math.min(gridSize - 1, Math.max(0, w.row + pasteOffsetRow)), column: Math.min(gridSize - 1, Math.max(0, w.column + pasteOffsetCol)) }));
+            const existingSet = new Set(state.drawWalls.map(w => `${w.column},${w.row}`));
+            let pasted = 0;
+            newWalls.forEach(w => { if (!existingSet.has(`${w.column},${w.row}`)) { state.drawWalls.push(w); pasted++; } });
+            elements.statusText.textContent = `已粘贴 ${pasted} 个墙段`;
+            state.clipboard.offsetRow = pasteOffsetRow;
+            state.clipboard.offsetColumn = pasteOffsetCol;
+            draw();
+        });
+
+        document.getElementById('drawDeselectBtn').addEventListener('click', () => {
+            state.selectedWalls = []; state.selectionStart = null; state.selectionEnd = null;
+            document.getElementById('clipboardTools').hidden = true;
+            draw();
+        });
+        document.getElementById('clearButton').addEventListener('click', () => { state.image = null; state.demoWalls = null; state.dimWalls.clear(); state.drawWalls = []; elements.fileInput.value = ''; selectMode('image'); elements.imageNote.textContent = '暂无源图片 / 等待输入'; });
         document.getElementById('exportButton').addEventListener('click', () => { const link = document.createElement('a'); link.download = 'coc-wall-layout.png'; link.href = canvas.toDataURL('image/png'); link.click(); });
         selectMode('text');
         drawConnectionPreviews();
