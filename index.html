@@ -1,0 +1,1263 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CoC Wall Crafter</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+        :root {
+            --ink: #1e2328;
+            --muted: #737b83;
+            --line: #d9ddd9;
+            --paper: #f6f7f3;
+            --panel: #ffffff;
+            --acid: #d8f44e;
+            --coral: #f46f54;
+            --blue: #3575d3;
+            --shadow: 0 18px 45px rgba(38, 43, 41, .10);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--ink);
+            background: var(--paper);
+            font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+            min-width: 320px;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .shell {
+            max-width: 1380px;
+            margin: 0 auto;
+            padding: 26px 34px 44px;
+        }
+
+        .topbar,
+        .basebar,
+        .workspace {
+            animation: rise .55s ease both;
+        }
+
+        .basebar {
+            animation-delay: .08s;
+        }
+
+        .workspace {
+            animation-delay: .16s;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            background: var(--acid);
+            border: 2px solid var(--ink);
+            font-size: 22px;
+            box-shadow: 4px 4px 0 var(--ink);
+        }
+
+        .brand h1 {
+            margin: 0;
+            font-size: clamp(20px, 2.2vw, 30px);
+            letter-spacing: -.06em;
+            line-height: .9;
+        }
+
+        .eyebrow {
+            margin: 0 0 6px;
+            color: var(--muted);
+            font: 500 10px 'DM Mono', monospace;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--muted);
+            font: 11px 'DM Mono', monospace;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #64b47a;
+        }
+
+        .premium {
+            border: 0;
+            padding: 12px 16px;
+            background: var(--ink);
+            color: #fff;
+            font-weight: 600;
+            box-shadow: 4px 4px 0 var(--coral);
+        }
+
+        .basebar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 16px 0 19px;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 28px;
+        }
+
+        .base-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .base-label b {
+            display: grid;
+            place-items: center;
+            width: 28px;
+            height: 28px;
+            background: var(--acid);
+            border: 1px solid var(--ink);
+        }
+
+        .limit {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .limit strong {
+            display: block;
+            font-size: 24px;
+            letter-spacing: -.07em;
+        }
+
+        .limit span {
+            color: var(--muted);
+            font: 10px 'DM Mono', monospace;
+            text-transform: uppercase;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 390px;
+            gap: 28px;
+            align-items: start;
+        }
+
+        .canvas-card {
+            position: relative;
+            min-height: 760px;
+            padding: 28px;
+            background: #e8ebe5;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .canvas-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: .3;
+            background-image: radial-gradient(#aeb7ae 1px, transparent 1px);
+            background-size: 17px 17px;
+            pointer-events: none;
+        }
+
+        .canvas-head {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 24px;
+        }
+
+        .canvas-head h2 {
+            margin: 0;
+            font-size: 18px;
+            letter-spacing: -.04em;
+        }
+
+        .canvas-head p {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .grid-label {
+            color: var(--muted);
+            font: 10px 'DM Mono', monospace;
+        }
+
+        .canvas-wrap {
+            position: relative;
+            z-index: 1;
+            width: min(100%, 760px);
+            aspect-ratio: 4 / 3;
+            margin: 0 auto;
+            border: 2px solid var(--ink);
+            background: #fff url('./images/base/base4.webp') center / cover no-repeat;
+            box-shadow: 9px 9px 0 rgba(30, 35, 40, .13);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .viewport-tools {
+            position: absolute;
+            z-index: 5;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 4px;
+        }
+
+        .viewport-tools button {
+            width: 28px;
+            height: 28px;
+            border: 1px solid rgba(30, 35, 40, .45);
+            background: rgba(255, 255, 255, .88);
+            color: var(--ink);
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .viewport-tools output {
+            display: grid;
+            place-items: center;
+            min-width: 48px;
+            padding: 0 6px;
+            background: rgba(255, 255, 255, .88);
+            border: 1px solid rgba(30, 35, 40, .25);
+            font-size: 10px;
+        }
+
+        .connection-tile {
+            position: relative;
+        }
+
+        .connection-tile .viewport-tools {
+            top: 6px;
+            right: 6px;
+            transform: scale(.8);
+            transform-origin: top right;
+        }
+
+        .empty-state {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-content: center;
+            text-align: center;
+            padding: 30px;
+            background: rgba(246, 247, 243, .26);
+        }
+
+        .empty-state[hidden] {
+            display: none;
+        }
+
+        .empty-icon {
+            margin: 0 auto 13px;
+            font-size: 33px;
+        }
+
+        .empty-state strong {
+            display: block;
+            font-size: 18px;
+        }
+
+        .empty-state p {
+            margin: 8px 0 18px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .ghost-btn {
+            border: 1px solid var(--ink);
+            background: #fff;
+            padding: 10px 14px;
+            font-weight: 600;
+        }
+
+        .corner-note {
+            position: absolute;
+            bottom: 25px;
+            left: 28px;
+            color: var(--muted);
+            font: 10px 'DM Mono', monospace;
+        }
+
+        .controls {
+            display: grid;
+            gap: 14px;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            padding: 21px;
+        }
+
+        .panel h3 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 0 19px;
+            font-size: 14px;
+            letter-spacing: -.02em;
+        }
+
+        .panel h3 span {
+            color: var(--muted);
+            font: 10px 'DM Mono', monospace;
+            font-weight: 400;
+        }
+
+        .upload-zone {
+            border: 1px dashed #aeb5ad;
+            padding: 17px;
+            background: #fbfcf9;
+        }
+
+        .upload-zone label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            color: var(--muted);
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .upload-zone input {
+            width: 0;
+            height: 0;
+            opacity: 0;
+            position: absolute;
+        }
+
+        .upload-zone b {
+            color: var(--ink);
+            border-bottom: 1px solid var(--ink);
+            font-size: 12px;
+        }
+
+        .drop-hint {
+            margin: 10px 0 0;
+            color: var(--muted);
+            font: 10px 'DM Mono', monospace;
+        }
+
+        .control-row {
+            margin: 16px 0;
+        }
+
+        .control-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 7px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        output {
+            color: var(--ink);
+            font: 11px 'DM Mono', monospace;
+        }
+
+        input[type=range] {
+            width: 100%;
+            accent-color: var(--coral);
+        }
+
+        select {
+            border: 1px solid var(--line);
+            background: #fff;
+            color: var(--ink);
+            padding: 7px 9px;
+            font-size: 11px;
+        }
+
+        .rgb-row {
+            display: grid;
+            grid-template-columns: 17px 1fr 43px;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rgb-row+.rgb-row {
+            margin-top: 10px;
+        }
+
+        .rgb-letter {
+            font: 600 11px 'DM Mono', monospace;
+        }
+
+        .rgb-letter.r {
+            color: #d55248;
+        }
+
+        .rgb-letter.g {
+            color: #4c9b5f;
+        }
+
+        .rgb-letter.b {
+            color: #3975c4;
+        }
+
+        .switch-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 17px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .switch {
+            position: relative;
+            width: 38px;
+            height: 22px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            background: #d3d8d1;
+            transition: .2s;
+            cursor: pointer;
+        }
+
+        .slider::before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            left: 3px;
+            top: 3px;
+            background: #fff;
+            border-radius: 50%;
+            transition: .2s;
+        }
+
+        .switch input:checked+.slider {
+            background: var(--coral);
+        }
+
+        .switch input:checked+.slider::before {
+            transform: translateX(16px);
+        }
+
+        .color-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 17px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .connection-legend {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            margin-top: 17px;
+        }
+
+        .connection-legend span {
+            border-top: 2px solid var(--line);
+            padding-top: 7px;
+            color: var(--muted);
+            font: 9px 'DM Mono', monospace;
+            text-align: center;
+        }
+
+        .connection-legend span:nth-child(1) {
+            border-color: #b9c1b8;
+        }
+
+        .connection-legend span:nth-child(2) {
+            border-color: #6e9fd9;
+        }
+
+        .connection-legend span:nth-child(3) {
+            border-color: var(--coral);
+        }
+
+        .connection-legend span:nth-child(4) {
+            border-color: var(--ink);
+        }
+
+        .mode-tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            margin-bottom: 12px;
+        }
+
+        .mode-tab {
+            border: 1px solid var(--line);
+            background: #fff;
+            padding: 9px 4px;
+            color: var(--muted);
+            font-size: 10px;
+        }
+
+        .mode-tab.active {
+            border-color: var(--ink);
+            color: var(--ink);
+            background: var(--acid);
+            font-weight: 600;
+        }
+
+        .mode-input {
+            width: 100%;
+            border: 1px solid var(--line);
+            padding: 10px;
+            color: var(--ink);
+            background: #fff;
+            font-size: 12px;
+        }
+
+        .mode-input::placeholder {
+            color: #8b928c;
+        }
+
+        .section-label {
+            margin: 22px 0 10px;
+            color: var(--muted);
+            font: 10px 'DM Mono', monospace;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+        .mode-only[hidden],
+        .param-group[hidden] {
+            display: none;
+        }
+
+        .shift-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .connection-preview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .connection-tile {
+            min-width: 0;
+            padding: 7px;
+            border: 1px solid var(--line);
+            background: #fbfcf9;
+            text-align: center;
+        }
+
+        .connection-tile canvas {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 4 / 3;
+            background: #dce8b7 url('./images/base/base4.webp') center / cover no-repeat;
+        }
+
+        .connection-tile .viewport-tools button {
+            display: none;
+        }
+
+        .connection-tile span {
+            display: block;
+            margin-top: 4px;
+            color: var(--muted);
+            font: 9px 'DM Mono', monospace;
+        }
+
+        input[type=color] {
+            width: 34px;
+            height: 25px;
+            padding: 2px;
+            border: 1px solid var(--line);
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .stat-panel {
+            background: var(--acid);
+            border-color: var(--ink);
+        }
+
+        .stat {
+            display: flex;
+            align-items: baseline;
+            gap: 7px;
+        }
+
+        .stat strong {
+            font-size: 43px;
+            letter-spacing: -.09em;
+            line-height: .9;
+        }
+
+        .stat span {
+            font: 12px 'DM Mono', monospace;
+        }
+
+        .meter {
+            height: 7px;
+            margin-top: 16px;
+            background: rgba(30, 35, 40, .13);
+        }
+
+        .meter i {
+            display: block;
+            height: 100%;
+            width: 0;
+            background: var(--ink);
+            transition: width .2s;
+        }
+
+        .stat-foot {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            color: rgba(30, 35, 40, .65);
+            font: 10px 'DM Mono', monospace;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 9px;
+        }
+
+        .action {
+            border: 1px solid var(--ink);
+            padding: 12px 10px;
+            background: #fff;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .action.primary {
+            color: #fff;
+            background: var(--ink);
+        }
+
+        .tool-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .tool-link {
+            padding: 11px 0;
+            border: 0;
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            background: transparent;
+            text-align: left;
+            font-size: 11px;
+        }
+
+        .tool-link:hover {
+            color: var(--ink);
+        }
+
+        @keyframes rise {
+            from {
+                opacity: 0;
+                transform: translateY(9px);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .canvas-card {
+                min-height: auto;
+                padding-bottom: 58px;
+            }
+
+            .controls {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .stat-panel,
+            .actions {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 580px) {
+            .shell {
+                padding: 20px 16px 32px;
+            }
+
+            .topbar,
+            .basebar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .top-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .limit {
+                text-align: left;
+            }
+
+            .basebar {
+                gap: 14px;
+            }
+
+            .canvas-card {
+                padding: 17px;
+            }
+
+            .canvas-head {
+                margin-bottom: 17px;
+            }
+
+            .corner-note {
+                left: 17px;
+                bottom: 16px;
+            }
+
+            .controls {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-panel,
+            .actions {
+                grid-column: auto;
+            }
+
+            .premium {
+                padding: 10px 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="shell">
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-mark">▦</div>
+                <div>
+                    <p class="eyebrow">Dale Demo / 03</p>
+                    <h1>CoC Wall Crafter</h1>
+                </div>
+            </div>
+            <div class="top-actions">
+                <div class="status"><i class="status-dot"></i><span id="statusText">READY TO CRAFT</span></div>
+            </div>
+        </header>
+        <section class="workspace">
+            <section class="canvas-card">
+                <div class="canvas-head">
+                    <div>
+                        <p class="eyebrow"><span id="densityLabel">0.0% FILLED</span></p>
+                        <div class="stat"><strong id="wallCount">0</strong><span>/ <b id="statLimit">325</b> WALLS</span></div>
+                        <p>点击墙段可暂时降低透明度，方便手动校准</p>
+                    </div><span class="grid-label">GRID / 1936 CELLS</span>
+                </div>
+                <div class="canvas-wrap"><canvas id="preview" width="1600" height="1200" aria-label="城墙布局预览"></canvas>
+                    <div class="viewport-tools" data-viewport-tools><button data-zoom="out" type="button"
+                            aria-label="缩小">−</button><output data-zoom-label>100%</output><button data-zoom="in"
+                            type="button" aria-label="放大">+</button><button data-zoom="reset" type="button"
+                            aria-label="重置视图">↺</button></div>
+                    <div class="empty-state" id="emptyState">
+                        <div>
+                            <div class="empty-icon">⌁</div><strong>Drop an image to begin</strong>
+                            <p>把你的阵型草图或截图放进来<br>自动转换为城墙布局</p><button class="ghost-btn" id="emptyUpload"
+                                type="button">选择图片</button>
+                        </div>
+                    </div>
+                </div>
+                <span class="corner-note" id="imageNote">NO SOURCE IMAGE / AWAITING INPUT</span>
+            </section>
+
+            <aside class="controls">
+                <div class="actions"><button class="action" id="clearButton" type="button">清空布局</button><button
+                        class="action primary" id="exportButton" type="button">导出预览 ↓</button></div>
+
+                <section class="panel">
+                    <h3><span>01</span>布局来源 <span>INPUT MODE</span></h3>
+                    <div class="mode-tabs" role="tablist"><button class="mode-tab active" data-mode="text"
+                            type="button">文字</button><button class="mode-tab" data-mode="image"
+                            type="button">图片</button><button class="mode-tab" data-mode="test" type="button">测试</button>
+                    </div><input class="mode-input" id="textInput" type="text" value="" maxlength="8"
+                        aria-label="文字排版内容" placeholder="COC（默认图案）">
+                    <div class="upload-zone" id="dropZone"><label
+                            for="fileInput"><span>拖放图片到这里</span><b>选择文件</b></label><input id="fileInput" type="file"
+                            accept="image/png,image/jpeg">
+                        <p class="drop-hint">图片模式：上传草图后按像素识别</p>
+                    </div>
+                    <p class="drop-hint" id="modeHint">文字模式：留空使用默认 COC 图案</p>
+                </section>
+
+                <section class="panel">
+                    
+                    <h3><span>02</span>参数调整 <span>CONTEXTUAL CONTROLS</span></h3>
+                    <div class="param-group" id="testParams" hidden>
+                        <div class="control-row">
+                            <div class="control-label"><span>菱形宽度</span><output id="projectionXOut">647px / 81%</output>
+                            </div><input id="projectionX" type="range" min="420" max="760" value="647">
+                        </div>
+                        <div class="control-row">
+                            <div class="control-label"><span>菱形高度</span><output id="projectionYOut">485px / 81%</output>
+                            </div><input id="projectionY" type="range" min="300" max="580" value="485">
+                        </div>
+                        <div class="control-row">
+                            <div class="control-label"><span>中心 X</span><output id="centerXOut">50.0%</output></div>
+                            <input id="centerX" type="range" min="35" max="65" step=".1" value="50">
+                        </div>
+                        <div class="control-row">
+                            <div class="control-label"><span>中心 Y</span><output id="centerYOut">49.0%</output></div>
+                            <input id="centerY" type="range" min="35" max="65" step=".1" value="49">
+                        </div>
+                    </div>
+                    <div class="control-row">
+                        <div class="control-label"><span>城墙数量</span><output id="capacityOut">325</output></div><input
+                            id="capacity" type="range" min="1" max="1936" value="325">
+                    </div>
+                    <div class="color-row"><span>城墙等级</span><select id="wallLevel" aria-label="城墙等级"></select></div>
+                    <div class="switch-row"><span>显示城墙</span><label class="switch"><input id="showWalls" type="checkbox"
+                                checked><i class="slider"></i></label></div>
+                    <div class="control-row">
+                        <div class="control-label"><span>旋转</span><output id="imageRotationOut">-45°</output></div>
+                        <input id="imageRotation" type="range" min="-180" max="180" value="-45">
+                    </div>
+                    <div class="control-row">
+                        <div class="control-label"><span>缩放</span><output id="imageScaleOut">100%</output></div><input
+                            id="imageScale" type="range" min="50" max="150" value="100">
+                    </div>
+                    <div class="section-label">文字 / 图片偏移</div>
+                    <div class="control-row">
+                        <div class="control-label"><span>X 偏移</span><output id="shiftXOut">0.0</output></div><input
+                            id="shiftX" type="range" min="-20" max="20" step=".1" value="0" aria-label="横向偏移">
+                    </div>
+                    <div class="control-row">
+                        <div class="control-label"><span>Y 偏移</span><output id="shiftYOut">0.0</output></div><input
+                            id="shiftY" type="range" min="-20" max="20" step=".1" value="0" aria-label="纵向偏移">
+                    </div>
+
+                    <div class="param-group" id="imageParams" hidden>
+                        <div class="switch-row"><span>反相识别</span><label class="switch"><input id="invert"
+                                    type="checkbox"><i class="slider"></i></label></div>
+                        <div class="control-row">
+                            <div class="control-label"><span>灰度阈值</span><output id="thresholdOut">128</output></div>
+                            <input id="threshold" type="range" min="0" max="255" value="128">
+                        </div>
+                        <div class="rgb-row"><b class="rgb-letter r">R</b><input id="redWeight" type="range" min="0"
+                                max="1" step=".001" value=".299"><output id="redOut">0.299</output></div>
+                        <div class="rgb-row"><b class="rgb-letter g">G</b><input id="greenWeight" type="range" min="0"
+                                max="1" step=".001" value=".587"><output id="greenOut">0.587</output></div>
+                        <div class="rgb-row"><b class="rgb-letter b">B</b><input id="blueWeight" type="range" min="0"
+                                max="1" step=".001" value=".114"><output id="blueOut">0.114</output></div>
+                    </div>
+                </section>
+
+                <section class="panel" id="connectionPanel">
+                    <h3><span>03</span>连接预览 <span>WALL STATES</span></h3>
+                    <div class="connection-preview">
+                        <div class="connection-tile"><canvas data-connection="single" width="800" height="600"></canvas>
+                            <div class="viewport-tools" data-viewport-tools><button data-zoom="out"
+                                    type="button">−</button><output data-zoom-label>1000%</output><button data-zoom="in"
+                                    type="button">+</button><button data-zoom="reset" type="button">↺</button></div>
+                            <span>单独</span>
+                        </div>
+                        <div class="connection-tile"><canvas data-connection="vertical" width="800"
+                                height="600"></canvas>
+                            <div class="viewport-tools" data-viewport-tools><button data-zoom="out"
+                                    type="button">−</button><output data-zoom-label>1000%</output><button data-zoom="in"
+                                    type="button">+</button><button data-zoom="reset" type="button">↺</button></div>
+                            <span>竖列两个</span>
+                        </div>
+                        <div class="connection-tile"><canvas data-connection="horizontal" width="800"
+                                height="600"></canvas>
+                            <div class="viewport-tools" data-viewport-tools><button data-zoom="out"
+                                    type="button">−</button><output data-zoom-label>1000%</output><button data-zoom="in"
+                                    type="button">+</button><button data-zoom="reset" type="button">↺</button></div>
+                            <span>横列两个</span>
+                        </div>
+                        <div class="connection-tile"><canvas data-connection="upTriangle" width="800"
+                                height="600"></canvas>
+                            <div class="viewport-tools" data-viewport-tools><button data-zoom="out"
+                                    type="button">−</button><output data-zoom-label>1000%</output><button data-zoom="in"
+                                    type="button">+</button><button data-zoom="reset" type="button">↺</button></div>
+                            <span>正三角</span>
+                        </div>
+                        <div class="connection-tile"><canvas data-connection="downTriangle" width="800"
+                                height="600"></canvas>
+                            <div class="viewport-tools" data-viewport-tools><button data-zoom="out"
+                                    type="button">−</button><output data-zoom-label>1000%</output><button data-zoom="in"
+                                    type="button">+</button><button data-zoom="reset" type="button">↺</button></div>
+                            <span>倒三角</span>
+                        </div>
+                        <div class="connection-tile"><canvas data-connection="cross" width="800" height="600"></canvas>
+                            <div class="viewport-tools" data-viewport-tools><button data-zoom="out"
+                                    type="button">−</button><output data-zoom-label>1000%</output><button data-zoom="in"
+                                    type="button">+</button><button data-zoom="reset" type="button">↺</button></div>
+                            <span>井字</span>
+                        </div>
+                    </div>
+                </section>
+
+            </aside>
+        </section>
+    </main>
+
+    <script>
+        const gridSize = 44;
+        const backgroundSize = { width: 800, height: 600 };
+        const canvas = document.getElementById('preview');
+        const context = canvas.getContext('2d', { willReadFrequently: true });
+        const sourceCanvas = document.createElement('canvas');
+        const sourceContext = sourceCanvas.getContext('2d', { willReadFrequently: true });
+        const elements = {
+            emptyState: document.getElementById('emptyState'), fileInput: document.getElementById('fileInput'), dropZone: document.getElementById('dropZone'),
+            statusText: document.getElementById('statusText'), imageNote: document.getElementById('imageNote'), wallCount: document.getElementById('wallCount'), statLimit: document.getElementById('statLimit'), limitValue: document.getElementById('limitValue'), meterFill: document.getElementById('meterFill'), densityLabel: document.getElementById('densityLabel'), stateLabel: document.getElementById('stateLabel'), modeHint: document.getElementById('modeHint'), textInput: document.getElementById('textInput'), modeTabs: document.querySelectorAll('[data-mode]'), testParams: document.getElementById('testParams'), imageParams: document.getElementById('imageParams'), connectionPanel: document.getElementById('connectionPanel'), threshold: document.getElementById('threshold'), thresholdOut: document.getElementById('thresholdOut'), imageScale: document.getElementById('imageScale'), imageScaleOut: document.getElementById('imageScaleOut'), imageRotation: document.getElementById('imageRotation'), imageRotationOut: document.getElementById('imageRotationOut'), shiftX: document.getElementById('shiftX'), shiftXOut: document.getElementById('shiftXOut'), shiftY: document.getElementById('shiftY'), shiftYOut: document.getElementById('shiftYOut'), projectionX: document.getElementById('projectionX'), projectionXOut: document.getElementById('projectionXOut'), projectionY: document.getElementById('projectionY'), projectionYOut: document.getElementById('projectionYOut'), centerX: document.getElementById('centerX'), centerXOut: document.getElementById('centerXOut'), centerY: document.getElementById('centerY'), centerYOut: document.getElementById('centerYOut'), capacity: document.getElementById('capacity'), capacityOut: document.getElementById('capacityOut'), invert: document.getElementById('invert'), wallLevel: document.getElementById('wallLevel'), showWalls: document.getElementById('showWalls'), redWeight: document.getElementById('redWeight'), greenWeight: document.getElementById('greenWeight'), blueWeight: document.getElementById('blueWeight'), redOut: document.getElementById('redOut'), greenOut: document.getElementById('greenOut'), blueOut: document.getElementById('blueOut')
+        };
+        const wallSprites = {};
+        const wallAssetNames = ['i', 'y', 'v', 'rowtail', 'coltail', 'row', 'col'];
+        for (let level = 1; level <= 21; level += 1) { wallSprites[level] = {}; wallAssetNames.forEach(style => { const image = new Image(); image.onload = () => { if (level === 12) drawConnectionPreviews(); draw(); }; image.src = `./images/walls/${level}/${level}${style}.webp`; wallSprites[level][style] = image; }); }
+        const backgroundImage = new Image(); backgroundImage.src = './images/base/base4.webp'; backgroundImage.onload = () => draw();
+        for (let level = 1; level <= 21; level += 1) elements.wallLevel.insertAdjacentHTML('beforeend', `<option value="${level}"${level === 12 ? ' selected' : ''}>${level} 级</option>`);
+        const state = { image: null, limit: 325, walls: [], demoWalls: null, dimWalls: new Set(), wallLevel: 12, mode: 'text' };
+        const mainView = { zoom: 1, defaultZoom: 1, minZoom: 1, panX: 0, panY: 0 };
+        const previewViews = new Map();
+
+        function updateViewportLabel(canvasElement, view) { const label = canvasElement.parentElement.querySelector('[data-zoom-label]'); if (label) label.textContent = `${Math.round(view.zoom * 100)}%`; }
+
+        function setupViewport(canvasElement, view, redraw) {
+            const tools = canvasElement.parentElement.querySelector('[data-viewport-tools]');
+            let dragging = false, startX = 0, startY = 0;
+            const setZoom = nextZoom => { view.zoom = Math.max(view.minZoom || .5, Math.min(20, nextZoom)); updateViewportLabel(canvasElement, view); redraw(); };
+            tools?.addEventListener('click', event => { const action = event.target.dataset.zoom; if (action === 'in') setZoom(view.zoom * 1.25); if (action === 'out') setZoom(view.zoom / 1.25); if (action === 'reset') { view.zoom = view.defaultZoom || 1; view.panX = 0; view.panY = 0; updateViewportLabel(canvasElement, view); redraw(); } });
+            canvasElement.addEventListener('wheel', event => { event.preventDefault(); setZoom(view.zoom * (event.deltaY < 0 ? 1.12 : .89)); }, { passive: false });
+            canvasElement.addEventListener('pointerdown', event => { dragging = true; startX = event.clientX - view.panX; startY = event.clientY - view.panY; canvasElement.setPointerCapture(event.pointerId); canvasElement.style.cursor = 'grabbing'; });
+            canvasElement.addEventListener('pointermove', event => { if (!dragging) return; view.panX = event.clientX - startX; view.panY = event.clientY - startY; redraw(); });
+            canvasElement.addEventListener('pointerup', event => { dragging = false; canvasElement.releasePointerCapture(event.pointerId); canvasElement.style.cursor = 'grab'; });
+            canvasElement.style.cursor = 'grab'; updateViewportLabel(canvasElement, view);
+        }
+
+        function createTextWalls(text) {
+            const raster = document.createElement('canvas');
+            raster.width = 440;
+            raster.height = 440;
+            const rasterContext = raster.getContext('2d', { willReadFrequently: true });
+
+            // 白色背景
+            rasterContext.fillStyle = '#fff';
+            rasterContext.fillRect(0, 0, 440, 440);
+            rasterContext.fillStyle = '#111';
+            rasterContext.textAlign = 'center';
+            rasterContext.textBaseline = 'middle';
+
+            const value = [...(text || 'COC')].slice(0, 8).join('');
+            let fontSize = 180;
+            rasterContext.font = `900 ${fontSize}px Arial, "Microsoft YaHei", "Noto Sans CJK SC", sans-serif`;
+            while (rasterContext.measureText(value).width > 400 && fontSize > 42) {
+                fontSize -= 4;
+                rasterContext.font = `900 ${fontSize}px Arial, "Microsoft YaHei", "Noto Sans CJK SC", sans-serif"`;
+            }
+
+            // 应用旋转到文字
+            rasterContext.save();
+            rasterContext.translate(220, 220);
+            rasterContext.rotate(Number(elements.imageRotation.value) * Math.PI / 180);
+            rasterContext.fillText(value, 0, 0);
+            rasterContext.restore();
+
+            const pixels = rasterContext.getImageData(0, 0, 440, 440).data;
+            const walls = [];
+
+            // 获取 scale 和偏移参数
+            const scale = Number(elements.imageScale.value) / 100;
+            const shiftX = Number(elements.shiftX.value);
+            const shiftY = Number(elements.shiftY.value);
+
+            // 计算采样区域：在 440x440 画布上的有效采样范围
+            // scale 控制采样范围大小，偏移控制中心位置
+            const sampleSize = 440 * scale; // 采样区域大小
+            const offsetX = 220 + shiftX * 10; // X偏移（像素），220是中心
+            const offsetY = 220 + shiftY * 10; // Y偏移（像素）
+
+            // 采样起始位置（确保不越界）
+            const startX = Math.max(0, offsetX - sampleSize / 2);
+            const startY = Math.max(0, offsetY - sampleSize / 2);
+            const endX = Math.min(440, offsetX + sampleSize / 2);
+            const endY = Math.min(440, offsetY + sampleSize / 2);
+            const actualSizeX = endX - startX;
+            const actualSizeY = endY - startY;
+
+            // 如果采样区域太小，返回空
+            if (actualSizeX < 10 || actualSizeY < 10) return walls;
+
+            for (let row = 0; row < gridSize; row += 1) {
+                for (let column = 0; column < gridSize; column += 1) {
+                    // 将网格坐标映射到采样区域
+                    const gridX = startX + (column / (gridSize - 1)) * actualSizeX;
+                    const gridY = startY + (row / (gridSize - 1)) * actualSizeY;
+
+                    // 采样周围像素
+                    let dark = 0;
+                    const samples = 8;
+                    for (let y = 0; y < samples; y += 1) {
+                        for (let x = 0; x < samples; x += 1) {
+                            const px = Math.min(439, Math.floor(gridX + (x / samples) * actualSizeX / (gridSize - 1)));
+                            const py = Math.min(439, Math.floor(gridY + (y / samples) * actualSizeY / (gridSize - 1)));
+                            const index = (py * 440 + px) * 4;
+                            if (pixels[index] < 150) dark += 1;
+                        }
+                    }
+                    if (dark >= 20) {
+                        walls.push({ row, column });
+                    }
+                }
+            }
+            return walls;
+        }
+
+        function createTestWalls() {
+            const walls = [], occupied = new Set(), add = (row, column) => { if (row >= 0 && row < gridSize && column >= 0 && column < gridSize && !occupied.has(`${column},${row}`)) { occupied.add(`${column},${row}`); walls.push({ row, column }); } };
+            // Keep the 44 + 43 + 43 + 42 perimeter cells first so the capacity trim never cuts the border.
+            for (let column = 0; column < gridSize; column += 1) add(0, column);
+            for (let row = 1; row < gridSize; row += 1) add(row, gridSize - 1);
+            for (let column = gridSize - 2; column >= 0; column -= 1) add(gridSize - 1, column);
+            for (let row = gridSize - 2; row > 0; row -= 1) add(row, 0);
+
+            // Interior fixtures: isolated, left-only, right-only, and four-neighbor junctions.
+            add(6, 6);
+            add(10, 10); add(10, 11);
+            add(14, 18); add(14, 19);
+            add(22, 22); add(21, 22); add(23, 22); add(22, 21); add(22, 23);
+            for (let row = 5; row < 39; row += 2) for (let column = 5; column < 39; column += 2) if (!(row >= 9 && row <= 25 && column >= 9 && column <= 25)) add(row, column);
+            return walls;
+        }
+
+        function renderSourceImage() {
+            if (!state.image) return;
+            const side = Math.max(state.image.naturalWidth, state.image.naturalHeight);
+            sourceCanvas.width = 400; sourceCanvas.height = 400;
+            sourceContext.clearRect(0, 0, 400, 400);
+            sourceContext.save(); sourceContext.translate(200, 200); sourceContext.rotate(Number(elements.imageRotation.value) * Math.PI / 180); sourceContext.scale(Number(elements.imageScale.value) / 100, Number(elements.imageScale.value) / 100);
+            sourceContext.drawImage(state.image, -side / 2, -side / 2, side, side); sourceContext.restore();
+        }
+
+        function wallAssetFor(row, column) {
+            return connectionAsset(state.walls, row, column);
+        }
+
+        function projectionMetrics() { const layoutScale = state.mode === 'image' ? 1 : Number(elements.imageScale.value) / 100; return { width: canvas.width * Number(elements.projectionX.value) / backgroundSize.width * layoutScale, height: canvas.height * Number(elements.projectionY.value) / backgroundSize.height * layoutScale }; }
+
+        function gridToCanvas(column, row) { const projection = projectionMetrics(), centerX = canvas.width * Number(elements.centerX.value) / 100 + Number(elements.shiftX.value) * canvas.width / backgroundSize.width, centerY = canvas.height * Number(elements.centerY.value) / 100 + Number(elements.shiftY.value) * canvas.height / backgroundSize.height; return { x: centerX + (column - row) * projection.width / 2 / (gridSize - 1), y: centerY + (column + row - (gridSize - 1)) * projection.height / 2 / (gridSize - 1) }; }
+
+        function connectionAsset(walls, row, column) {
+            const occupied = new Set(walls.map(wall => `${wall.column},${wall.row}`));
+            const has = (nextRow, nextColumn) => occupied.has(`${nextColumn},${nextRow}`);
+            const up = has(row - 1, column), right = has(row, column + 1), down = has(row + 1, column), left = has(row, column - 1);
+            if (up && left && (down || right)) return 'y';
+            if (up && down) return 'col';
+            if (left && right) return 'row';
+            if (up && left) return 'v';
+            if (up) return 'coltail';
+            if (left) return 'rowtail';
+            return 'i';
+        }
+
+        function drawConnectionPreviews() {
+            const patterns = {
+                single: { walls: [[2, 2]], directed: false },
+                vertical: { walls: [[2, 2], [3, 2]], directed: true },
+                horizontal: { walls: [[2, 2], [2, 3]], directed: true },
+                upTriangle: { walls: [[2, 3], [3, 2], [3, 3]], directed: false },
+                downTriangle: { walls: [[2, 2], [2, 3], [3, 2]], directed: false },
+                cross: { walls: [[2, 3], [3, 2], [3, 3], [3, 4], [4, 3]], directed: false }
+            };
+            document.querySelectorAll('[data-connection]').forEach(preview => {
+                const previewContext = preview.getContext('2d');
+                if (!previewViews.has(preview)) previewViews.set(preview, { zoom: 16, defaultZoom: 16, minZoom: 16, panX: 0, panY: 0 });
+                const view = previewViews.get(preview);
+                previewContext.clearRect(0, 0, preview.width, preview.height); previewContext.save(); previewContext.translate(preview.width / 2 + view.panX, preview.height / 2 + view.panY); previewContext.scale(view.zoom, view.zoom); previewContext.translate(-preview.width / 2, -preview.height / 2);
+                const { walls, directed } = patterns[preview.dataset.connection];
+                const cells = walls.map(([row, column]) => ({ row: row + 19, column: column + 19 }));
+                const occupied = new Set(cells.map(cell => `${cell.column},${cell.row}`));
+                if (backgroundImage.complete && backgroundImage.naturalWidth) previewContext.drawImage(backgroundImage, 0, 0, preview.width, preview.height);
+                cells.forEach(({ row, column }, index) => {
+                    const asset = connectionAsset(cells, row, column);
+                    const sprite = wallSprites[12][asset];
+                    if (!sprite?.complete || !sprite.naturalWidth) return;
+                    const previewWidth = Number(elements.projectionX.value) / backgroundSize.width * preview.width;
+                    const previewHeight = Number(elements.projectionY.value) / backgroundSize.height * preview.height;
+                    const centerX = preview.width * Number(elements.centerX.value) / 100 + Number(elements.shiftX.value) * preview.width / backgroundSize.width;
+                    const centerY = preview.height * Number(elements.centerY.value) / 100 + Number(elements.shiftY.value) * preview.height / backgroundSize.height;
+                    const baseX = centerX + (column - row) * previewWidth / 2 / (gridSize - 1), baseY = centerY + (column + row - (gridSize - 1)) * previewHeight / 2 / (gridSize - 1);
+                    const focusX = centerX + (21 - 21) * previewWidth / 2 / (gridSize - 1), focusY = centerY + (21 + 21 - (gridSize - 1)) * previewHeight / 2 / (gridSize - 1);
+                    const x = baseX, y = baseY;
+                    const wallWidth = 57.12 * preview.width / canvas.width, wallHeight = 39.84 * preview.height / canvas.height;
+                    previewContext.drawImage(sprite, x - wallWidth / 2, y - wallHeight / 2, wallWidth, wallHeight);
+                });
+                previewContext.restore(); updateViewportLabel(preview, view);
+            });
+        }
+
+        function placeWall(sprite, column, row) {
+            const { x, y } = gridToCanvas(column, row);
+            context.drawImage(sprite, x - 28.56, y - 19.92, 57.12, 39.84);
+        }
+
+        function draw() {
+            const wallWidth = 57.12, wallHeight = 39.84;
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.save(); context.translate(canvas.width / 2 + mainView.panX, canvas.height / 2 + mainView.panY); context.scale(mainView.zoom, mainView.zoom); context.translate(-canvas.width / 2, -canvas.height / 2);
+            if (backgroundImage.complete && backgroundImage.naturalWidth) context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+            // The uploaded image is used only as a hidden sampling source. The final canvas contains the village and walls.
+            const red = Number(elements.redWeight.value), green = Number(elements.greenWeight.value), blue = Number(elements.blueWeight.value), threshold = Number(elements.threshold.value), invert = elements.invert.checked;
+            state.walls = state.demoWalls ? state.demoWalls.slice(0, state.limit) : [];
+            if (state.image && !state.demoWalls) {
+                renderSourceImage();
+                const pixels = sourceContext.getImageData(0, 0, sourceCanvas.width, sourceCanvas.height).data;
+                const side = 400, offsetX = 0, offsetY = 0;
+                for (let row = 0; row < gridSize; row += 1) for (let column = 0; column < gridSize; column += 1) {
+                    const x = Math.min(sourceCanvas.width - 1, Math.floor(offsetX + (column + .5) * side / gridSize));
+                    const y = Math.min(sourceCanvas.height - 1, Math.floor(offsetY + (row + .5) * side / gridSize));
+                    const index = (y * sourceCanvas.width + x) * 4;
+                    const gray = pixels[index] * red + pixels[index + 1] * green + pixels[index + 2] * blue;
+                    const marked = invert ? gray >= threshold : gray < threshold;
+                    if (marked) state.walls.push({ row, column });
+                }
+                state.walls = state.walls.slice(0, state.limit);
+            }
+            state.wallSet = new Set(state.walls.map(wall => `${wall.column},${wall.row}`));
+            if (!elements.showWalls.checked) {
+                context.fillStyle = '#f28b2e'; context.globalAlpha = .92;
+                state.walls.forEach(({ row, column }) => { const { x, y } = gridToCanvas(column, row); context.fillRect(x - wallWidth / 2, y - wallHeight / 2, wallWidth, wallHeight); });
+                context.globalAlpha = 1; context.restore(); const count = state.walls.length, percentage = count / (gridSize * gridSize) * 100; elements.wallCount.textContent = count; elements.statLimit.textContent = state.limit; elements.limitValue.textContent = state.limit; elements.meterFill.style.width = `${Math.min(100, count / state.limit * 100)}%`; elements.densityLabel.textContent = `${percentage.toFixed(1)}% FILLED`; elements.stateLabel.textContent = state.image || state.demoWalls ? 'WALLS HIDDEN / MARKERS' : 'EMPTY BLUEPRINT'; return;
+            }
+            state.walls.forEach(({ row, column }) => {
+                const sprite = wallSprites[state.wallLevel][wallAssetFor(row, column)];
+                if (sprite && sprite.complete && sprite.naturalWidth) {
+                    context.globalAlpha = state.dimWalls.has(`${column},${row}`) ? .2 : .92; placeWall(sprite, column, row);
+                } else { const { x, y } = gridToCanvas(column, row); context.globalAlpha = state.dimWalls.has(`${column},${row}`) ? .2 : 1; context.fillStyle = '#f46f54'; context.fillRect(x - wallWidth / 2, y - wallHeight / 2, wallWidth, wallHeight); }
+            });
+            context.globalAlpha = 1;
+            context.restore();
+            const count = state.walls.length, percentage = count / (gridSize * gridSize) * 100;
+            elements.wallCount.textContent = count; elements.statLimit.textContent = state.limit; elements.limitValue.textContent = state.limit; elements.meterFill.style.width = `${Math.min(100, count / state.limit * 100)}%`; elements.densityLabel.textContent = `${percentage.toFixed(1)}% FILLED`; elements.stateLabel.textContent = state.image || state.demoWalls ? (count > state.limit ? 'OVER CAPACITY' : 'READY TO PLACE') : 'EMPTY BLUEPRINT';
+        }
+
+        function hexToRgb(hex) { return { r: parseInt(hex.slice(1, 3), 16), g: parseInt(hex.slice(3, 5), 16), b: parseInt(hex.slice(5, 7), 16) }; }
+
+        function loadImage(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+            const image = new Image(); image.onload = () => { state.image = image; state.demoWalls = null; state.dimWalls.clear(); elements.emptyState.hidden = true; elements.statusText.textContent = 'IMAGE LOADED / LIVE'; elements.imageNote.textContent = `${image.naturalWidth} × ${image.naturalHeight} / ${file.name}`; draw(); URL.revokeObjectURL(image.src); }; image.src = URL.createObjectURL(file);
+        }
+
+        function loadCocDemo() { state.mode = 'coc'; state.image = null; state.demoWalls = createTextWalls('COC'); state.dimWalls.clear(); state.wallLevel = 12; elements.wallLevel.value = '12'; elements.emptyState.hidden = true; elements.statusText.textContent = 'COC DEMO / 12 WALL'; elements.imageNote.textContent = 'DEFAULT COC PATTERN / LOGICAL GRID'; draw(); }
+
+        function selectMode(mode) {
+            state.mode = mode; state.image = null; state.dimWalls.clear();
+            elements.modeTabs.forEach(tab => tab.classList.toggle('active', tab.dataset.mode === mode));
+            if (mode === 'coc') { mode = 'text'; state.mode = 'text'; state.demoWalls = createTextWalls(''); elements.modeHint.textContent = '默认 COC 图案，可直接调节菱形尺寸'; elements.statusText.textContent = 'COC PATTERN / READY'; }
+            if (mode === 'text') { state.demoWalls = createTextWalls(elements.textInput.value); elements.modeHint.textContent = '输入文字后自动排版到 44×44 网格'; elements.statusText.textContent = 'TEXT LAYOUT / READY'; }
+            if (mode === 'test') { state.demoWalls = createTestWalls(); elements.modeHint.textContent = '四角 + 交替边框 + 随机二连/三连，用于校准菱形'; elements.statusText.textContent = '44×44 TEST / READY'; }
+            if (mode === 'image') { state.demoWalls = null; elements.modeHint.textContent = '图片模式：上传草图后按像素识别'; elements.statusText.textContent = 'IMAGE MODE / AWAITING INPUT'; }
+            elements.dropZone.hidden = mode !== 'image';
+            elements.textInput.hidden = mode !== 'text';
+            elements.testParams.hidden = mode !== 'test';
+            elements.imageParams.hidden = mode !== 'image';
+            elements.connectionPanel.hidden = mode !== 'test';
+            elements.emptyState.hidden = mode !== 'image'; draw();
+        }
+
+        elements.fileInput.addEventListener('change', event => { selectMode('image'); loadImage(event.target.files[0]); });
+        canvas.addEventListener('click', event => { const bounds = canvas.getBoundingClientRect(), scaleX = canvas.width / bounds.width, scaleY = canvas.height / bounds.height, clickX = (event.clientX - bounds.left) * scaleX, clickY = (event.clientY - bounds.top) * scaleY; let closest = null, distance = Infinity; state.walls.forEach(wall => { const point = gridToCanvas(wall.column, wall.row), currentDistance = Math.hypot(point.x - clickX, point.y - clickY); if (currentDistance < distance) { closest = wall; distance = currentDistance; } }); if (closest && distance < 34) { const key = `${closest.column},${closest.row}`; state.dimWalls.has(key) ? state.dimWalls.delete(key) : state.dimWalls.add(key); draw(); } });
+        document.getElementById('emptyUpload').addEventListener('click', () => elements.fileInput.click());
+        elements.modeTabs.forEach(tab => tab.addEventListener('click', () => selectMode(tab.dataset.mode)));
+        elements.textInput.addEventListener('input', () => { if (state.mode === 'text') { state.demoWalls = createTextWalls(elements.textInput.value); draw(); } });
+        ['dragenter', 'dragover'].forEach(name => elements.dropZone.addEventListener(name, event => { event.preventDefault(); elements.dropZone.style.background = '#eef6c5'; }));
+        ['dragleave', 'drop'].forEach(name => elements.dropZone.addEventListener(name, event => { event.preventDefault(); elements.dropZone.style.background = ''; }));
+        elements.dropZone.addEventListener('drop', event => loadImage(event.dataTransfer.files[0]));
+        [elements.threshold, elements.imageScale, elements.imageRotation, elements.shiftX, elements.shiftY, elements.projectionX, elements.projectionY, elements.centerX, elements.centerY, elements.invert, elements.showWalls, elements.redWeight, elements.greenWeight, elements.blueWeight].forEach(input => input.addEventListener('input', () => { elements.thresholdOut.textContent = elements.threshold.value; elements.imageScaleOut.textContent = `${elements.imageScale.value}%`; elements.imageRotationOut.textContent = `${elements.imageRotation.value}°`; elements.shiftXOut.textContent = Number(elements.shiftX.value).toFixed(1); elements.shiftYOut.textContent = Number(elements.shiftY.value).toFixed(1); elements.projectionXOut.textContent = `${elements.projectionX.value}px / ${Math.round(Number(elements.projectionX.value) / backgroundSize.width * 100)}%`; elements.projectionYOut.textContent = `${elements.projectionY.value}px / ${Math.round(Number(elements.projectionY.value) / backgroundSize.height * 100)}%`; elements.centerXOut.textContent = `${Number(elements.centerX.value).toFixed(1)}%`; elements.centerYOut.textContent = `${Number(elements.centerY.value).toFixed(1)}%`; elements.redOut.textContent = Number(elements.redWeight.value).toFixed(3); elements.greenOut.textContent = Number(elements.greenWeight.value).toFixed(3); elements.blueOut.textContent = Number(elements.blueWeight.value).toFixed(3); if (state.mode === 'text') state.demoWalls = createTextWalls(elements.textInput.value); draw(); }));
+        elements.wallLevel.addEventListener('change', () => { state.wallLevel = Number(elements.wallLevel.value); draw(); });
+        elements.capacity.addEventListener('input', () => { state.limit = Number(elements.capacity.value); elements.capacityOut.textContent = state.limit; draw(); });
+        document.getElementById('clearButton').addEventListener('click', () => { state.image = null; state.demoWalls = null; state.dimWalls.clear(); elements.fileInput.value = ''; selectMode('image'); elements.imageNote.textContent = 'NO SOURCE IMAGE / AWAITING INPUT'; });
+        document.getElementById('exportButton').addEventListener('click', () => { const link = document.createElement('a'); link.download = 'coc-wall-layout.png'; link.href = canvas.toDataURL('image/png'); link.click(); });
+        selectMode('text');
+        drawConnectionPreviews();
+        setupViewport(canvas, mainView, draw);
+    </script>
+</body>
+
+</html>
