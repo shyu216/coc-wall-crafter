@@ -48,13 +48,8 @@
         }
 
         .topbar,
-        .basebar,
         .workspace {
             animation: rise .55s ease both;
-        }
-
-        .basebar {
-            animation-delay: .08s;
         }
 
         .workspace {
@@ -120,60 +115,6 @@
             height: 8px;
             border-radius: 50%;
             background: #64b47a;
-        }
-
-        .premium {
-            border: 0;
-            padding: 12px 16px;
-            background: var(--ink);
-            color: #fff;
-            font-weight: 600;
-            box-shadow: 4px 4px 0 var(--coral);
-        }
-
-        .basebar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            padding: 16px 0 19px;
-            border-top: 1px solid var(--line);
-            border-bottom: 1px solid var(--line);
-            margin-bottom: 28px;
-        }
-
-        .base-label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .base-label b {
-            display: grid;
-            place-items: center;
-            width: 28px;
-            height: 28px;
-            background: var(--acid);
-            border: 1px solid var(--ink);
-        }
-
-        .limit {
-            text-align: right;
-            white-space: nowrap;
-        }
-
-        .limit strong {
-            display: block;
-            font-size: 24px;
-            letter-spacing: -.07em;
-        }
-
-        .limit span {
-            color: var(--muted);
-            font: 10px 'DM Mono', monospace;
-            text-transform: uppercase;
         }
 
         .workspace {
@@ -639,11 +580,6 @@
             cursor: pointer;
         }
 
-        .stat-panel {
-            background: var(--acid);
-            border-color: var(--ink);
-        }
-
         .stat {
             display: flex;
             align-items: baseline;
@@ -658,28 +594,6 @@
 
         .stat span {
             font: 12px 'DM Mono', monospace;
-        }
-
-        .meter {
-            height: 7px;
-            margin-top: 16px;
-            background: rgba(30, 35, 40, .13);
-        }
-
-        .meter i {
-            display: block;
-            height: 100%;
-            width: 0;
-            background: var(--ink);
-            transition: width .2s;
-        }
-
-        .stat-foot {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-            color: rgba(30, 35, 40, .65);
-            font: 10px 'DM Mono', monospace;
         }
 
         .actions {
@@ -699,27 +613,6 @@
         .action.primary {
             color: #fff;
             background: var(--ink);
-        }
-
-        .tool-links {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-top: 4px;
-        }
-
-        .tool-link {
-            padding: 11px 0;
-            border: 0;
-            border-top: 1px solid var(--line);
-            color: var(--muted);
-            background: transparent;
-            text-align: left;
-            font-size: 11px;
-        }
-
-        .tool-link:hover {
-            color: var(--ink);
         }
 
         @keyframes rise {
@@ -759,23 +652,9 @@
                 padding: 20px 16px 32px;
             }
 
-            .topbar,
-            .basebar {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
             .top-actions {
                 width: 100%;
                 justify-content: space-between;
-            }
-
-            .limit {
-                text-align: left;
-            }
-
-            .basebar {
-                gap: 14px;
             }
 
             .canvas-card {
@@ -793,15 +672,6 @@
 
             .controls {
                 grid-template-columns: 1fr;
-            }
-
-            .stat-panel,
-            .actions {
-                grid-column: auto;
-            }
-
-            .premium {
-                padding: 10px 12px;
             }
         }
     </style>
@@ -826,7 +696,8 @@
                 <div class="canvas-head">
                     <div>
                         <p class="eyebrow"><span id="densityLabel">0.0% FILLED</span></p>
-                        <div class="stat"><strong id="wallCount">0</strong><span>/ <b id="statLimit">325</b> WALLS</span></div>
+                        <div class="stat"><strong id="wallCount">0</strong><span>/ <b id="statLimit">325</b>
+                                WALLS</span></div>
                         <p>点击墙段可暂时降低透明度，方便手动校准</p>
                     </div><span class="grid-label">GRID / 1936 CELLS</span>
                 </div>
@@ -866,24 +737,24 @@
                 </section>
 
                 <section class="panel">
-                    
+
                     <h3><span>02</span>参数调整 <span>CONTEXTUAL CONTROLS</span></h3>
                     <div class="param-group" id="testParams" hidden>
                         <div class="control-row">
-                            <div class="control-label"><span>菱形宽度</span><output id="projectionXOut">647px / 81%</output>
-                            </div><input id="projectionX" type="range" min="420" max="760" value="647">
+                            <div class="control-label"><span>菱形宽度</span><output id="projectionXOut">657px / 82%</output>
+                            </div><input id="projectionX" type="range" min="420" max="760" value="657">
                         </div>
                         <div class="control-row">
-                            <div class="control-label"><span>菱形高度</span><output id="projectionYOut">485px / 81%</output>
-                            </div><input id="projectionY" type="range" min="300" max="580" value="485">
+                            <div class="control-label"><span>菱形高度</span><output id="projectionYOut">489px / 82%</output>
+                            </div><input id="projectionY" type="range" min="300" max="580" value="489">
                         </div>
                         <div class="control-row">
-                            <div class="control-label"><span>中心 X</span><output id="centerXOut">50.0%</output></div>
-                            <input id="centerX" type="range" min="35" max="65" step=".1" value="50">
+                            <div class="control-label"><span>中心 X</span><output id="centerXOut">50.4%</output></div>
+                            <input id="centerX" type="range" min="35" max="65" step=".1" value="50.4">
                         </div>
                         <div class="control-row">
-                            <div class="control-label"><span>中心 Y</span><output id="centerYOut">49.0%</output></div>
-                            <input id="centerY" type="range" min="35" max="65" step=".1" value="49">
+                            <div class="control-label"><span>中心 Y</span><output id="centerYOut">48.8%</output></div>
+                            <input id="centerY" type="range" min="35" max="65" step=".1" value="48.8">
                         </div>
                     </div>
                     <div class="control-row">
@@ -893,22 +764,23 @@
                     <div class="color-row"><span>城墙等级</span><select id="wallLevel" aria-label="城墙等级"></select></div>
                     <div class="switch-row"><span>显示城墙</span><label class="switch"><input id="showWalls" type="checkbox"
                                 checked><i class="slider"></i></label></div>
-                    <div class="control-row">
-                        <div class="control-label"><span>旋转</span><output id="imageRotationOut">-45°</output></div>
-                        <input id="imageRotation" type="range" min="-180" max="180" value="-45">
-                    </div>
-                    <div class="control-row">
-                        <div class="control-label"><span>缩放</span><output id="imageScaleOut">100%</output></div><input
-                            id="imageScale" type="range" min="50" max="150" value="100">
-                    </div>
-                    <div class="section-label">文字 / 图片偏移</div>
-                    <div class="control-row">
-                        <div class="control-label"><span>X 偏移</span><output id="shiftXOut">0.0</output></div><input
-                            id="shiftX" type="range" min="-20" max="20" step=".1" value="0" aria-label="横向偏移">
-                    </div>
-                    <div class="control-row">
-                        <div class="control-label"><span>Y 偏移</span><output id="shiftYOut">0.0</output></div><input
-                            id="shiftY" type="range" min="-20" max="20" step=".1" value="0" aria-label="纵向偏移">
+                    <div class="param-group" id="sourceParams">
+                        <div class="control-row">
+                            <div class="control-label"><span>旋转</span><output id="imageRotationOut">-45°</output></div>
+                            <input id="imageRotation" type="range" min="-180" max="180" value="-45">
+                        </div>
+                        <div class="control-row">
+                            <div class="control-label"><span>缩放</span><output id="imageScaleOut">100%</output></div>
+                            <input id="imageScale" type="range" min="50" max="150" value="100">
+                        </div>
+                        <div class="control-row">
+                            <div class="control-label"><span>X 偏移</span><output id="shiftXOut">0.0</output></div><input
+                                id="shiftX" type="range" min="-20" max="20" step=".1" value="0" aria-label="横向偏移">
+                        </div>
+                        <div class="control-row">
+                            <div class="control-label"><span>Y 偏移</span><output id="shiftYOut">0.0</output></div><input
+                                id="shiftY" type="range" min="-20" max="20" step=".1" value="0" aria-label="纵向偏移">
+                        </div>
                     </div>
 
                     <div class="param-group" id="imageParams" hidden>
@@ -986,7 +858,7 @@
         const sourceContext = sourceCanvas.getContext('2d', { willReadFrequently: true });
         const elements = {
             emptyState: document.getElementById('emptyState'), fileInput: document.getElementById('fileInput'), dropZone: document.getElementById('dropZone'),
-            statusText: document.getElementById('statusText'), imageNote: document.getElementById('imageNote'), wallCount: document.getElementById('wallCount'), statLimit: document.getElementById('statLimit'), limitValue: document.getElementById('limitValue'), meterFill: document.getElementById('meterFill'), densityLabel: document.getElementById('densityLabel'), stateLabel: document.getElementById('stateLabel'), modeHint: document.getElementById('modeHint'), textInput: document.getElementById('textInput'), modeTabs: document.querySelectorAll('[data-mode]'), testParams: document.getElementById('testParams'), imageParams: document.getElementById('imageParams'), connectionPanel: document.getElementById('connectionPanel'), threshold: document.getElementById('threshold'), thresholdOut: document.getElementById('thresholdOut'), imageScale: document.getElementById('imageScale'), imageScaleOut: document.getElementById('imageScaleOut'), imageRotation: document.getElementById('imageRotation'), imageRotationOut: document.getElementById('imageRotationOut'), shiftX: document.getElementById('shiftX'), shiftXOut: document.getElementById('shiftXOut'), shiftY: document.getElementById('shiftY'), shiftYOut: document.getElementById('shiftYOut'), projectionX: document.getElementById('projectionX'), projectionXOut: document.getElementById('projectionXOut'), projectionY: document.getElementById('projectionY'), projectionYOut: document.getElementById('projectionYOut'), centerX: document.getElementById('centerX'), centerXOut: document.getElementById('centerXOut'), centerY: document.getElementById('centerY'), centerYOut: document.getElementById('centerYOut'), capacity: document.getElementById('capacity'), capacityOut: document.getElementById('capacityOut'), invert: document.getElementById('invert'), wallLevel: document.getElementById('wallLevel'), showWalls: document.getElementById('showWalls'), redWeight: document.getElementById('redWeight'), greenWeight: document.getElementById('greenWeight'), blueWeight: document.getElementById('blueWeight'), redOut: document.getElementById('redOut'), greenOut: document.getElementById('greenOut'), blueOut: document.getElementById('blueOut')
+            statusText: document.getElementById('statusText'), imageNote: document.getElementById('imageNote'), wallCount: document.getElementById('wallCount'), statLimit: document.getElementById('statLimit'), densityLabel: document.getElementById('densityLabel'), modeHint: document.getElementById('modeHint'), textInput: document.getElementById('textInput'), sourceParams: document.getElementById('sourceParams'), modeTabs: document.querySelectorAll('[data-mode]'), testParams: document.getElementById('testParams'), imageParams: document.getElementById('imageParams'), connectionPanel: document.getElementById('connectionPanel'), threshold: document.getElementById('threshold'), thresholdOut: document.getElementById('thresholdOut'), imageScale: document.getElementById('imageScale'), imageScaleOut: document.getElementById('imageScaleOut'), imageRotation: document.getElementById('imageRotation'), imageRotationOut: document.getElementById('imageRotationOut'), shiftX: document.getElementById('shiftX'), shiftXOut: document.getElementById('shiftXOut'), shiftY: document.getElementById('shiftY'), shiftYOut: document.getElementById('shiftYOut'), projectionX: document.getElementById('projectionX'), projectionXOut: document.getElementById('projectionXOut'), projectionY: document.getElementById('projectionY'), projectionYOut: document.getElementById('projectionYOut'), centerX: document.getElementById('centerX'), centerXOut: document.getElementById('centerXOut'), centerY: document.getElementById('centerY'), centerYOut: document.getElementById('centerYOut'), capacity: document.getElementById('capacity'), capacityOut: document.getElementById('capacityOut'), invert: document.getElementById('invert'), wallLevel: document.getElementById('wallLevel'), showWalls: document.getElementById('showWalls'), redWeight: document.getElementById('redWeight'), greenWeight: document.getElementById('greenWeight'), blueWeight: document.getElementById('blueWeight'), redOut: document.getElementById('redOut'), greenOut: document.getElementById('greenOut'), blueOut: document.getElementById('blueOut')
         };
         const wallSprites = {};
         const wallAssetNames = ['i', 'y', 'v', 'rowtail', 'coltail', 'row', 'col'];
@@ -1093,15 +965,17 @@
             const walls = [], occupied = new Set(), add = (row, column) => { if (row >= 0 && row < gridSize && column >= 0 && column < gridSize && !occupied.has(`${column},${row}`)) { occupied.add(`${column},${row}`); walls.push({ row, column }); } };
             // Keep the 44 + 43 + 43 + 42 perimeter cells first so the capacity trim never cuts the border.
             for (let column = 0; column < gridSize; column += 1) add(0, column);
-            for (let row = 1; row < gridSize; row += 1) add(row, gridSize - 1);
-            for (let column = gridSize - 2; column >= 0; column -= 1) add(gridSize - 1, column);
-            for (let row = gridSize - 2; row > 0; row -= 1) add(row, 0);
+            for (let row = 1; row < gridSize - 1; row += 1) add(row, gridSize - 1);
+            for (let row = 1; row < gridSize - 1; row += 1) add(row, 0);
+            for (let column = 0; column < gridSize; column += 1) add(gridSize - 1, column);
 
             // Interior fixtures: isolated, left-only, right-only, and four-neighbor junctions.
             add(6, 6);
             add(10, 10); add(10, 11);
             add(14, 18); add(14, 19);
-            add(22, 22); add(21, 22); add(23, 22); add(22, 21); add(22, 23);
+            add(21, 22);
+            add(22, 21); add(22, 22); add(22, 23);
+            add(23, 22);
             for (let row = 5; row < 39; row += 2) for (let column = 5; column < 39; column += 2) if (!(row >= 9 && row <= 25 && column >= 9 && column <= 25)) add(row, column);
             return walls;
         }
@@ -1110,8 +984,11 @@
             if (!state.image) return;
             const side = Math.max(state.image.naturalWidth, state.image.naturalHeight);
             sourceCanvas.width = 400; sourceCanvas.height = 400;
-            sourceContext.clearRect(0, 0, 400, 400);
-            sourceContext.save(); sourceContext.translate(200, 200); sourceContext.rotate(Number(elements.imageRotation.value) * Math.PI / 180); sourceContext.scale(Number(elements.imageScale.value) / 100, Number(elements.imageScale.value) / 100);
+            sourceContext.fillStyle = '#000000';
+            sourceContext.fillRect(0, 0, 400, 400);
+            sourceContext.save(); sourceContext.translate(200, 200);
+            sourceContext.translate(Number(elements.shiftX.value) * 10, Number(elements.shiftY.value) * 10);
+            sourceContext.rotate(Number(elements.imageRotation.value) * Math.PI / 180); sourceContext.scale(Number(elements.imageScale.value) / 100, Number(elements.imageScale.value) / 100);
             sourceContext.drawImage(state.image, -side / 2, -side / 2, side, side); sourceContext.restore();
         }
 
@@ -1119,7 +996,7 @@
             return connectionAsset(state.walls, row, column);
         }
 
-        function projectionMetrics() { const layoutScale = state.mode === 'image' ? 1 : Number(elements.imageScale.value) / 100; return { width: canvas.width * Number(elements.projectionX.value) / backgroundSize.width * layoutScale, height: canvas.height * Number(elements.projectionY.value) / backgroundSize.height * layoutScale }; }
+        function projectionMetrics() { return { width: canvas.width * Number(elements.projectionX.value) / backgroundSize.width, height: canvas.height * Number(elements.projectionY.value) / backgroundSize.height }; }
 
         function gridToCanvas(column, row) { const projection = projectionMetrics(), centerX = canvas.width * Number(elements.centerX.value) / 100 + Number(elements.shiftX.value) * canvas.width / backgroundSize.width, centerY = canvas.height * Number(elements.centerY.value) / 100 + Number(elements.shiftY.value) * canvas.height / backgroundSize.height; return { x: centerX + (column - row) * projection.width / 2 / (gridSize - 1), y: centerY + (column + row - (gridSize - 1)) * projection.height / 2 / (gridSize - 1) }; }
 
@@ -1160,8 +1037,8 @@
                     if (!sprite?.complete || !sprite.naturalWidth) return;
                     const previewWidth = Number(elements.projectionX.value) / backgroundSize.width * preview.width;
                     const previewHeight = Number(elements.projectionY.value) / backgroundSize.height * preview.height;
-                    const centerX = preview.width * Number(elements.centerX.value) / 100 + Number(elements.shiftX.value) * preview.width / backgroundSize.width;
-                    const centerY = preview.height * Number(elements.centerY.value) / 100 + Number(elements.shiftY.value) * preview.height / backgroundSize.height;
+                    const centerX = preview.width * Number(elements.centerX.value) / 100;
+                    const centerY = preview.height * Number(elements.centerY.value) / 100;
                     const baseX = centerX + (column - row) * previewWidth / 2 / (gridSize - 1), baseY = centerY + (column + row - (gridSize - 1)) * previewHeight / 2 / (gridSize - 1);
                     const focusX = centerX + (21 - 21) * previewWidth / 2 / (gridSize - 1), focusY = centerY + (21 + 21 - (gridSize - 1)) * previewHeight / 2 / (gridSize - 1);
                     const x = baseX, y = baseY;
@@ -1201,9 +1078,60 @@
             }
             state.wallSet = new Set(state.walls.map(wall => `${wall.column},${wall.row}`));
             if (!elements.showWalls.checked) {
+                const projection = projectionMetrics();
+                const dx = projection.width / 2 / (gridSize - 1) / 2;
+                const dy = projection.height / 2 / (gridSize - 1) / 2;
+
+                // 44x44 gray draft grid lines (all cells)
+                context.strokeStyle = 'rgba(140,140,140,0.35)';
+                context.lineWidth = 0.8;
+                for (let row = 0; row < gridSize; row++) {
+                    for (let column = 0; column < gridSize; column++) {
+                        const { x, y } = gridToCanvas(column, row);
+                        if (column < gridSize - 1) {
+                            const r = gridToCanvas(column + 1, row);
+                            context.beginPath(); context.moveTo(x, y); context.lineTo(r.x, r.y); context.stroke();
+                        }
+                        if (row < gridSize - 1) {
+                            const d = gridToCanvas(column, row + 1);
+                            context.beginPath(); context.moveTo(x, y); context.lineTo(d.x, d.y); context.stroke();
+                        }
+                    }
+                }
+
+                // Row/column legend labels on all 4 edges
+                context.fillStyle = 'rgba(100,100,100,0.55)';
+                context.font = '9px "DM Mono", monospace';
+                context.textAlign = 'center';
+                context.textBaseline = 'middle';
+                for (let i = 0; i < gridSize; i++) {
+                    // Row labels on left edge (column=0)
+                    let p = gridToCanvas(0, i);
+                    context.fillText(String(i), p.x - dx * 4, p.y);
+                    // Row labels on right edge (column=43)
+                    p = gridToCanvas(gridSize - 1, i);
+                    context.fillText(String(i), p.x + dx * 4, p.y);
+                    // Column labels on top edge (row=0)
+                    p = gridToCanvas(i, 0);
+                    context.fillText(String(i), p.x, p.y - dy * 4);
+                    // Column labels on bottom edge (row=43)
+                    p = gridToCanvas(i, gridSize - 1);
+                    context.fillText(String(i), p.x, p.y + dy * 4);
+                }
+
+                // Wall diamonds at full cell size
                 context.fillStyle = '#f28b2e'; context.globalAlpha = .92;
-                state.walls.forEach(({ row, column }) => { const { x, y } = gridToCanvas(column, row); context.fillRect(x - wallWidth / 2, y - wallHeight / 2, wallWidth, wallHeight); });
-                context.globalAlpha = 1; context.restore(); const count = state.walls.length, percentage = count / (gridSize * gridSize) * 100; elements.wallCount.textContent = count; elements.statLimit.textContent = state.limit; elements.limitValue.textContent = state.limit; elements.meterFill.style.width = `${Math.min(100, count / state.limit * 100)}%`; elements.densityLabel.textContent = `${percentage.toFixed(1)}% FILLED`; elements.stateLabel.textContent = state.image || state.demoWalls ? 'WALLS HIDDEN / MARKERS' : 'EMPTY BLUEPRINT'; return;
+                state.walls.forEach(({ row, column }) => {
+                    const { x, y } = gridToCanvas(column, row);
+                    context.beginPath();
+                    context.moveTo(x + dx, y - dy);
+                    context.lineTo(x + dx, y + dy);
+                    context.lineTo(x - dx, y + dy);
+                    context.lineTo(x - dx, y - dy);
+                    context.closePath();
+                    context.fill();
+                });
+                context.globalAlpha = 1; context.restore(); const count = state.walls.length, percentage = count / (gridSize * gridSize) * 100; elements.wallCount.textContent = count; elements.statLimit.textContent = state.limit; elements.densityLabel.textContent = `${percentage.toFixed(1)}% FILLED`; return;
             }
             state.walls.forEach(({ row, column }) => {
                 const sprite = wallSprites[state.wallLevel][wallAssetFor(row, column)];
@@ -1214,7 +1142,7 @@
             context.globalAlpha = 1;
             context.restore();
             const count = state.walls.length, percentage = count / (gridSize * gridSize) * 100;
-            elements.wallCount.textContent = count; elements.statLimit.textContent = state.limit; elements.limitValue.textContent = state.limit; elements.meterFill.style.width = `${Math.min(100, count / state.limit * 100)}%`; elements.densityLabel.textContent = `${percentage.toFixed(1)}% FILLED`; elements.stateLabel.textContent = state.image || state.demoWalls ? (count > state.limit ? 'OVER CAPACITY' : 'READY TO PLACE') : 'EMPTY BLUEPRINT';
+            elements.wallCount.textContent = count; elements.statLimit.textContent = state.limit; elements.densityLabel.textContent = `${percentage.toFixed(1)}% FILLED`;
         }
 
         function hexToRgb(hex) { return { r: parseInt(hex.slice(1, 3), 16), g: parseInt(hex.slice(3, 5), 16), b: parseInt(hex.slice(5, 7), 16) }; }
@@ -1235,6 +1163,7 @@
             if (mode === 'image') { state.demoWalls = null; elements.modeHint.textContent = '图片模式：上传草图后按像素识别'; elements.statusText.textContent = 'IMAGE MODE / AWAITING INPUT'; }
             elements.dropZone.hidden = mode !== 'image';
             elements.textInput.hidden = mode !== 'text';
+            elements.sourceParams.hidden = mode === 'test';
             elements.testParams.hidden = mode !== 'test';
             elements.imageParams.hidden = mode !== 'image';
             elements.connectionPanel.hidden = mode !== 'test';
