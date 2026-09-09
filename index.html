@@ -1702,44 +1702,51 @@
                 const dx = projection.width / 2 / (gridSize - 1) / 2;
                 const dy = projection.height / 2 / (gridSize - 1) / 2;
 
-                // 44x44 gray draft grid lines (all cells)
-                context.strokeStyle = 'rgba(140,140,140,0.35)';
-                context.lineWidth = 0.8;
-                for (let row = 0; row < gridSize; row++) {
-                    for (let column = 0; column < gridSize; column++) {
-                        const { x, y } = gridToCanvas(column, row);
-                        if (column < gridSize - 1) {
-                            const r = gridToCanvas(column + 1, row);
-                            context.beginPath(); context.moveTo(x, y); context.lineTo(r.x, r.y); context.stroke();
-                        }
-                        if (row < gridSize - 1) {
-                            const d = gridToCanvas(column, row + 1);
-                            context.beginPath(); context.moveTo(x, y); context.lineTo(d.x, d.y); context.stroke();
-                        }
-                    }
+                // CELL_SHIFT：整个 44×44 格子系统（灰线 + 橙色菱形）相对墙段格点的公共偏移，
+                // 单位 dx = 半格宽、dy = 半格高。实测 (0.3, 2) 时橙色菱形与 base PNG 网格完全重合，
+                // 灰色网格线平移同一向量 → 格心恰好落在橙色菱形中心，两者正确重叠
+                const CELL_SHIFT_X = -0.3;
+                const CELL_SHIFT_Y = 1.9;
+
+                // 44x44 gray draft grid：以墙段格点为格心的 44×44 个完整格子。
+                // 旧版连接 44×44 格点 → 实际只有 43×43 格（每格以 4 格点为顶点）；
+                // 现改为边界落在半整数网格坐标（fc/fr = k-0.5, k=0..44），每面墙独占一个格心对齐的格子，
+                // 再整体平移 CELL_SHIFT 使格心对齐 base PNG 网格
+                context.strokeStyle = 'rgba(120,120,120,0.55)';
+                context.lineWidth = 2;
+                const proj = (fc, fr) => ({ x: canvas.width * Number(elements.centerX.value) / 100 + (fc - fr) * dx * 2 + dx * CELL_SHIFT_X, y: canvas.height * Number(elements.centerY.value) / 100 + (fc + fr - (gridSize - 1)) * dy * 2 + dy * CELL_SHIFT_Y });
+                for (let b = 0; b <= gridSize; b++) {
+                    const t = b - 0.5;
+                    // constant column boundary（沿 row 方向延伸）
+                    let a = proj(t, -0.5), z = proj(t, gridSize - 0.5);
+                    context.beginPath(); context.moveTo(a.x, a.y); context.lineTo(z.x, z.y); context.stroke();
+                    // constant row boundary（沿 column 方向延伸）
+                    a = proj(-0.5, t); z = proj(gridSize - 0.5, t);
+                    context.beginPath(); context.moveTo(a.x, a.y); context.lineTo(z.x, z.y); context.stroke();
                 }
 
-                // Row/column legend labels：每 6 格显示一个数字，加粗放大；只保留左下边（column=43 大菱形的左下边），不显示右上
+                // Row/column legend labels：每 6 格显示一个数字，加粗放大；
+                // 沿 column=0 边（左上边，顶角→左角）与 row=43 边（左下边，左角→底角）两条左边显示，数字置于边左侧
                 context.fillStyle = 'rgba(60,60,60,0.8)';
                 context.font = 'bold 14px "DM Mono", monospace';
                 context.textAlign = 'center';
                 context.textBaseline = 'middle';
                 for (let i = 0; i < gridSize; i += 6) {
-                    // Row labels on lower-left edge (column=43)，数字置于边外侧偏左
-                    const p = gridToCanvas(gridSize - 1, i);
-                    context.fillText(String(i), p.x + dx * 4, p.y);
+                    // Row numbers along the column=0 edge（左上边），跟随 CELL_SHIFT 贴住网格边线
+                    const p = gridToCanvas(0, i);
+                    context.fillText(String(i), p.x - dx * 4 + dx * CELL_SHIFT_X, p.y + dy * CELL_SHIFT_Y);
+                    // Column numbers along the row=43 edge（左下边）
+                    const q = gridToCanvas(i, gridSize - 1);
+                    context.fillText(String(i), q.x - dx * 4 + dx * CELL_SHIFT_X, q.y + dy * CELL_SHIFT_Y);
                 }
 
                 // Wall diamonds：与灰色网格同朝向（边平行于等距网格线）、恰好一个格子大小的菱形，
-                // 相邻墙段的橙色菱形边贴边无缝铺满。中心相对格点做偏移以对齐 7 种墙片 PNG 的视觉中心：
-                // 偏移单位 dx = 半格宽、dy = 半格高（1 = 右/下移半格），实测右下各 +1 恰好对齐
-                const ORANGE_SHIFT_X = 0.3;
-                const ORANGE_SHIFT_Y = 2;
+                // 相邻墙段的橙色菱形边贴边无缝铺满，中心与灰色格子的格心共用同一 CELL_SHIFT
                 context.fillStyle = '#f28b2e'; context.globalAlpha = .92;
                 context.strokeStyle = '#f28b2e'; context.lineWidth = 1;
                 state.walls.forEach(({ row, column }) => {
                     const { x, y } = gridToCanvas(column, row);
-                    const ox = x + dx * ORANGE_SHIFT_X, oy = y + dy * ORANGE_SHIFT_Y;
+                    const ox = x + dx * CELL_SHIFT_X, oy = y + dy * CELL_SHIFT_Y;
                     context.beginPath();
                     context.moveTo(ox, oy - dy * 2);
                     context.lineTo(ox + dx * 2, oy);
