@@ -1,29 +1,38 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-page-node-id="WqSvIY0j9hwMjVd6rBjUIz">
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>CoC Wall Crafter</title>
+<head data-page-node-id="hOojxJKatfcJldckpTujKr">
+    <meta charset="utf-8" data-page-node-id="1i14IVdTjPOu4a6DFQP7HE">
+    <meta name="viewport" content="width=device-width, initial-scale=1" data-page-node-id="lLWWli9HLUKmoqrVgq7kwz">
+    <title>CoC 城墙编辑器 · Wall Crafter</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
         :root {
             --ink: #1a1f24;
             --muted: #6d767e;
-            --line: #d5dad5;
+            --line: #d8ddd6;
             --paper: #f2f4ef;
             --panel: #ffffff;
             --acid: #d8f44e;
             --coral: #f46f54;
-            --blue: #3575d3;
-            --shadow: 0 12px 40px rgba(38, 43, 41, .08);
-            --radius: 10px;
-            --radius-sm: 6px;
+            --shadow: 0 10px 28px rgba(38, 43, 41, .07);
+            --radius: 12px;
+            --radius-sm: 8px;
+            /* ---- 部落冲突（CoC）主题强调色 ---- */
+            --gold: #f4c430;
+            --gold-soft: #fecc54;
+            --gold-deep: #d99e2b;
+            --grass: #84c44c;
+            --wood: #5b4636;
         }
 
         * {
             box-sizing: border-box;
+        }
+
+        [hidden] {
+            display: none !important;
         }
 
         body {
@@ -36,7 +45,9 @@
         }
 
         button,
-        input {
+        input,
+        select,
+        textarea {
             font: inherit;
         }
 
@@ -45,71 +56,92 @@
         }
 
         .shell {
-            max-width: 1400px;
+            max-width: 1440px;
             margin: 0 auto;
-            padding: 24px 32px 48px;
+            padding: 20px 28px 32px;
         }
 
-        .topbar,
-        .workspace {
-            animation: rise .55s ease both;
+        .mono {
+            color: var(--muted);
+            font: 10px 'DM Mono', monospace;
+            letter-spacing: .04em;
         }
 
-        .workspace {
-            animation-delay: .16s;
-        }
-
+        /* ---------- 顶栏：品牌 / 状态 / 全局操作 ---------- */
         .topbar {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            gap: 24px;
-            margin-bottom: 32px;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 16px;
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
+            min-width: 0;
         }
 
         .brand-mark {
-            width: 44px;
-            height: 44px;
+            width: 36px;
+            height: 36px;
             display: grid;
             place-items: center;
-            background: var(--acid);
+            background: linear-gradient(145deg, var(--gold-soft), var(--gold) 55%, var(--gold-deep));
             border: 2px solid var(--ink);
-            font-size: 24px;
             border-radius: var(--radius-sm);
             box-shadow: 3px 3px 0 var(--ink);
-            transition: transform .2s ease;
         }
 
-        .brand-mark:hover {
-            transform: translate(-1px, -1px);
-            box-shadow: 4px 4px 0 var(--ink);
+        .brand-mark svg {
+            width: 22px;
+            height: 22px;
+            display: block;
         }
 
         .brand h1 {
             margin: 0;
-            font-size: clamp(20px, 2.2vw, 30px);
-            letter-spacing: -.06em;
-            line-height: .9;
+            font-size: 21px;
+            letter-spacing: -.05em;
         }
 
-        .eyebrow {
-            margin: 0 0 6px;
+        .brand-sub {
+            margin: 2px 0 0;
+            font-size: 10.5px;
+            font-weight: 500;
+            letter-spacing: .02em;
             color: var(--muted);
-            font: 500 10px 'DM Mono', monospace;
-            letter-spacing: .12em;
-            text-transform: uppercase;
+        }
+
+        .coc-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: 8px;
+            padding: 2px 8px;
+            font: 600 10px 'DM Mono', monospace;
+            letter-spacing: .08em;
+            color: var(--wood);
+            background: linear-gradient(145deg, var(--gold-soft), var(--gold));
+            border: 1px solid var(--gold-deep);
+            border-radius: 999px;
+            box-shadow: 1px 1px 0 var(--gold-deep);
+        }
+
+        .coc-tag::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--wood);
+            border-radius: 1px;
+            transform: rotate(45deg);
         }
 
         .top-actions {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 10px;
         }
 
         .status {
@@ -118,26 +150,141 @@
             gap: 7px;
             color: var(--muted);
             font: 11px 'DM Mono', monospace;
+            max-width: 34vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .status-dot {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             border-radius: 50%;
-            background: #64b47a;
+            background: var(--grass);
+            flex: none;
         }
 
+        .top-btn {
+            border: 1px solid var(--ink);
+            background: #fff;
+            padding: 8px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            transition: background .15s, transform .15s;
+        }
+
+        .top-btn:hover {
+            background: var(--acid);
+            transform: translateY(-1px);
+        }
+
+        .top-btn.primary {
+            background: var(--ink);
+            color: #fff;
+        }
+
+        .top-btn.primary:hover {
+            background: var(--gold);
+            color: var(--ink);
+            border-color: var(--gold-deep);
+        }
+
+        /* ---------- 主区（画布） / 侧栏（控件） ---------- */
         .workspace {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 380px;
-            gap: 24px;
+            grid-template-columns: minmax(0, 1fr) 352px;
+            gap: 20px;
             align-items: start;
         }
 
+        .stage,
+        .rail {
+            display: grid;
+            gap: 14px;
+            min-width: 0;
+        }
+
+        /* 侧栏高度与模式相关（各模式控件数量不同），改为贴顶滚动，
+           页面高度始终由主区决定，任何模式都不会在栏底留下大片空白 */
+        .rail {
+            position: sticky;
+            top: 20px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            padding-right: 3px;
+            scrollbar-width: thin;
+        }
+
+        .rail::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .rail::-webkit-scrollbar-thumb {
+            background: #c9d0c8;
+            border-radius: 3px;
+        }
+
+        /* ---------- 模式路由 ---------- */
+        .stage-head {
+            display: grid;
+            gap: 10px;
+            padding: 12px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .mode-tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+
+        .mode-tab {
+            border: 1px solid var(--line);
+            background: #fff;
+            padding: 9px 4px;
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: var(--radius-sm);
+            transition: all .15s;
+        }
+
+        .mode-tab:hover {
+            border-color: var(--muted);
+            color: var(--ink);
+        }
+
+        .mode-tab.active {
+            border-color: var(--gold-deep);
+            color: var(--ink);
+            background: linear-gradient(145deg, var(--gold-soft), var(--gold));
+            font-weight: 600;
+            box-shadow: 0 2px 0 var(--gold-deep);
+        }
+
+        .stage-hint {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .stage-hint .mono {
+            flex: none;
+        }
+
+        /* ---------- 主画布 ---------- */
         .canvas-card {
             position: relative;
-            min-height: 760px;
-            padding: 24px;
+            padding: 14px;
             background: #e8ebe5;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
@@ -148,55 +295,59 @@
             content: '';
             position: absolute;
             inset: 0;
-            opacity: .3;
+            opacity: .25;
             background-image: radial-gradient(#aeb7ae 1px, transparent 1px);
             background-size: 17px 17px;
             pointer-events: none;
         }
 
-        .canvas-head {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 24px;
-        }
-
-        .canvas-head h2 {
-            margin: 0;
-            font-size: 18px;
-            letter-spacing: -.04em;
-        }
-
-        .canvas-head p {
-            margin: 5px 0 0;
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        .grid-label {
-            color: var(--muted);
-            font: 10px 'DM Mono', monospace;
-        }
-
         .canvas-wrap {
             position: relative;
             z-index: 1;
-            width: min(100%, 760px);
+            width: 100%;
             aspect-ratio: 4 / 3;
-            margin: 0 auto;
             border: 2px solid var(--ink);
             border-radius: var(--radius-sm);
+            overflow: hidden;
             background: #fff url('./images/base/base4.webp') center / cover no-repeat;
             box-shadow: 6px 6px 0 rgba(30, 35, 40, .10);
-            overflow: hidden;
         }
 
         canvas {
             display: block;
             width: 100%;
             height: 100%;
+        }
+
+        .hud {
+            position: absolute;
+            z-index: 4;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            align-items: baseline;
+            gap: 9px;
+            padding: 5px 9px;
+            background: rgba(255, 255, 255, .9);
+            border: 1px solid rgba(30, 35, 40, .22);
+            border-radius: 6px;
+        }
+
+        .stat {
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+
+        .stat strong {
+            font-size: 22px;
+            letter-spacing: -.08em;
+            line-height: .9;
+        }
+
+        .stat span {
+            font: 11px 'DM Mono', monospace;
+            color: var(--muted);
         }
 
         .viewport-tools {
@@ -209,9 +360,9 @@
         }
 
         .viewport-tools button {
-            width: 28px;
-            height: 28px;
-            border: 1px solid rgba(30, 35, 40, .35);
+            width: 26px;
+            height: 26px;
+            border: 1px solid rgba(30, 35, 40, .3);
             background: rgba(255, 255, 255, .92);
             color: var(--ink);
             font-weight: 700;
@@ -228,22 +379,12 @@
         .viewport-tools output {
             display: grid;
             place-items: center;
-            min-width: 48px;
+            min-width: 44px;
             padding: 0 6px;
             background: rgba(255, 255, 255, .88);
-            border: 1px solid rgba(30, 35, 40, .25);
-            font-size: 10px;
-        }
-
-        .connection-tile {
-            position: relative;
-        }
-
-        .connection-tile .viewport-tools {
-            top: 6px;
-            right: 6px;
-            transform: scale(.8);
-            transform-origin: top right;
+            border: 1px solid rgba(30, 35, 40, .22);
+            border-radius: 4px;
+            font: 10px 'DM Mono', monospace;
         }
 
         .empty-state {
@@ -252,87 +393,203 @@
             display: grid;
             place-content: center;
             text-align: center;
-            padding: 30px;
-            background: rgba(246, 247, 243, .26);
+            padding: 24px;
+            background: rgba(246, 247, 243, .30);
             backdrop-filter: blur(2px);
         }
 
-        .empty-state[hidden] {
-            display: none;
-        }
-
         .empty-icon {
-            margin: 0 auto 16px;
-            font-size: 36px;
-            opacity: .7;
+            margin: 0 auto 10px;
+            font-size: 30px;
+            opacity: .65;
         }
 
         .empty-state strong {
             display: block;
-            font-size: 18px;
-            font-weight: 600;
+            font-size: 16px;
         }
 
         .empty-state p {
-            margin: 8px 0 20px;
+            margin: 6px 0 14px;
             color: var(--muted);
-            font-size: 13px;
-            line-height: 1.7;
+            font-size: 12px;
         }
 
         .ghost-btn {
             border: 1px solid var(--ink);
             background: #fff;
-            padding: 10px 18px;
+            padding: 8px 16px;
+            font-size: 12px;
             font-weight: 600;
             border-radius: var(--radius-sm);
-            transition: background .15s, transform .15s;
         }
 
         .ghost-btn:hover {
             background: var(--acid);
-            transform: translateY(-1px);
         }
 
-        .corner-note {
-            position: absolute;
-            bottom: 25px;
-            left: 28px;
+        .stage-foot {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 0;
             color: var(--muted);
             font: 10px 'DM Mono', monospace;
         }
 
-        .controls {
-            display: grid;
-            gap: 16px;
-        }
-
-        .panel {
+        /* ---------- 连接参考（主画布下方，横向铺满） ---------- */
+        .connection-panel {
+            padding: 12px;
             background: var(--panel);
             border: 1px solid var(--line);
             border-radius: var(--radius);
-            padding: 20px;
+            box-shadow: var(--shadow);
         }
 
-        .panel h3 {
+        .connection-preview {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+
+        .connection-tile {
+            min-width: 0;
+            padding: 5px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            background: #fbfcf9;
+            text-align: center;
+        }
+
+        .connection-tile canvas {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 4 / 3;
+            /* 背景图由 drawConnectionPreviews 在 transform 内 drawImage 绘制（与城墙同投影坐标系对齐），此处仅保留底色兜底 */
+            background: #dce8b7;
+        }
+
+        .connection-tile .ct-name {
+            display: block;
+            margin-top: 4px;
+            color: var(--ink);
+            font: 600 11px 'DM Mono', monospace;
+            letter-spacing: .02em;
+        }
+
+        .connection-tile .ct-desc {
+            display: block;
+            margin-top: 1px;
+            color: var(--muted);
+            font: 9px 'DM Mono', monospace;
+        }
+
+        /* ---------- 侧栏面板 ---------- */
+        .panel {
+            padding: 14px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .panel-head {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin: 0 0 18px;
-            font-size: 14px;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .panel-head i {
+            color: var(--muted);
+            font: 10px 'DM Mono', monospace;
+            font-style: normal;
+        }
+
+        .panel-head h3 {
+            margin: 0;
+            font-size: 13px;
             letter-spacing: -.02em;
         }
 
-        .panel h3 span {
+        .panel-head .note {
+            margin-left: auto;
             color: var(--muted);
             font: 10px 'DM Mono', monospace;
-            font-weight: 400;
+        }
+
+        .section-label {
+            margin: 14px 0 8px;
+            color: var(--muted);
+            font: 10px 'DM Mono', monospace;
+            letter-spacing: .1em;
+            text-transform: uppercase;
+        }
+
+        .section-label:first-child {
+            margin-top: 0;
+        }
+
+        .mode-input {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            padding: 9px 10px;
+            color: var(--ink);
+            background: #fff;
+            font-size: 13px;
+            outline: none;
+            transition: border-color .2s;
+        }
+
+        .mode-input:focus {
+            border-color: var(--ink);
+        }
+
+        .mode-input::placeholder {
+            color: #9aa19a;
+        }
+
+        textarea.mode-input {
+            min-height: 62px;
+            resize: vertical;
+            line-height: 1.5;
+            font-family: inherit;
+        }
+
+        select {
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            background: #fff;
+            color: var(--ink);
+            padding: 6px 8px;
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .font-pick {
+            display: grid;
+            grid-template-columns: 1fr 28px;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .font-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .font-row select {
+            width: 100%;
         }
 
         .upload-zone {
             border: 1px dashed #b5bcb5;
             border-radius: var(--radius-sm);
-            padding: 16px;
+            padding: 14px;
             background: #fbfcf9;
             transition: background .2s, border-color .2s;
         }
@@ -353,10 +610,10 @@
         }
 
         .upload-zone input {
+            position: absolute;
             width: 0;
             height: 0;
             opacity: 0;
-            position: absolute;
         }
 
         .upload-zone b {
@@ -366,13 +623,18 @@
         }
 
         .drop-hint {
-            margin: 10px 0 0;
+            margin: 8px 0 0;
             color: var(--muted);
             font: 10px 'DM Mono', monospace;
+            line-height: 1.6;
         }
 
         .control-row {
-            margin: 16px 0;
+            margin: 12px 0;
+        }
+
+        .control-row:first-child {
+            margin-top: 0;
         }
 
         .control-row:last-child {
@@ -383,7 +645,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 7px;
+            margin-bottom: 6px;
             color: var(--muted);
             font-size: 12px;
         }
@@ -398,57 +660,30 @@
             accent-color: var(--coral);
         }
 
-        select {
-            border: 1px solid var(--line);
-            border-radius: var(--radius-sm);
-            background: #fff;
-            color: var(--ink);
-            padding: 6px 10px;
-            font-size: 12px;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .rgb-row {
-            display: grid;
-            grid-template-columns: 17px 1fr 43px;
+        .color-row {
+            display: flex;
             align-items: center;
-            gap: 8px;
-        }
-
-        .rgb-row+.rgb-row {
-            margin-top: 10px;
-        }
-
-        .rgb-letter {
-            font: 600 11px 'DM Mono', monospace;
-        }
-
-        .rgb-letter.r {
-            color: #d55248;
-        }
-
-        .rgb-letter.g {
-            color: #4c9b5f;
-        }
-
-        .rgb-letter.b {
-            color: #3975c4;
+            justify-content: space-between;
+            gap: 10px;
+            color: var(--muted);
+            font-size: 12px;
         }
 
         .switch-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-top: 17px;
+            gap: 10px;
+            margin-top: 12px;
             color: var(--muted);
             font-size: 12px;
         }
 
         .switch {
             position: relative;
-            width: 38px;
-            height: 22px;
+            width: 36px;
+            height: 20px;
+            flex: none;
         }
 
         .switch input {
@@ -469,8 +704,8 @@
         .slider::before {
             content: '';
             position: absolute;
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             left: 3px;
             top: 3px;
             background: #fff;
@@ -486,338 +721,51 @@
             transform: translateX(16px);
         }
 
-        .color-row {
-            display: flex;
+        .rgb-row {
+            display: grid;
+            grid-template-columns: 14px 1fr 40px;
             align-items: center;
-            justify-content: space-between;
-            margin-top: 17px;
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        .connection-legend {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-            margin-top: 17px;
-        }
-
-        .connection-legend span {
-            border-top: 2px solid var(--line);
-            padding-top: 7px;
-            color: var(--muted);
-            font: 9px 'DM Mono', monospace;
-            text-align: center;
-        }
-
-        .connection-legend span:nth-child(1) {
-            border-color: #b9c1b8;
-        }
-
-        .connection-legend span:nth-child(2) {
-            border-color: #6e9fd9;
-        }
-
-        .connection-legend span:nth-child(3) {
-            border-color: var(--coral);
-        }
-
-        .connection-legend span:nth-child(4) {
-            border-color: var(--ink);
-        }
-
-        .mode-tabs {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
-            margin-bottom: 14px;
-        }
-
-        .mode-tab {
-            border: 1px solid var(--line);
-            background: #fff;
-            padding: 9px 4px;
-            color: var(--muted);
-            font-size: 10px;
-            border-radius: var(--radius-sm);
-            transition: all .15s;
-        }
-
-        .mode-tab:hover {
-            border-color: var(--muted);
-            color: var(--ink);
-        }
-
-        .mode-tab.active {
-            border-color: var(--ink);
-            color: var(--ink);
-            background: var(--acid);
-            font-weight: 600;
-        }
-
-        .mode-input {
-            width: 100%;
-            border: 1px solid var(--line);
-            border-radius: var(--radius-sm);
-            padding: 10px 12px;
-            color: var(--ink);
-            background: #fff;
-            font-size: 13px;
-            transition: border-color .2s;
-            outline: none;
-        }
-
-        .mode-input:focus {
-            border-color: var(--ink);
-        }
-
-        .mode-input::placeholder {
-            color: #8b928c;
-        }
-
-        .section-label {
-            margin: 22px 0 10px;
-            color: var(--muted);
-            font: 10px 'DM Mono', monospace;
-            letter-spacing: .1em;
-            text-transform: uppercase;
-        }
-
-        .mode-only[hidden],
-        .param-group[hidden] {
-            display: none;
-        }
-
-        .shift-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
             gap: 8px;
         }
 
-        .connection-preview {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+        .rgb-row+.rgb-row {
+            margin-top: 8px;
         }
 
-        .connection-tile {
-            min-width: 0;
-            padding: 8px;
-            border: 1px solid var(--line);
-            border-radius: var(--radius-sm);
-            background: #fbfcf9;
-            text-align: center;
+        .rgb-letter {
+            font: 600 11px 'DM Mono', monospace;
         }
 
-        .connection-tile canvas {
-            width: 100%;
-            height: auto;
-            aspect-ratio: 4 / 3;
-            background: #dce8b7 url('./images/base/base4.webp') center / cover no-repeat;
+        .rgb-letter.r {
+            color: #d55248;
         }
 
-        .connection-tile .viewport-tools button {
-            display: none;
+        .rgb-letter.g {
+            color: #4c9b5f;
         }
 
-        .connection-tile span {
-            display: block;
-            margin-top: 4px;
-            color: var(--muted);
-            font: 9px 'DM Mono', monospace;
-        }
-
-        input[type=color] {
-            width: 34px;
-            height: 25px;
-            padding: 2px;
-            border: 1px solid var(--line);
-            background: #fff;
-            cursor: pointer;
-        }
-
-        .stat {
-            display: flex;
-            align-items: baseline;
-            gap: 7px;
-        }
-
-        .stat strong {
-            font-size: 43px;
-            letter-spacing: -.09em;
-            line-height: .9;
-        }
-
-        .stat span {
-            font: 12px 'DM Mono', monospace;
-        }
-
-        .actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-
-        .action {
-            border: 1px solid var(--ink);
-            padding: 12px 10px;
-            background: #fff;
-            font-size: 12px;
-            font-weight: 600;
-            border-radius: var(--radius-sm);
-            transition: all .15s;
-        }
-
-        .action:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 3px 10px rgba(0,0,0,.08);
-        }
-
-        .action.primary {
-            color: #fff;
-            background: var(--ink);
-        }
-
-        .action.primary:hover {
-            background: #2a323a;
-        }
-
-        @keyframes rise {
-            from {
-                opacity: 0;
-                transform: translateY(9px);
-            }
-
-            to {
-                opacity: 1;
-                transform: none;
-            }
-        }
-
-        .roi-section {
-            margin-top: 24px;
-            animation: rise .55s ease both;
-            animation-delay: .32s;
-        }
-
-        .roi-card {
-            padding: 24px;
-            background: var(--panel);
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-        }
-
-        .roi-head {
-            margin-bottom: 20px;
-        }
-
-        .roi-head-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 4px;
-        }
-
-        .roi-head h2 {
-            margin: 0;
-            font-size: 18px;
-            letter-spacing: -.04em;
-        }
-
-        .roi-head p {
-            margin: 0;
-            color: var(--muted);
-            font-size: 12px;
-        }
-
-        .roi-grid-label {
-            color: var(--muted);
-            font: 10px 'DM Mono', monospace;
-            letter-spacing: .05em;
-        }
-
-        .roi-wrap {
-            position: relative;
-            width: min(100%, 480px);
-            margin: 0 auto;
-            border: 2px solid var(--ink);
-            background: #fff;
-            box-shadow: 6px 6px 0 rgba(30, 35, 40, .10);
-        }
-
-        .roi-wrap canvas {
-            display: block;
-            width: 100%;
-            height: auto;
-        }
-
-        .roi-mask {
-            position: absolute;
-            inset: 0;
-            display: grid;
-            place-content: center;
-            background: rgba(246, 247, 243, .85);
-            color: var(--muted);
-            font: 12px 'DM Mono', monospace;
-            text-align: center;
-        }
-
-        .brush-toggle {
-            width: 28px;
-            height: 28px;
-            border: 1px solid rgba(30, 35, 40, .35);
-            background: rgba(255, 255, 255, .92);
-            color: var(--ink);
-            font-weight: 700;
-            line-height: 1;
-            border-radius: 4px;
-            transition: background .15s, border-color .15s;
-            cursor: pointer;
-            display: grid;
-            place-items: center;
-            font-size: 14px;
-        }
-
-        .brush-toggle:hover {
-            background: #fff;
-            border-color: var(--ink);
-        }
-
-        .brush-toggle.active {
-            background: var(--acid);
-            border-color: var(--ink);
-        }
-
-        .brush-toggle.hidden-mode {
-            display: none;
+        .rgb-letter.b {
+            color: #3975c4;
         }
 
         .draw-panel {
             display: grid;
-            gap: 12px;
-        }
-
-        .draw-panel[hidden] {
-            display: none;
+            gap: 10px;
         }
 
         .draw-toolbar {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
         }
 
         .draw-tool-btn {
             border: 1px solid var(--line);
             background: #fff;
-            padding: 10px 8px;
+            padding: 9px 4px;
             font-size: 12px;
-            font-weight: 500;
             border-radius: var(--radius-sm);
             transition: all .15s;
-            text-align: center;
-            cursor: pointer;
         }
 
         .draw-tool-btn:hover {
@@ -832,288 +780,358 @@
 
         .draw-tool-btn.danger {
             color: var(--coral);
-            border-color: var(--coral);
+            border-color: rgba(244, 111, 84, .5);
         }
 
         .draw-tool-btn.danger:hover {
-            background: #fef0ec;
+            background: #fdf0ec;
         }
 
+        /* 禁用态：复制/剪切在跟随预览激活后失效、取消在无内容可取消时失效 */
         .draw-tool-btn:disabled {
-            opacity: .4;
+            opacity: .38;
             cursor: not-allowed;
-            pointer-events: none;
+            border-color: var(--line);
+            background: #f5f5f0;
         }
 
-        @media (max-width: 900px) {
+        .roi-wrap {
+            position: relative;
+            border: 2px solid var(--ink);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            box-shadow: 5px 5px 0 rgba(30, 35, 40, .10);
+        }
+
+        .roi-wrap canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .roi-mask {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-content: center;
+            background: rgba(246, 247, 243, .86);
+            color: var(--muted);
+            font: 11px 'DM Mono', monospace;
+        }
+
+        .roi-meta {
+            margin: 8px 0 0;
+            color: var(--muted);
+            font: 10px 'DM Mono', monospace;
+        }
+
+        @media (max-width: 1180px) {
             .workspace {
                 grid-template-columns: 1fr;
-                gap: 20px;
             }
 
-            .canvas-card {
-                min-height: auto;
-                padding-bottom: 56px;
+            .rail {
+                position: static;
+                max-height: none;
+                overflow: visible;
             }
 
-            .controls {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-
-            .stat-panel,
-            .actions {
-                grid-column: span 2;
+            .connection-preview {
+                grid-template-columns: repeat(6, 1fr);
             }
         }
 
-        @media (max-width: 580px) {
+        @media (max-width: 620px) {
             .shell {
-                padding: 18px 14px 28px;
+                padding: 16px 14px 24px;
             }
 
-            .top-actions {
-                width: 100%;
-                justify-content: space-between;
+            .topbar {
+                flex-wrap: wrap;
             }
 
-            .canvas-card {
-                padding: 14px;
+            .status {
+                max-width: 100%;
             }
 
-            .canvas-head {
-                margin-bottom: 14px;
-            }
-
-            .corner-note {
-                left: 14px;
-                bottom: 14px;
-            }
-
-            .controls {
-                grid-template-columns: 1fr;
+            .connection-preview {
+                grid-template-columns: repeat(6, 1fr);
             }
         }
     </style>
 </head>
 
-<body>
-    <main class="shell">
-        <header class="topbar">
-            <div class="brand">
-                    <div class="brand-mark">▦</div>
-                    <div>
-                        <p class="eyebrow">CoC 城墙布局工具</p>
-                        <h1>Wall Crafter</h1>
-                    </div>
+<body data-page-node-id="3mpSuKeRlhJtqhuO2ulEFa">
+    <main class="shell" data-page-node-id="l0HEWkvpGB3WNiAcMdVsCx">
+        <header class="topbar" data-page-node-id="JHdv4FXvGMtEoegFCTwcLO">
+            <div class="brand" data-page-node-id="WaZTsxnjbHXSVArxTuTSkl">
+                <div class="brand-mark" data-page-node-id="QCuH4B73zK1V7w7kFXd4C4">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" data-page-node-id="4jgoh3WOSzrubbKCr8qCyi">
+                        <g fill="#5b4636" data-page-node-id="7MbdIwyyRXfCWHsxAYv6Ac">
+                            <rect x="3" y="4" width="8" height="4" rx="1" data-page-node-id="mQgpxSUfICGdx8kg3P5kWy" />
+                            <rect x="13" y="4" width="8" height="4" rx="1" data-page-node-id="H7foYnM952HiqbOSqEva6D" />
+                            <rect x="8" y="10" width="8" height="4" rx="1" data-page-node-id="SlKYHl4hseXWnNcRS3aANi" />
+                            <rect x="3" y="16" width="8" height="4" rx="1" data-page-node-id="CfyE9ps6YMtHSZ1Htr0FTG" />
+                            <rect x="13" y="16" width="8" height="4" rx="1" data-page-node-id="BQNynvs7rFA6ctC7wxt2wW" />
+                        </g>
+                    </svg>
                 </div>
-                <div class="top-actions">
-                    <div class="status"><i class="status-dot"></i><span id="statusText">就绪</span></div>
+                <div data-page-node-id="mGC5Vb2rWto9pRXViQzARL">
+                    <h1 data-page-node-id="wzPS3r8Z85WyNw386zV2VQ">Wall Crafter <span class="coc-tag" data-page-node-id="wW4BwON0Tf4AbvDTVGPb6B">COC</span></h1>
+                    <p class="brand-sub" data-page-node-id="FGNWxG5OCaXZ91K69IVIAp">部落冲突 · 城墙布局编辑器</p>
                 </div>
+            </div>
+            <div class="top-actions" data-page-node-id="E4WIstO9GBOfImLxik4TBc">
+                <div class="status" data-page-node-id="2nqZalgflV2EXR2rv1GCfi"><i class="status-dot" data-page-node-id="5ell5zxCxcANxOCBZoLciN"></i><span id="statusText" data-page-node-id="UXqjZLe6HHNquQhso45xjo">就绪</span></div>
+                <button class="top-btn" id="clearButton" type="button" data-page-node-id="WnwaiLxPKyEreq9UZ73Byj">清空布局</button>
+                <button class="top-btn primary" id="exportButton" type="button" data-page-node-id="vNeAi1LvE96zDp61463iNx">导出阵型 PNG</button>
+            </div>
         </header>
-        <section class="workspace">
-            <section class="canvas-card">
-                <div class="canvas-head">
-                    <div>
-                        <p class="eyebrow"><span id="densityLabel">0.0% 填充率</span></p>
-                        <div class="stat"><strong id="wallCount">0</strong><span>/ <b id="statLimit">325</b> 墙段</span></div>
-                        <p>点击墙段可临时降低透明度，方便手动校准</p>
-                    </div><span class="grid-label">网格 / 1936 格</span>
+
+        <div class="workspace" data-page-node-id="Dh7JkO6uUbwHm4D10hUFw1">
+            <!-- ============ 主区：模式路由 + 主画布 + 连接参考 ============ -->
+            <section class="stage" data-page-node-id="R4MGQgGbCQqDUNZu3tsbEn">
+                <div class="stage-head" data-page-node-id="rMCaDNFHABrwYOZEe6U5ac">
+                    <div class="mode-tabs" role="tablist" data-page-node-id="RBkuNEc2BWGfnU0wmETNdE">
+                        <button class="mode-tab active" data-mode="text" type="button" data-page-node-id="2LwXRLmNSlHwMvfWJWVnVg">文字</button>
+                        <button class="mode-tab" data-mode="image" type="button" data-page-node-id="0Ix4WFuhPYidzlnKlEbpqn">图片</button>
+                        <button class="mode-tab" data-mode="test" type="button" data-page-node-id="UdQGxzbQcO1rayKMsjKZ0s">模板</button>
+                        <button class="mode-tab" data-mode="draw" type="button" data-page-node-id="SLnjGcc3EyCmKwFtBJtvpO">绘制</button>
+                    </div>
+                    <p class="stage-hint" data-page-node-id="SpnETFeNGJAY9KaJH73puB"><span id="modeHint" data-page-node-id="WGqkJ1V56yWvhjWv8keYrG">输入文字后自动排版到 44 × 44 网格</span><span
+                            class="mono" data-page-node-id="ORariPjF9towfzVmESWnIb">44 × 44 · 1936 格</span></p>
                 </div>
-                <div class="canvas-wrap"><canvas id="preview" width="1600" height="1200" aria-label="城墙布局预览"></canvas>
-                    <div class="viewport-tools" data-viewport-tools><button class="brush-toggle hidden-mode" id="brushToggle"
-                            type="button" aria-label="画笔模式" title="画笔模式">✏️</button><button data-zoom="out" type="button"
-                            aria-label="缩小">−</button><output data-zoom-label>100%</output><button data-zoom="in"
-                            type="button" aria-label="放大">+</button><button data-zoom="reset" type="button"
-                            aria-label="重置视图">↺</button></div>
-                    <div class="empty-state" id="emptyState">
-                        <div>
-                            <div class="empty-icon">⌁</div><strong>拖入图片开始编辑</strong>
-                            <p>将阵型草图或截图拖入此处<br>自动转换为 44×44 城墙布局</p><button class="ghost-btn" id="emptyUpload"
-                                type="button">选择图片</button>
+
+                <section class="canvas-card" data-page-node-id="mVkAZapRyGA1NZ1KXvq6U1">
+                    <div class="canvas-wrap" data-page-node-id="tr0qrEcYzkfgZcGLemHdzS">
+                        <canvas id="preview" width="1600" height="1200" aria-label="城墙布局预览" data-page-node-id="scbDcl918Rzlm2zF8tA7ZI"></canvas>
+                        <div class="hud" data-page-node-id="Yxy8byc6rhWGvoAcO4mj9K">
+                            <span class="stat" data-page-node-id="PNj601zuOjuXXub0tbRFT2"><strong id="wallCount" data-page-node-id="pvuNTZ80bCVidLaNKKiKg5">0</strong><span data-page-node-id="FWTlaOCWxmtyLBTQCcHn0F">/ <b
+                                        id="statLimit" data-page-node-id="NC20m4ueiLlnQOE5LOA6kf">325</b></span></span>
+                            <span class="mono" id="densityLabel" data-page-node-id="MLGCPoi4WnKe0w01djaTLx">0.0%</span>
+                        </div>
+                        <div class="viewport-tools" data-viewport-tools data-page-node-id="4DCSoNsARHGe1sQZKPs9y0">
+                            <button data-zoom="out" type="button" aria-label="缩小" data-page-node-id="usE4KKjAgBLB4LakbldfHK">−</button>
+                            <output data-zoom-label data-page-node-id="f2lQRke61GmqPWbxdAwrpD">100%</output>
+                            <button data-zoom="in" type="button" aria-label="放大" data-page-node-id="UQW8WXAjPZKUGj8Eq1XWEd">+</button>
+                            <button data-zoom="reset" type="button" aria-label="重置视图" data-page-node-id="7dWyGmgO8fErYYO2Nh7o2y">↺</button>
+                        </div>
+                        <div class="empty-state" id="emptyState" data-page-node-id="SHQ4sKwzzK2SQR2OXgDHnN">
+                            <div data-page-node-id="dPkzj4uIFA0oPMuKEG6U1M">
+                                <div class="empty-icon" data-page-node-id="ARynmMjuqWEGKCuur6IsZ1">⌁</div>
+                                <strong data-page-node-id="yL2J9AWNBYgoFa9Hcmx4gY">拖入阵型图开始</strong>
+                                <p data-page-node-id="hgDugfCXzs21STiLmjf7dm">自动转换为 44 × 44 城墙布局</p>
+                                <button class="ghost-btn" id="emptyUpload" type="button" data-page-node-id="xqiIkhVPKo58B174I77x6V">选择文件</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <span class="corner-note" id="imageNote">暂无源图片 / 等待输入</span>
+                </section>
+
+                <p class="stage-foot" data-page-node-id="btuULoAIuiaMYRR4NgcGDD"><span id="imageNote" data-page-node-id="UjHEECEjzHePuRWl0jPV5a">暂无阵型图</span><span data-page-node-id="JEb5qTofhLSzTVnTXb86VS">点击墙段可临时调暗，便于校准</span></p>
+
+                <section class="connection-panel" id="connectionPanel" data-page-node-id="3M5n2xXPrB0pFUh2lkrvkg">
+                    <div class="panel-head" data-page-node-id="yArtl3NnnXDfZ9P3cvmL4r"><i data-page-node-id="FTOgcVtgso6hlascetT3Ug"></i>
+                        <h3 data-page-node-id="b8mxlGff3kmEmxqfsqiDvu">连接参考</h3><span class="note" data-page-node-id="t6k0fHWD2OX37ZY6gaJJ7g">7 种连接 · 对应 7 种墙片</span>
+                    </div>
+                    <div class="connection-preview" data-page-node-id="eFA4o4RDqCL7kx7fiZwrjJ">
+                        <div class="connection-tile" data-page-node-id="cpTNdBra88ukirZqsxvuXB"><canvas data-connection="single" width="800"
+                                height="600" data-page-node-id="1J8UZI6NhBV5T7FzGvlvkA"></canvas><span class="ct-name" data-page-node-id="B6JhkwLw8DikXGHSXrBgY6">单段</span><span class="ct-desc" data-page-node-id="RPANub4Jh9lmVUYa9e4mxO">孤立墙段</span></div>
+                        <div class="connection-tile" data-page-node-id="ZFxbLUjNYiE3tZxlua4Iwp"><canvas data-connection="col" width="800"
+                                height="600" data-page-node-id="wim0KYox660UZjZmP2hAOq"></canvas><span class="ct-name" data-page-node-id="VCvy3Cx9ppdGjTLncwgo7g">竖向直段</span><span class="ct-desc" data-page-node-id="ERcGfUOX2UyqxJPDXx8NAi">上下贯通</span></div>
+                        <div class="connection-tile" data-page-node-id="1lVCNC53TxFmscaRV67al5"><canvas data-connection="row" width="800"
+                                height="600" data-page-node-id="OiIvk3tnYt9Zt6gc2M4wZa"></canvas><span class="ct-name" data-page-node-id="sWVB1LEW0B9Rb0VVXYptIE">横向直段</span><span class="ct-desc" data-page-node-id="ZZRMTECDhmvDC9JLy9Xz2P">左右贯通</span></div>
+                        <div class="connection-tile" data-page-node-id="dWQxIHysyNRhHAaB8ohF7K"><canvas data-connection="v" width="800"
+                                height="600" data-page-node-id="zMDO5j5F26548w0EADLENf"></canvas><span class="ct-name" data-page-node-id="5GzKOpEz2bP92LrkWhI2rl">拐角</span><span class="ct-desc" data-page-node-id="Jf9bS7Nuxt5Ovt36DedTEE">上左相接</span></div>
+                        <div class="connection-tile" data-page-node-id="BbHYHkfU99vD4OvdMWfNl0"><canvas data-connection="y" width="800"
+                                height="600" data-page-node-id="z02uNHIGVuZU8xisGPssHT"></canvas><span class="ct-name" data-page-node-id="sLu87Iw1IwLpCQX5a3UfoV">T 形</span><span class="ct-desc" data-page-node-id="5JFagHTnWnbA4EpYOvLDYh">三向连接</span></div>
+                        <div class="connection-tile" data-page-node-id="YHj2TVoygZSKEPNFct0rSL"><canvas data-connection="cross" width="800"
+                                height="600" data-page-node-id="bPEa54WFb5c1WJDdFBcQmg"></canvas><span class="ct-name" data-page-node-id="6Gap3BPdnsm89DLukNq4Mc">十字</span><span class="ct-desc" data-page-node-id="KiGovKSnTRkgjn8dULsiYI">四向交汇</span></div>
+                    </div>
+                </section>
             </section>
 
-            <aside class="controls">
-                <div class="actions"><button class="action" id="clearButton" type="button">清空布局</button><button
-                        class="action primary" id="exportButton" type="button">导出预览 ↓</button></div>
-
-                <section class="panel">
-                    <h3><span>01</span>布局来源 <span>输入模式</span></h3>
-                    <div class="mode-tabs" role="tablist"><button class="mode-tab active" data-mode="text"
-                            type="button">文字</button><button class="mode-tab" data-mode="image"
-                            type="button">图片</button><button class="mode-tab" data-mode="test" type="button">测试</button><button class="mode-tab" data-mode="draw" type="button">绘制</button>
-                    </div><input class="mode-input" id="textInput" type="text" value="" maxlength="8"
-                        aria-label="文字排版内容" placeholder="COC（默认图案）">
-                    <div class="upload-zone" id="dropZone"><label
-                            for="fileInput"><span>拖放图片到此处</span><b>选择文件</b></label><input id="fileInput" type="file"
-                            accept="image/png,image/jpeg">
-                        <p class="drop-hint">图片模式：上传阵型草图后按像素识别</p>
+            <!-- ============ 侧栏：01 阵型来源 / 02 阵型参数 / 03 采样区 / 04 变换 / 05 网格校准（连接参考在舞台区，自动编号为 06） ============ -->
+            <aside class="rail" data-page-node-id="WAJlS7DMsaPkKSJE64pkgw">
+                <section class="panel" data-page-node-id="TBFf16jypApaG5GwQlQQgY">
+                    <div class="panel-head" data-page-node-id="3uFfpc194ta89EGT1pBsP6"><i data-page-node-id="SCtP6gg6dFGtyoDCxvqxTL"></i>
+                        <h3 data-page-node-id="JDVctnXv5xNI2Ct5ZSUY8k">阵型来源</h3>
                     </div>
-                    <p class="drop-hint" id="modeHint">文字模式：留空使用默认 COC 图案</p>
-                </section>
-
-                <section class="panel" id="paramsPanel">
-                    <div class="param-group" id="testParams" hidden>
-                        <div class="control-row">
-                            <div class="control-label"><span>菱形宽度</span><output id="projectionXOut">657px / 82%</output>
-                            </div><input id="projectionX" type="range" min="420" max="760" value="657">
+                    <!-- 文字模式 -->
+                    <div id="textParams" data-page-node-id="gJ7jEKaDGv5k48xuLlmllc">
+                        <textarea class="mode-input" id="textInput" rows="3" aria-label="文字排版内容"
+                            placeholder="留空为默认 COC 字样 · 回车换行"></textarea>
+                        <p class="section-label" data-page-node-id="PCJPfmrxvFREO8HwYt2udr">字体</p>
+                        <div class="font-pick" data-page-node-id="v6QfdEYeinQCm87fl0Pd9j">
+                            <select class="mode-input" id="fontFamily" aria-label="字体" data-page-node-id="Fh7w4DWDtTMaRtn0gyrGEA"></select>
+                            <button class="draw-tool-btn" id="fontRescan" type="button" title="读取系统字体列表"
+                                aria-label="读取系统字体列表" style="padding:0;height:34px" data-page-node-id="eylsi2Uwoy32wlNxbAumil">⌕</button>
                         </div>
-                        <div class="control-row">
-                            <div class="control-label"><span>菱形高度</span><output id="projectionYOut">489px / 82%</output>
-                            </div><input id="projectionY" type="range" min="300" max="580" value="489">
-                        </div>
-                        <div class="control-row">
-                            <div class="control-label"><span>中心点 X</span><output id="centerXOut">50.4%</output></div>
-                            <input id="centerX" type="range" min="35" max="65" step=".1" value="50.4">
-                        </div>
-                        <div class="control-row">
-                            <div class="control-label"><span>中心点 Y</span><output id="centerYOut">48.8%</output></div>
-                            <input id="centerY" type="range" min="35" max="65" step=".1" value="48.8">
+                        <div class="font-row" data-page-node-id="kTj69VPbYGG52FmaTMHEB9">
+                            <select id="fontWeight" aria-label="字重与样式" data-page-node-id="rsP8JTQ5FVfyzBN1Izscep"></select>
+                            <select id="textAlign" aria-label="对齐方式" data-page-node-id="eFQPk1dMqcgojSKnnMwbzZ">
+                                <option value="left" data-page-node-id="f6F8eIQNWfTLfqnYwwgfyM">左对齐</option>
+                                <option value="center" selected data-page-node-id="QDzjSsaAYNLNq3CItJtkPn">居中</option>
+                                <option value="right" data-page-node-id="Rm8j0jVtr9whzhgHQlN6YA">右对齐</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="control-row" id="capacityControl">
-                        <div class="control-label"><span>墙段数量上限</span><output id="capacityOut">325</output></div><input
-                            id="capacity" type="range" min="1" max="1936" value="325">
+                    <!-- 图片模式 -->
+                    <div class="upload-zone" id="dropZone" hidden data-page-node-id="lPAG0WztXAIrLfTAHNON9U">
+                        <label for="fileInput" data-page-node-id="arhrpONtxBgnoCaQb0fuW5"><span data-page-node-id="JP0JH6rl0Sb4yDEpvRueU4">拖放阵型图</span><b data-page-node-id="WAZIOpXAZPmiPdXpNaPA45">选择文件</b></label>
+                        <input id="fileInput" type="file" accept="image/png,image/jpeg" data-page-node-id="KjwkDNDtpEqYvEPxCyu4Kr">
                     </div>
-                    <div class="color-row"><span>城墙等级</span><select id="wallLevel" aria-label="城墙等级"></select></div>
-                    <div class="switch-row"><span>显示城墙</span><label class="switch"><input id="showWalls" type="checkbox"
-                                checked><i class="slider"></i></label></div>
-                    <div class="param-group" id="sourceParams">
-                        <div class="control-row">
-                            <div class="control-label"><span>旋转角度</span><output id="imageRotationOut">-45°</output></div>
-                            <input id="imageRotation" type="range" min="-180" max="180" value="-45">
-                        </div>
-                        <div class="control-row">
-                            <div class="control-label"><span>缩放比例</span><output id="imageScaleOut">100%</output></div>
-                            <input id="imageScale" type="range" min="0" max="300" value="100">
-                        </div>
-                        <div class="control-row">
-                            <div class="control-label"><span>横向偏移</span><output id="shiftXOut">0.0</output></div><input
-                                id="shiftX" type="range" min="-100" max="100" step=".1" value="0" aria-label="横向偏移">
-                        </div>
-                        <div class="control-row">
-                            <div class="control-label"><span>纵向偏移</span><output id="shiftYOut">0.0</output></div><input
-                                id="shiftY" type="range" min="-100" max="100" step=".1" value="0" aria-label="纵向偏移">
+                    <!-- 测试模式 -->
+                    <div class="param-group" id="testParams" hidden data-page-node-id="uZdWhVvMfGHeQli02XsN3C">
+                        <div class="mode-tabs" id="testMapTabs" data-page-node-id="NBc0PBzWrg414j8DpeAZMo">
+                            <button class="mode-tab active" data-map="border" type="button" data-page-node-id="EAcPaRzH4tK3ru5bvoqyZO">边界</button>
+                            <button class="mode-tab" data-map="grid" type="button" data-page-node-id="rBF7FQzgurFeU1kkMjWe3G">网格</button>
+                            <button class="mode-tab" data-map="spiral" type="button" data-page-node-id="PhqEpPCnCY1HTpwVxfzXI6">螺旋</button>
+                            <button class="mode-tab" data-map="fractal" type="button" data-page-node-id="FLCVvwh1Vbf7l3FQuVmHnB">分形</button>
+                            <button class="mode-tab" data-map="rings" type="button" data-page-node-id="yZZEcs7LXw5FqaLHnjlpb7">同心环</button>
+                            <button class="mode-tab" data-map="hilbert" type="button" data-page-node-id="qI8OfDf2L3Qb4XhF6mD8S9">希尔伯特</button>
+                            <button class="mode-tab" data-map="lissajous" type="button" data-page-node-id="lj9EwuDPzHIv6hnN3E7es5">利萨如</button>
+                            <button class="mode-tab" data-map="rose" type="button" data-page-node-id="eDwlErPdVp0tHB3cjjX4XC">玫瑰线</button>
                         </div>
                     </div>
-
-                    <div class="param-group" id="imageParams" hidden>
-                        <div class="switch-row"><span>反相识别</span><label class="switch"><input id="invert"
-                                    type="checkbox"><i class="slider"></i></label></div>
-                        <div class="control-row">
-                            <div class="control-label"><span>灰度阈值</span><output id="thresholdOut">128</output></div>
-                            <input id="threshold" type="range" min="0" max="255" value="128">
+                    <!-- 绘制模式 -->
+                    <div class="draw-panel" id="drawPanel" hidden data-page-node-id="xV9Rk5Rdv2gfXRd02nbHtS">
+                        <div class="color-row" data-page-node-id="fFOGcpSPCdvZxTSs2YABV1"><span data-page-node-id="PILF6w7tCqXgScalfwN1uC">城墙等级</span><select id="drawWallLevel"
+                                aria-label="城墙等级" data-page-node-id="cfdo7s8PCHCWxFvtfI0XhQ"></select></div>
+                        <div class="draw-toolbar" data-page-node-id="wbdMbwsrOfmi1go0HGUZBx">
+                            <button class="draw-tool-btn active" id="drawBrushBtn" data-draw-tool="brush"
+                                type="button" data-page-node-id="B3RETATbilCuGsY5R28kYO">画笔</button>
+                            <button class="draw-tool-btn" id="drawEraserBtn" data-draw-tool="eraser"
+                                type="button" data-page-node-id="esWqM8vzXWQ1XSXAq1OMVN">橡皮</button>
+                            <button class="draw-tool-btn" id="drawSelectBtn" data-draw-tool="select"
+                                type="button" data-page-node-id="i9wCX9PX8BtqD3MAZJoAgd">选择</button>
+                            <button class="draw-tool-btn" id="drawPanBtn" data-draw-tool="pan"
+                                type="button" data-page-node-id="PnM3NFUHdyIhudORlWfyOF">平移</button>
                         </div>
-                        <div class="rgb-row"><b class="rgb-letter r">R</b><input id="redWeight" type="range" min="0"
-                                max="1" step=".001" value=".299"><output id="redOut">0.299</output></div>
-                        <div class="rgb-row"><b class="rgb-letter g">G</b><input id="greenWeight" type="range" min="0"
-                                max="1" step=".001" value=".587"><output id="greenOut">0.587</output></div>
-                        <div class="rgb-row"><b class="rgb-letter b">B</b><input id="blueWeight" type="range" min="0"
-                                max="1" step=".001" value=".114"><output id="blueOut">0.114</output></div>
+                        <div class="draw-toolbar" id="clipboardTools" hidden data-page-node-id="3GqFhggIZAM2NHaO4K47Tm">
+                            <button class="draw-tool-btn" id="drawCopyBtn" type="button" data-page-node-id="RkDeRGkftuwvIIpmUXCaiP">复制</button>
+                            <button class="draw-tool-btn" id="drawCutBtn" type="button" data-page-node-id="N4j1pZuGafklGmuC5BbTgc">剪切</button>
+                            <button class="draw-tool-btn" id="drawDeselectBtn" type="button" data-page-node-id="qkJkKRBShcf3HVF3f4ROCO">取消</button>
+                        </div>
+                        <button class="draw-tool-btn danger" id="drawClearBtn" type="button" data-page-node-id="1CdGQfGryrgGtsvseQEBmE">清空绘制</button>
+                        <p class="drop-hint" style="margin:0" data-page-node-id="jLvifys6xjOAELKsZcXOY5">新等级只影响之后绘制的城墙</p>
                     </div>
                 </section>
 
-                <section class="panel" id="drawPanel" hidden>
-                    <h3><span>02</span>绘制工具 <span>画笔</span></h3>
-                    <div class="draw-panel">
-                        <div class="color-row"><span>城墙等级</span><select id="drawWallLevel" aria-label="城墙等级"></select></div>
-                       
-                        <div class="mode-tabs" id="drawModeToggle" style="grid-template-columns:1fr 1fr;margin-bottom:14px;">
-                            <button class="mode-tab active" id="drawToggleBrush" type="button">✏️ 绘制城墙</button>
-                            <button class="mode-tab" id="drawToggleView" type="button">👁️ 调整画面</button>
+                
+                <section class="panel" data-page-node-id="TueckELR0brzWKb3rAVkce">
+                    <div class="panel-head" data-page-node-id="BVhknHHbMN20NudfCaXCxh"><i data-page-node-id="8B0tQVmEeK0IPEy27WCFyD"></i>
+                        <h3 data-page-node-id="YAIABhGLby0JArLDZxJ2g9">阵型参数</h3>
+                    </div>
+                    <div class="color-row" id="wallLevelRow" data-page-node-id="ocAnNoW4UG92kOClQsWVBE"><span data-page-node-id="PgvCuc827C1luUg0YQjFM9">城墙等级</span><select id="wallLevel"
+                            aria-label="城墙等级" data-page-node-id="ZAumw3FP3VfXEIYbWijaQB"></select></div>
+                    <div class="control-row" id="capacityControl" data-page-node-id="X2TQfeUW2GHh6ofBw833IB">
+                        <div class="control-label" data-page-node-id="mporvbejFl28otxWFaBE3B"><span data-page-node-id="YLYFoyXx4A75qStNyiiIuh">墙段上限</span>
+                            <output id="capacityOut" data-page-node-id="FIHGGUaPZQlmNNiBG0SGj3">325</output>
+                        </div><input id="capacity" type="range" min="1" max="1936" value="325" data-page-node-id="K0cNSHkd92XRGWfKyQiboH">
+                    </div>
+                    <div class="switch-row" data-page-node-id="OGdk9YOFfkyxmO6amlQbTV"><span data-page-node-id="GNgNth9na48YIUepGQvJrE">显示城墙</span><label class="switch" data-page-node-id="BnYNAhPuXtbcutSrsDX2K2"><input id="showWalls"
+                                type="checkbox" checked data-page-node-id="V7NE2jD7obxheUbvSlfAuw"><i class="slider" data-page-node-id="18rVcnSaaMBe8HSMMqnKKK"></i></label></div>
+                </section>
+
+                <section class="panel" id="roiPanel" data-page-node-id="gMycEyesTDmCsJHHCmsZ5b">
+                    <div class="panel-head" data-page-node-id="4a4IqCa6Z9TbYzZybdlqET"><i data-page-node-id="kB71M5XcF610JldfC9hgbj"></i>
+                        <h3 data-page-node-id="bGrnzP23GmQb5hf021KVaJ">采样区</h3><span class="note" id="roiGridInfo" data-page-node-id="NyP7iEZPTeLOgM1FF4BPH0">44 × 44</span>
+                    </div>
+                    <div class="roi-wrap" data-page-node-id="bi10XwJxJ1NC0eTRRUhEr1">
+                        <canvas id="roiPreview" width="440" height="440" data-page-node-id="wE9LwncnB6fAQel0xjMvZT"></canvas>
+                        <div class="viewport-tools" data-viewport-tools data-page-node-id="F0ZYDKf72c0wGoFq3Ro34I">
+                            <button data-zoom="out" type="button" aria-label="缩小" data-page-node-id="pDkJvPHIEmyyWtDP8xmxlq">−</button>
+                            <output data-zoom-label data-page-node-id="vcInuxjwnJ8yzHrGyDby9Y">100%</output>
+                            <button data-zoom="in" type="button" aria-label="放大" data-page-node-id="t36Fl0RDB2SeQikMvlBHpW">+</button>
+                            <button data-zoom="reset" type="button" aria-label="重置视图" data-page-node-id="AVNTsiL0x6l5V5JSg6s7nB">↺</button>
                         </div>
-                         <div class="draw-toolbar">
-                            <button class="draw-tool-btn active" id="drawBrushBtn" type="button" data-draw-tool="brush">✏️ 画笔</button>
-                            <button class="draw-tool-btn" id="drawEraserBtn" type="button" data-draw-tool="eraser">🧹 橡皮擦</button>
-                            <button class="draw-tool-btn" id="drawSelectBtn" type="button" data-draw-tool="select">🔲 选择</button>
-                            <button class="draw-tool-btn danger" id="drawClearBtn" type="button">🗑️ 清空</button>
+                        <div class="roi-mask" id="roiMask" hidden data-page-node-id="xoOsXkZQIsHGcbSSwZiLJT"></div>
+                    </div>
+                    <p class="roi-meta" data-page-node-id="O3B49KFc6Mb2Cg1QjqvKi5">透明区域不生成城墙</p>
+                </section>
+
+                <section class="panel" id="transformPanel" data-page-node-id="zi9J3iBQpSQNRFS4KEMCdH">
+                    <div class="panel-head" data-page-node-id="N4o6P8BDan2weKffqXQ6BL"><i data-page-node-id="jXeD5fVgYx48eFq9AQQQIE"></i>
+                        <h3 data-page-node-id="vkiKRZZy4s5Ru3dp3oyqQI">变换</h3>
+                    </div>
+                    <div class="param-group" id="sourceParams" data-page-node-id="ro9mLRcb1WwJJhTeulHf8G">
+                        <div class="control-row" data-page-node-id="AKsdcD0Cwyve5Tnzm0T3rO">
+                            <div class="control-label" data-page-node-id="xK5EVRCGK3HnZxcDiekT1w"><span data-page-node-id="8GiT7IEADd8VyOwPCL7po7">旋转</span>
+                                <output id="imageRotationOut" data-page-node-id="PQIUy2SqbnBHlY2r0OO4T1">-45°</output>
+                            </div><input id="imageRotation" type="range" min="-180" max="180" value="-45" data-page-node-id="yU7RuElZZwpv272juO8DZ6">
                         </div>
-                        <div class="draw-toolbar" id="clipboardTools" hidden>
-                            <button class="draw-tool-btn" id="drawCopyBtn" type="button">📋 复制</button>
-                            <button class="draw-tool-btn" id="drawCutBtn" type="button">✂️ 剪切</button>
-                            <button class="draw-tool-btn" id="drawPasteBtn" type="button">📄 粘贴</button>
-                            <button class="draw-tool-btn" id="drawDeselectBtn" type="button">取消选择</button>
+                        <div class="control-row" data-page-node-id="NyyZKFAablz6DiWZv9malz">
+                            <div class="control-label" data-page-node-id="J92Y2e0BA2zBbjU9WmSXp0"><span data-page-node-id="1kTwn0fsErmkWgjqD0xstf">缩放</span>
+                                <output id="imageScaleOut" data-page-node-id="OPUR6N6t3s1NHQ6QJizqJo">100%</output>
+                            </div><input id="imageScale" type="range" min="0" max="300" value="100" data-page-node-id="mAmVaiieggoAOR2OVYg4pW">
+                        </div>
+                        <div class="control-row" data-page-node-id="o3dCFxgBMt1SAH7Two1vB5">
+                            <div class="control-label" data-page-node-id="yleMmLOjrtTyFBW7ZBOLLN"><span data-page-node-id="qNVmZ9bHgZ8tM9uQECnPIn">横向偏移</span>
+                                <output id="shiftXOut" data-page-node-id="x4obmIWNC1XTD7F8ESZWXg">0.0</output>
+                            </div><input id="shiftX" type="range" min="-100" max="100" step=".1" value="0"
+                                aria-label="横向偏移" data-page-node-id="f3ZGUErUoQAuoZTS9MQtcb">
+                        </div>
+                        <div class="control-row" data-page-node-id="jP8vsO9mM01SDasJZpBLYK">
+                            <div class="control-label" data-page-node-id="qxY0pIASR5XEqz1xAqqN85"><span data-page-node-id="DFfnddAUco6LUJ0axO0rYd">纵向偏移</span>
+                                <output id="shiftYOut" data-page-node-id="wUxt48T23vwZaZceR7E2xc">0.0</output>
+                            </div><input id="shiftY" type="range" min="-100" max="100" step=".1" value="0"
+                                aria-label="纵向偏移" data-page-node-id="QUbE78e0UDd5JYS7A5bUXR">
+                        </div>
+                    </div>
+                    <div class="param-group" id="imageParams" hidden data-page-node-id="QBM9pTrUZPln8HGCA0rAlS">
+                        <div class="switch-row" style="margin:0 0 12px" data-page-node-id="cz5qMFzXVGxxgfNSUibmfJ"><span data-page-node-id="w5SvdFsEeFLxJgJ0Boqv1w">反相识别</span><label
+                                class="switch" data-page-node-id="075HCOWZMsnPrdKeENY6G8"><input id="invert" type="checkbox" data-page-node-id="5t6izggRBwSj69U2rL5BFh"><i class="slider" data-page-node-id="8hG6ki5zXA26jBA5KxInGU"></i></label>
+                        </div>
+                        <div class="control-row" data-page-node-id="dEGRqKMB15lZfbBZRdltaP">
+                            <div class="control-label" data-page-node-id="NvTTGX6fx0aF35PrTVZpoY"><span data-page-node-id="jmtBiql5VEJczoigGnzg68">灰度阈值</span>
+                                <output id="thresholdOut" data-page-node-id="iMLuEOvlrUPd8x1oO4BKox">128</output>
+                            </div><input id="threshold" type="range" min="0" max="255" value="128" data-page-node-id="evsxDNj750xPRswjt1ONG7">
+                        </div>
+                        <div class="rgb-row" data-page-node-id="sEGy9qoAYLw7F6x1Ti7kIv"><b class="rgb-letter r" data-page-node-id="BR7T5DDnHK7HpHXpQNTLMR">R</b><input id="redWeight" type="range" min="0"
+                                max="1" step=".001" value=".299" data-page-node-id="RAvH4Tk5AbwouaGaeGagZ2">
+                            <output id="redOut" data-page-node-id="0DYWCpX7aSk6w4KHJ9yStr">0.299</output>
+                        </div>
+                        <div class="rgb-row" data-page-node-id="CBAcTASgBZEsIpT3c95QB6"><b class="rgb-letter g" data-page-node-id="inKIJsOIIGScOY5g2ojaTr">G</b><input id="greenWeight" type="range" min="0"
+                                max="1" step=".001" value=".587" data-page-node-id="UPUP28b9lYQSMaG2BHCiPH">
+                            <output id="greenOut" data-page-node-id="UL4A7GCMzVnZ2uYCeMwkpH">0.587</output>
+                        </div>
+                        <div class="rgb-row" data-page-node-id="NhTjA2XdgqnsDKKBkzvCna"><b class="rgb-letter b" data-page-node-id="fPlPBBedz7TSJL4woLV1K6">B</b><input id="blueWeight" type="range" min="0"
+                                max="1" step=".001" value=".114" data-page-node-id="ACbHOcETHlbGe2F6TnfBDY">
+                            <output id="blueOut" data-page-node-id="IhaQnITM4bLCBwouWC6KW8">0.114</output>
                         </div>
                     </div>
                 </section>
 
-                <section class="panel" id="connectionPanel">
-                    <h3><span>03</span>连接预览 <span>墙段状态</span></h3>
-                    <div class="connection-preview">
-                        <div class="connection-tile"><canvas data-connection="single" width="800" height="600"></canvas>
-                            <div class="viewport-tools" data-viewport-tools><button data-zoom="out"
-                                    type="button">−</button><output data-zoom-label>1000%</output><button data-zoom="in"
-                                    type="button">+</button><button data-zoom="reset" type="button">↺</button></div>
-                            <span>单段</span>
+                <section class="panel" id="paramsPanel" data-page-node-id="UKIXyFnjUnBXFMtfxW96Dp">
+                    <div class="panel-head" data-page-node-id="2uvzdUgCu5oTyYvEyIBLKz"><i data-page-node-id="ZdN7KverV1sFwkX36CUB5g"></i>
+                        <h3 data-page-node-id="jdA4aCLPlRMivX0wMi6Rrh">网格校准</h3>
+                    </div>
+                    <div class="param-group" id="calibParams" data-page-node-id="DDf2JQuzWM6SN8XTfzIm3B">
+                        <div class="control-row" data-page-node-id="0GVo2bza7UN9FezgCnHLFe">
+                            <div class="control-label" data-page-node-id="fdvm7nTKbO95j1l3rwZnTl"><span data-page-node-id="mC6beQGKtBaCTKFmPzyY4Z">菱形宽度</span>
+                                <output id="projectionXOut" data-page-node-id="XFrELmf34wnfc1UaH91K4j">657px / 82%</output>
+                            </div><input id="projectionX" type="range" min="420" max="760" value="657" data-page-node-id="cBC6uXbbULI3GpJNcjuQVc">
                         </div>
-                        <div class="connection-tile"><canvas data-connection="vertical" width="800"
-                                height="600"></canvas>
-                            <div class="viewport-tools" data-viewport-tools><button data-zoom="out"
-                                    type="button">−</button><output data-zoom-label>1000%</output><button data-zoom="in"
-                                    type="button">+</button><button data-zoom="reset" type="button">↺</button></div>
-                            <span>纵向双段</span>
+                        <div class="control-row" data-page-node-id="mb3UujwEx8cETjyaCy7JRE">
+                            <div class="control-label" data-page-node-id="gc46KO5G4MTCTowfyfixG5"><span data-page-node-id="hGlxCmak0wGbNjALeDRLjn">菱形高度</span>
+                                <output id="projectionYOut" data-page-node-id="3rW0hRKpPMYte3ALz900P5">489px / 82%</output>
+                            </div><input id="projectionY" type="range" min="300" max="580" value="489" data-page-node-id="7zIYYSEXBUYRzzBHLNjM5R">
                         </div>
-                        <div class="connection-tile"><canvas data-connection="horizontal" width="800"
-                                height="600"></canvas>
-                            <div class="viewport-tools" data-viewport-tools><button data-zoom="out"
-                                    type="button">−</button><output data-zoom-label>1000%</output><button data-zoom="in"
-                                    type="button">+</button><button data-zoom="reset" type="button">↺</button></div>
-                            <span>横向双段</span>
+                        <div class="control-row" data-page-node-id="jUqpWgOjbB3d6VQFd78aYJ">
+                            <div class="control-label" data-page-node-id="UmCeVsiRFsEsUvEfTL82cu"><span data-page-node-id="7JSAMN46ru7Ea5JfuGWHUV">中心点 X</span>
+                                <output id="centerXOut" data-page-node-id="qSIqiQkcjcTu2prouyHBAA">50.4%</output>
+                            </div><input id="centerX" type="range" min="35" max="65" step=".1" value="50.4" data-page-node-id="4o1oICaTB0KxMVIhB9cGHi">
                         </div>
-                        <div class="connection-tile"><canvas data-connection="upTriangle" width="800"
-                                height="600"></canvas>
-                            <div class="viewport-tools" data-viewport-tools><button data-zoom="out"
-                                    type="button">−</button><output data-zoom-label>1000%</output><button data-zoom="in"
-                                    type="button">+</button><button data-zoom="reset" type="button">↺</button></div>
-                            <span>上三角</span>
-                        </div>
-                        <div class="connection-tile"><canvas data-connection="downTriangle" width="800"
-                                height="600"></canvas>
-                            <div class="viewport-tools" data-viewport-tools><button data-zoom="out"
-                                    type="button">−</button><output data-zoom-label>1000%</output><button data-zoom="in"
-                                    type="button">+</button><button data-zoom="reset" type="button">↺</button></div>
-                            <span>下三角</span>
-                        </div>
-                        <div class="connection-tile"><canvas data-connection="cross" width="800" height="600"></canvas>
-                            <div class="viewport-tools" data-viewport-tools><button data-zoom="out"
-                                    type="button">−</button><output data-zoom-label>1000%</output><button data-zoom="in"
-                                    type="button">+</button><button data-zoom="reset" type="button">↺</button></div>
-                            <span>十字</span>
+                        <div class="control-row" data-page-node-id="XR1eNUHnVs6fSbIWY1esZ1">
+                            <div class="control-label" data-page-node-id="ANAR7gGJtUYYWYgfnUWNCg"><span data-page-node-id="0GLCGLb6OivWfKvndSNKZY">中心点 Y</span>
+                                <output id="centerYOut" data-page-node-id="IP8bTvBDeAwBNmpZzLZ1Nu">48.8%</output>
+                            </div><input id="centerY" type="range" min="35" max="65" step=".1" value="48.8" data-page-node-id="d3iQz3BfSEjmxe6xF2Uj7T">
                         </div>
                     </div>
                 </section>
 
             </aside>
-        </section>
-
-            <section class="roi-section">
-                <div class="roi-card">
-                    <div class="roi-head">
-                        <div>
-                            <p class="eyebrow">采样预览</p>
-                            <div class="roi-head-row">
-                                <h2>ROI 分析</h2>
-                                <span class="roi-grid-label" id="roiGridInfo">44 × 44 网格</span>
-                            </div>
-                            <p>显示当前变换后的采样区域与网格，反映旋转、缩放、偏移及灰度化处理后的 ROI</p>
-                        </div>
-                    </div>
-                    <div class="roi-wrap">
-                        <canvas id="roiPreview" width="440" height="440"></canvas>
-                        <div class="viewport-tools" data-viewport-tools>
-                            <button data-zoom="out" type="button" aria-label="缩小">−</button>
-                            <output data-zoom-label>100%</output>
-                            <button data-zoom="in" type="button" aria-label="放大">+</button>
-                            <button data-zoom="reset" type="button" aria-label="重置视图">↺</button>
-                        </div>
-                        <div class="roi-mask" id="roiMask" hidden></div>
-                    </div>
-                </div>
-            </section>
-
+        </div>
     </main>
 
     <script>
@@ -1125,15 +1143,15 @@
         const sourceContext = sourceCanvas.getContext('2d', { willReadFrequently: true });
         const elements = {
             emptyState: document.getElementById('emptyState'), fileInput: document.getElementById('fileInput'), dropZone: document.getElementById('dropZone'),
-            statusText: document.getElementById('statusText'), imageNote: document.getElementById('imageNote'), wallCount: document.getElementById('wallCount'), statLimit: document.getElementById('statLimit'), densityLabel: document.getElementById('densityLabel'), modeHint: document.getElementById('modeHint'), textInput: document.getElementById('textInput'), sourceParams: document.getElementById('sourceParams'), modeTabs: document.querySelectorAll('[data-mode]'), testParams: document.getElementById('testParams'), imageParams: document.getElementById('imageParams'), connectionPanel: document.getElementById('connectionPanel'), threshold: document.getElementById('threshold'), thresholdOut: document.getElementById('thresholdOut'), imageScale: document.getElementById('imageScale'), imageScaleOut: document.getElementById('imageScaleOut'), imageRotation: document.getElementById('imageRotation'), imageRotationOut: document.getElementById('imageRotationOut'), shiftX: document.getElementById('shiftX'), shiftXOut: document.getElementById('shiftXOut'), shiftY: document.getElementById('shiftY'), shiftYOut: document.getElementById('shiftYOut'), projectionX: document.getElementById('projectionX'), projectionXOut: document.getElementById('projectionXOut'), projectionY: document.getElementById('projectionY'), projectionYOut: document.getElementById('projectionYOut'), centerX: document.getElementById('centerX'), centerXOut: document.getElementById('centerXOut'), centerY: document.getElementById('centerY'), centerYOut: document.getElementById('centerYOut'), capacity: document.getElementById('capacity'), capacityOut: document.getElementById('capacityOut'), invert: document.getElementById('invert'), wallLevel: document.getElementById('wallLevel'), showWalls: document.getElementById('showWalls'), redWeight: document.getElementById('redWeight'), greenWeight: document.getElementById('greenWeight'), blueWeight: document.getElementById('blueWeight'), redOut: document.getElementById('redOut'), greenOut: document.getElementById('greenOut'), blueOut: document.getElementById('blueOut')
+            statusText: document.getElementById('statusText'), imageNote: document.getElementById('imageNote'), wallCount: document.getElementById('wallCount'), statLimit: document.getElementById('statLimit'), densityLabel: document.getElementById('densityLabel'), modeHint: document.getElementById('modeHint'), textInput: document.getElementById('textInput'), sourceParams: document.getElementById('sourceParams'), modeTabs: document.querySelectorAll('[data-mode]'), testParams: document.getElementById('testParams'), imageParams: document.getElementById('imageParams'), connectionPanel: document.getElementById('connectionPanel'), threshold: document.getElementById('threshold'), thresholdOut: document.getElementById('thresholdOut'), imageScale: document.getElementById('imageScale'), imageScaleOut: document.getElementById('imageScaleOut'), imageRotation: document.getElementById('imageRotation'), imageRotationOut: document.getElementById('imageRotationOut'), shiftX: document.getElementById('shiftX'), shiftXOut: document.getElementById('shiftXOut'), shiftY: document.getElementById('shiftY'), shiftYOut: document.getElementById('shiftYOut'), projectionX: document.getElementById('projectionX'), projectionXOut: document.getElementById('projectionXOut'), projectionY: document.getElementById('projectionY'), projectionYOut: document.getElementById('projectionYOut'), centerX: document.getElementById('centerX'), centerXOut: document.getElementById('centerXOut'), centerY: document.getElementById('centerY'), centerYOut: document.getElementById('centerYOut'), capacity: document.getElementById('capacity'), capacityOut: document.getElementById('capacityOut'), invert: document.getElementById('invert'), wallLevel: document.getElementById('wallLevel'), showWalls: document.getElementById('showWalls'), redWeight: document.getElementById('redWeight'), greenWeight: document.getElementById('greenWeight'), blueWeight: document.getElementById('blueWeight'), redOut: document.getElementById('redOut'), greenOut: document.getElementById('greenOut'), blueOut: document.getElementById('blueOut'), textParams: document.getElementById('textParams'), fontFamily: document.getElementById('fontFamily'), fontWeight: document.getElementById('fontWeight'), textAlign: document.getElementById('textAlign'), fontRescan: document.getElementById('fontRescan')
         };
         const wallSprites = {};
         const wallAssetNames = ['i', 'y', 'v', 'rowtail', 'coltail', 'row', 'col'];
         for (let level = 1; level <= 21; level += 1) { wallSprites[level] = {}; wallAssetNames.forEach(style => { const image = new Image(); image.onload = () => { if (level === 12) drawConnectionPreviews(); draw(); }; image.src = `./images/walls/${level}/${level}${style}.webp`; wallSprites[level][style] = image; }); }
         const backgroundImage = new Image(); backgroundImage.src = './images/base/base4.webp'; backgroundImage.onload = () => draw();
-        for (let level = 1; level <= 21; level += 1) elements.wallLevel.insertAdjacentHTML('beforeend', `<option value="${level}"${level === 12 ? ' selected' : ''}>${level} 级</option>`);
-        for (let level = 1; level <= 21; level += 1) document.getElementById('drawWallLevel').insertAdjacentHTML('beforeend', `<option value="${level}"${level === 12 ? ' selected' : ''}>${level} 级</option>`);
-        const state = { image: null, limit: 325, walls: [], demoWalls: null, dimWalls: new Set(), wallLevel: 12, mode: 'text', drawWalls: [], drawMode: 'draw', interactionMode: 'zoom', selectedWalls: [], clipboard: null, isErasing: false, selectionStart: null, selectionEnd: null, isSelecting: false, hoveredCell: null };
+        for (let level = 1; level <= 21; level += 1) elements.wallLevel.insertAdjacentHTML('beforeend', `<option value="${level}"${level === 12 ? ' selected' : ''}>${level} 级墙</option>`);
+        for (let level = 1; level <= 21; level += 1) document.getElementById('drawWallLevel').insertAdjacentHTML('beforeend', `<option value="${level}"${level === 12 ? ' selected' : ''}>${level} 级墙</option>`);
+        const state = { image: null, limit: 325, walls: [], demoWalls: null, dimWalls: new Set(), wallLevel: 12, mode: 'text', drawWalls: [], drawMode: 'draw', interactionMode: 'zoom', selectedWalls: [], clipboard: null, clipboardGhost: false, isErasing: false, selectionStart: null, selectionEnd: null, isSelecting: false, hoveredCell: null, drawImportSignature: null, testMap: 'border', testGrowRadius: 0 };
         const mainView = { zoom: 1, defaultZoom: 1, minZoom: 1, panX: 0, panY: 0 };
         const roiView = { zoom: 1, defaultZoom: 1, minZoom: 1, panX: 0, panY: 0 };
         const previewViews = new Map();
@@ -1152,7 +1170,7 @@
             const tools = canvasElement.parentElement.querySelector('[data-viewport-tools]');
             let dragging = false, startX = 0, startY = 0;
             const setZoom = nextZoom => { view.zoom = Math.max(view.minZoom || .5, Math.min(20, nextZoom)); applyPanConstraints(view); updateViewportLabel(canvasElement, view); redraw(); };
-            tools?.addEventListener('click', event => { if (event.target === document.getElementById('brushToggle')) return; const action = event.target.dataset.zoom; if (action === 'in') setZoom(view.zoom * 1.25); if (action === 'out') setZoom(view.zoom / 1.25); if (action === 'reset') { view.zoom = view.defaultZoom || 1; view.panX = 0; view.panY = 0; updateViewportLabel(canvasElement, view); redraw(); } });
+            tools?.addEventListener('click', event => { const action = event.target.dataset.zoom; if (action === 'in') setZoom(view.zoom * 1.25); if (action === 'out') setZoom(view.zoom / 1.25); if (action === 'reset') { view.zoom = view.defaultZoom || 1; view.panX = 0; view.panY = 0; updateViewportLabel(canvasElement, view); redraw(); } });
             canvasElement.addEventListener('wheel', event => { event.preventDefault(); setZoom(view.zoom * (event.deltaY < 0 ? 1.12 : .89)); }, { passive: false });
             canvasElement.addEventListener('pointerdown', event => {
                 if (state.mode === 'draw' && state.interactionMode === 'brush') return;
@@ -1172,109 +1190,406 @@
             canvasElement.style.cursor = 'grab'; updateViewportLabel(canvasElement, view);
         }
 
-        function createTextWalls(text) {
-            const raster = document.createElement('canvas');
-            raster.width = 440;
-            raster.height = 440;
-            const rasterContext = raster.getContext('2d', { willReadFrequently: true });
+        // ---- 文字模式：字体 / 字重 / 对齐 ----
+        const fontState = { family: 'Arial', weight: '400', style: 'normal', align: 'center' };
+        const systemFonts = new Map(); // family -> Set('style|weight')
 
-            // 白色背景
-            rasterContext.fillStyle = '#fff';
-            rasterContext.fillRect(0, 0, 440, 440);
-            rasterContext.fillStyle = '#111';
-            rasterContext.textAlign = 'center';
-            rasterContext.textBaseline = 'middle';
+        // 降级候选：Font Access API 不可用时用 canvas 宽度探测筛出本机存在的字体
+        const fontCandidates = ['Arial', 'Arial Black', 'Arial Narrow', 'Bahnschrift', 'Bookman Old Style', 'Calibri', 'Calibri Light', 'Cambria', 'Candara', 'Century Gothic', 'Comic Sans MS', 'Consolas', 'Constantia', 'Corbel', 'Courier New', 'Franklin Gothic Medium', 'Gabriola', 'Garamond', 'Georgia', 'Impact', 'Ink Free', 'Lucida Console', 'Lucida Sans Unicode', 'Microsoft JhengHei', 'Microsoft Sans Serif', 'Microsoft YaHei', 'Nirmala UI', 'Palatino Linotype', 'Segoe Print', 'Segoe Script', 'Segoe UI', 'Segoe UI Black', 'Segoe UI Light', 'Segoe UI Semibold', 'Segoe UI Semilight', 'SimHei', 'SimSun', 'KaiTi', 'FangSong', 'DengXian', 'Tahoma', 'Times New Roman', 'Trebuchet MS', 'Verdana', 'Helvetica', 'Helvetica Neue', 'Times', 'Courier', 'Menlo', 'Monaco', '微软雅黑', '黑体', '宋体', '楷体', '仿宋', '等线', '隶书', '幼圆'];
 
-            const value = [...(text || 'COC')].slice(0, 8).join('');
-            let fontSize = 180;
-            rasterContext.font = `900 ${fontSize}px Arial, "Microsoft YaHei", "Noto Sans CJK SC", sans-serif`;
-            while (rasterContext.measureText(value).width > 400 && fontSize > 42) {
-                fontSize -= 4;
-                rasterContext.font = `900 ${fontSize}px Arial, "Microsoft YaHei", "Noto Sans CJK SC", sans-serif"`;
+        const fallbackWeightList = [['normal', '300'], ['normal', '400'], ['normal', '500'], ['normal', '600'], ['normal', '700'], ['normal', '800'], ['normal', '900'], ['italic', '400'], ['italic', '700']];
+
+        function probeAvailableFonts(candidates) {
+            const probe = document.createElement('canvas').getContext('2d');
+            const baselines = ['monospace', 'sans-serif', 'serif'];
+            const sample = 'mmmmmmmmmmlliWW@漢字ABC';
+            const widths = {};
+            baselines.forEach(name => { probe.font = `72px ${name}`; widths[name] = probe.measureText(sample).width; });
+            return candidates.filter(family => baselines.some(name => {
+                probe.font = `72px "${family}", ${name}`;
+                return probe.measureText(sample).width !== widths[name];
+            }));
+        }
+
+        // Font Access API：能拿到真实字体名及其可用的 style/weight 组合
+        async function queryLocalFonts() {
+            if (typeof window.queryLocalFonts !== 'function') return null;
+            try {
+                const list = await window.queryLocalFonts();
+                const map = new Map();
+                list.forEach(font => {
+                    if (!font.family) return;
+                    if (!map.has(font.family)) map.set(font.family, new Set());
+                    map.get(font.family).add(`${String(font.style || 'normal').toLowerCase()}|${String(font.weight || '400')}`);
+                });
+                return map.size ? map : null;
+            } catch (error) { return null; }
+        }
+
+        function populateFontStyles() {
+            const available = systemFonts.get(fontState.family);
+            let list = [];
+            if (available && available.size) {
+                list = [...available].map(entry => entry.split('|'))
+                    .sort((a, b) => Number(a[1]) - Number(b[1]) || a[0].localeCompare(b[0]));
+            } else {
+                list = fallbackWeightList.slice();
             }
+            const previous = `${fontState.style}|${fontState.weight}`;
+            elements.fontWeight.textContent = '';
+            list.forEach(([style, weight]) => {
+                const option = document.createElement('option');
+                option.value = `${style}|${weight}`;
+                option.textContent = `${weight} ${style === 'italic' ? '斜体' : '常规'}`;
+                elements.fontWeight.appendChild(option);
+            });
+            if ([...elements.fontWeight.options].some(option => option.value === previous)) {
+                elements.fontWeight.value = previous;
+            } else {
+                [fontState.style, fontState.weight] = list[0];
+                elements.fontWeight.value = `${fontState.style}|${fontState.weight}`;
+            }
+        }
 
-            // 应用旋转到文字
+        function populateFontFamilies(entries) {
+            systemFonts.clear();
+            entries.forEach((styles, family) => systemFonts.set(family, styles));
+            let families = [...systemFonts.keys()].sort((a, b) => a.localeCompare(b, 'zh-Hans-CN'));
+            if (!families.length) families = ['Arial'];
+            const previous = fontState.family;
+            elements.fontFamily.textContent = '';
+            families.forEach(family => {
+                const option = document.createElement('option');
+                option.value = family; option.textContent = family;
+                elements.fontFamily.appendChild(option);
+            });
+            if (families.includes(previous)) elements.fontFamily.value = previous;
+            else { fontState.family = families.includes('Arial') ? 'Arial' : families[0]; elements.fontFamily.value = fontState.family; }
+            populateFontStyles();
+        }
+
+        function initFonts() {
+            const detected = probeAvailableFonts(fontCandidates);
+            const map = new Map();
+            (detected.length ? detected : fontCandidates).forEach(family => map.set(family, new Set()));
+            populateFontFamilies(map);
+            if (state.mode === 'text') { state.demoWalls = createTextWalls(); draw(); }
+            // 已经授予过字体访问权限时静默升级为完整列表，否则不打扰用户
+            (async () => {
+                try {
+                    if (!navigator.permissions || typeof window.queryLocalFonts !== 'function') return;
+                    const status = await navigator.permissions.query({ name: 'local-fonts' });
+                    if (status.state !== 'granted') return;
+                    const fonts = await queryLocalFonts();
+                    if (fonts) { populateFontFamilies(fonts); draw(); }
+                } catch (error) { /* 不支持则保持候选列表 */ }
+            })();
+        }
+
+        // ---- 文字源栅格：单一数据源（背景透明 = 永不生成城墙）----
+        const textRasterSize = 440;
+
+        function renderTextRaster() {
+            const size = textRasterSize, margin = 20, lineSpacing = 1.15;
+            const raster = document.createElement('canvas');
+            raster.width = size;
+            raster.height = size;
+            const rasterContext = raster.getContext('2d', { willReadFrequently: true });
+            // 边界保持透明：透明区域在采样时始终被忽略，不会变成城墙
+            rasterContext.clearRect(0, 0, size, size);
+            rasterContext.fillStyle = '#111';
+            rasterContext.textBaseline = 'middle';
+            rasterContext.textAlign = fontState.align;
+
+            // 多行：回车换行，最多 8 行 / 每行 16 字符
+            const value = elements.textInput.value;
+            const lines = String(value && value.trim() ? value : 'COC').split('\n').slice(0, 8).map(line => [...line].slice(0, 16).join(''));
+            const family = fontState.family || 'Arial';
+            const setFont = px => { rasterContext.font = `${fontState.style} ${fontState.weight} ${px}px "${family}", sans-serif`; };
+
+            // 自适应字号：整块文字的宽和高都要放得进画布
+            const fits = px => {
+                const width = Math.max(...lines.map(line => rasterContext.measureText(line).width));
+                return width <= size - margin * 2 && lines.length * px * lineSpacing <= size - margin * 2;
+            };
+            let fontSize = 180;
+            setFont(fontSize);
+            while (fontSize > 8 && !fits(fontSize)) { fontSize -= 2; setFont(fontSize); }
+
+            const lineHeight = fontSize * lineSpacing;
+            const anchorX = fontState.align === 'left' ? -(size - margin * 2) / 2 : fontState.align === 'right' ? (size - margin * 2) / 2 : 0;
+            const top = -(lines.length - 1) * lineHeight / 2;
+
             rasterContext.save();
-            rasterContext.translate(220, 220);
+            rasterContext.translate(size / 2, size / 2);
             rasterContext.rotate(Number(elements.imageRotation.value) * Math.PI / 180);
-            rasterContext.fillText(value, 0, 0);
+            lines.forEach((line, index) => rasterContext.fillText(line, anchorX, top + index * lineHeight));
             rasterContext.restore();
+            return raster;
+        }
 
-            const pixels = rasterContext.getImageData(0, 0, 440, 440).data;
+        // 采样窗口：scale > 100% 时窗口外扩到栅格画布之外，文字在 44×44 网格中变小；
+        // 窗口落在栅格之外的部分是透明的，按规则不生成城墙。
+        function textSampleWindow() {
+            const size = textRasterSize;
+            const windowSize = size * Number(elements.imageScale.value) / 100;
+            const centerX = size / 2 + Number(elements.shiftX.value) * 10;
+            const centerY = size / 2 + Number(elements.shiftY.value) * 10;
+            return { startX: centerX - windowSize / 2, startY: centerY - windowSize / 2, sizeX: windowSize, sizeY: windowSize };
+        }
+
+        function createTextWalls() {
+            const size = textRasterSize;
+            const raster = renderTextRaster();
+            const pixels = raster.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, size, size).data;
+            const win = textSampleWindow();
             const walls = [];
-
-            // 获取 scale 和偏移参数
-            const scale = Number(elements.imageScale.value) / 100;
-            const shiftX = Number(elements.shiftX.value);
-            const shiftY = Number(elements.shiftY.value);
-
-            // 计算采样区域：在 440x440 画布上的有效采样范围
-            // scale 控制采样范围大小，偏移控制中心位置
-            const sampleSize = 440 * scale; // 采样区域大小
-            const offsetX = 220 + shiftX * 10; // X偏移（像素），220是中心
-            const offsetY = 220 + shiftY * 10; // Y偏移（像素）
-
-            // 采样起始位置（确保不越界）
-            const startX = Math.max(0, offsetX - sampleSize / 2);
-            const startY = Math.max(0, offsetY - sampleSize / 2);
-            const endX = Math.min(440, offsetX + sampleSize / 2);
-            const endY = Math.min(440, offsetY + sampleSize / 2);
-            const actualSizeX = endX - startX;
-            const actualSizeY = endY - startY;
-
-            // 如果采样区域太小，返回空
-            if (actualSizeX < 10 || actualSizeY < 10) return walls;
-
+            if (win.sizeX < 10 || win.sizeY < 10) return walls;
+            const stepX = win.sizeX / (gridSize - 1);
+            const stepY = win.sizeY / (gridSize - 1);
             for (let row = 0; row < gridSize; row += 1) {
                 for (let column = 0; column < gridSize; column += 1) {
-                    // 将网格坐标映射到采样区域
-                    const gridX = startX + (column / (gridSize - 1)) * actualSizeX;
-                    const gridY = startY + (row / (gridSize - 1)) * actualSizeY;
-
-                    // 采样周围像素
+                    const originX = win.startX + column * stepX;
+                    const originY = win.startY + row * stepY;
+                    // 完全落在栅格之外 → 透明 → 不填充
+                    if (originX + stepX <= 0 || originY + stepY <= 0 || originX >= size || originY >= size) continue;
                     let dark = 0;
                     const samples = 8;
-                    for (let y = 0; y < samples; y += 1) {
-                        for (let x = 0; x < samples; x += 1) {
-                            const px = Math.min(439, Math.floor(gridX + (x / samples) * actualSizeX / (gridSize - 1)));
-                            const py = Math.min(439, Math.floor(gridY + (y / samples) * actualSizeY / (gridSize - 1)));
-                            const index = (py * 440 + px) * 4;
-                            if (pixels[index] < 150) dark += 1;
+                    for (let sy = 0; sy < samples; sy += 1) {
+                        for (let sx = 0; sx < samples; sx += 1) {
+                            const px = Math.max(0, Math.min(size - 1, Math.floor(originX + (sx / samples) * stepX)));
+                            const py = Math.max(0, Math.min(size - 1, Math.floor(originY + (sy / samples) * stepY)));
+                            const index = (py * size + px) * 4;
+                            if (pixels[index + 3] > 8 && pixels[index] < 150) dark += 1;
                         }
                     }
-                    if (dark >= 20) {
-                        walls.push({ row, column });
-                    }
+                    if (dark >= 20) walls.push(makeWall(row, column));
                 }
             }
             return walls;
         }
 
-        function createTestWalls() {
-            const walls = [], occupied = new Set(), add = (row, column) => { if (row >= 0 && row < gridSize && column >= 0 && column < gridSize && !occupied.has(`${column},${row}`)) { occupied.add(`${column},${row}`); walls.push({ row, column }); } };
-            // Keep the 44 + 43 + 43 + 42 perimeter cells first so the capacity trim never cuts the border.
-            for (let column = 0; column < gridSize; column += 1) add(0, column);
-            for (let row = 1; row < gridSize - 1; row += 1) add(row, gridSize - 1);
-            for (let row = 1; row < gridSize - 1; row += 1) add(row, 0);
-            for (let column = 0; column < gridSize; column += 1) add(gridSize - 1, column);
+        // ---- 墙段工厂与绘制次序（rank）----
+        // 等距投影下屏幕纵坐标 y ∝ (column + row)，所以 row + column 就是"远近"：
+        // 值越大越靠近观者。必须 rank 升序绘制（远的先画），否则近处墙段会被
+        // 后画的远处墙段盖住 —— 螺旋/利萨如/希尔伯特这类"沿曲线生成"的地图最明显。
+        // rank 在墙段落格时一次性写入（墙段只会被新增/删除，不会被移动），
+        // 因此是单一数据源；比较器仍带一次兜底计算，防止外部构造的对象漏写。
+        function wallRankOf(row, column) { return row + column; }
 
-            // Interior fixtures: isolated, left-only, right-only, and four-neighbor junctions.
-            add(6, 6);
-            add(10, 10); add(10, 11);
-            add(14, 18); add(14, 19);
-            add(21, 22);
-            add(22, 21); add(22, 22); add(22, 23);
-            add(23, 22);
-            for (let row = 5; row < 39; row += 2) for (let column = 5; column < 39; column += 2) if (!(row >= 9 && row <= 25 && column >= 9 && column <= 25)) add(row, column);
+        function makeWall(row, column, level) {
+            const wall = { row, column, rank: wallRankOf(row, column) };
+            if (level !== undefined && level !== null) wall.level = level;
+            return wall;
+        }
+
+        function rankOfWall(wall) { return typeof wall.rank === 'number' ? wall.rank : wallRankOf(wall.row, wall.column); }
+
+        // rank 升序 → row 升序 → column 升序（同一 rank 上左右相邻，行序决定叠压）
+        function compareWallsByRank(a, b) { return rankOfWall(a) - rankOfWall(b) || a.row - b.row || a.column - b.column; }
+
+        // ---- 测试模式：预设地图 ----
+        // 谓词式：逐格判断是否放墙
+        function buildFromPredicate(predicate) {
+            const walls = [];
+            for (let row = 0; row < gridSize; row += 1) {
+                for (let column = 0; column < gridSize; column += 1) {
+                    if (predicate(row, column)) walls.push(makeWall(row, column));
+                }
+            }
             return walls;
+        }
+
+        // 点集式：[row, column] 浮点坐标 → 取整去重
+        function buildFromPoints(points) {
+            const seen = new Set(), walls = [];
+            points.forEach(([row, column]) => {
+                const r = Math.round(row), c = Math.round(column);
+                if (r < 0 || c < 0 || r >= gridSize || c >= gridSize) return;
+                const key = `${c},${r}`;
+                if (seen.has(key)) return;
+                seen.add(key); walls.push(makeWall(r, c));
+            });
+            return walls;
+        }
+
+        // 参数曲线：curve(t) 返回 [x, y]，取值域 [-1, 1]，映射并铺满网格
+        function buildParametric(curve, tMax, samples) {
+            const center = (gridSize - 1) / 2, radius = center - 0.5;
+            const total = samples || 6000, points = [];
+            for (let i = 0; i <= total; i += 1) {
+                const [x, y] = curve(tMax * i / total);
+                points.push([center + radius * y, center + radius * x]);
+            }
+            return buildFromPoints(points);
+        }
+
+        // 希尔伯特曲线：d → (x, y)，order 阶
+        function hilbertXY(order, distance) {
+            const side = 1 << order;
+            let t = distance, x = 0, y = 0;
+            for (let s = 1; s < side; s *= 2) {
+                const rx = 1 & (t >> 1);
+                const ry = 1 & (t ^ rx);
+                if (ry === 0) {
+                    if (rx === 1) { x = s - 1 - x; y = s - 1 - y; }
+                    const swap = x; x = y; y = swap;
+                }
+                x += s * rx; y += s * ry;
+                t >>= 2;
+            }
+            return [x, y];
+        }
+
+        const testMaps = {
+            border: {
+                label: '边界', build() {
+                    // add 的调用顺序 = 生成顺序，只用于上限裁剪（边框优先，先裁内部点阵）；
+                    // 实际绘制顺序由 rank（row+column）统一决定，见 compareWallsByRank。
+                    const walls = [], occupied = new Set(), add = (row, column) => { if (row >= 0 && row < gridSize && column >= 0 && column < gridSize && !occupied.has(`${column},${row}`)) { occupied.add(`${column},${row}`); walls.push(makeWall(row, column)); } };
+                    // Keep the 44 + 43 + 43 + 42 perimeter cells first so the capacity trim never cuts the border.
+                    for (let column = 0; column < gridSize; column += 1) add(0, column);
+                    for (let row = 1; row < gridSize - 1; row += 1) add(row, gridSize - 1);
+                    for (let row = 1; row < gridSize - 1; row += 1) add(row, 0);
+                    for (let column = 0; column < gridSize; column += 1) add(gridSize - 1, column);
+
+                    // Interior fixtures: isolated, left-only, right-only, and four-neighbor junctions.
+                    add(6, 6);
+                    add(10, 10); add(10, 11);
+                    add(14, 18); add(14, 19);
+                    add(21, 22);
+                    add(22, 21); add(22, 22); add(22, 23);
+                    add(23, 22);
+                    for (let row = 5; row < 39; row += 2) for (let column = 5; column < 39; column += 2) if (!(row >= 9 && row <= 25 && column >= 9 && column <= 25)) add(row, column);
+                    return walls;
+                }
+            },
+            grid: {
+                label: '网格',
+                build: () => buildFromPredicate((row, column) => row % 15 === 0 || column % 15 === 0)
+            },
+            spiral: {
+                label: '螺旋',
+                // 阿基米德螺线 r ∝ θ，约 3.5 圈
+                build: () => { const tMax = 3.5 * Math.PI * 2; return buildParametric(t => { const r = t / tMax; return [r * Math.cos(t), r * Math.sin(t)]; }, tMax, 9000); }
+            },
+            fractal: {
+                label: '分形',
+                // 谢尔宾斯基三角：(row & column) === 0 即帕斯卡三角 mod 2；铺满整张 44×44 以覆盖全图
+                build: () => { const size = gridSize, offset = 0; return buildFromPredicate((row, column) => { const r = row - offset, c = column - offset; return r >= 0 && c >= 0 && r < size && c < size && (r & c) === 0; }); }
+            },
+            rings: {
+                label: '同心环',
+                // 曼哈顿距离等值线：等距投影下呈现嵌套正方形。
+                // 由中心向外逐层铺到四角（43,0)(0,43)(43,43)(0,0)：低上限先覆盖整张 44×44，拖高上限再加粗。
+                build: () => { const center = (gridSize - 1) / 2; const levels = []; for (let k = 5; k <= 41; k += 6) levels.push(k); levels.push(43); return buildFromPredicate((row, column) => { const d = Math.abs(row - center) + Math.abs(column - center); return levels.some(kk => Math.abs(d - kk) < .5); }); }
+            },
+            hilbert: {
+                label: '希尔伯特',
+                // 3 阶希尔伯特空间填充曲线，放大至铺满整张 44×44 以覆盖全图
+                build: () => {
+                    const order = 3, side = 1 << order, scale = 6, offset = 1;
+                    const points = []; let previous = null;
+                    for (let d = 0; d < side * side; d += 1) {
+                        const [x, y] = hilbertXY(order, d);
+                        const target = [y * scale + offset, x * scale + offset];
+                        if (previous) {
+                            const steps = Math.max(Math.abs(target[0] - previous[0]), Math.abs(target[1] - previous[1]));
+                            for (let s = 1; s <= steps; s += 1) points.push([previous[0] + (target[0] - previous[0]) * s / steps, previous[1] + (target[1] - previous[1]) * s / steps]);
+                        } else points.push(target);
+                        previous = target;
+                    }
+                    return buildFromPoints(points);
+                }
+            },
+            lissajous: {
+                label: '利萨如',
+                // 2:5 利萨如曲线
+                build: () => buildParametric(t => [Math.sin(2 * t + Math.PI / 2), Math.sin(5 * t)], Math.PI * 2, 9000)
+            },
+            rose: {
+                label: '玫瑰线',
+                // r = sin(5θ)，五瓣玫瑰
+                build: () => buildParametric(t => { const r = Math.sin(5 * t); return [r * Math.sin(t), r * Math.cos(t)]; }, Math.PI, 9000)
+            }
+        };
+
+        function createTestWalls(limit) {
+            const map = testMaps[state.testMap] || testMaps.border;
+            const cap = Math.max(0, Math.min(gridSize * gridSize, Math.floor(limit === undefined ? state.limit : limit)));
+            const grown = growFromSeeds(map.build(), cap);
+            state.testGrowRadius = grown.radius;
+            return grown.walls;
+        }
+
+        // ---- 形状场：以 build() 返回的骨架为种子，做 Chamfer 距离变换后按距离整层"膨胀"填充 ----
+        // 3-4 Chamfer：轴向 3、对角 4（单位 1/3 格），整数运算精确，免去浮点误差
+        const chamferAxis = 3, chamferDiag = 4, chamferInf = 0x3fffffff;
+
+        function fieldDistance(seeds) {
+            const n = gridSize, dist = new Int32Array(n * n).fill(chamferInf);
+            seeds.forEach(({ row, column }) => { if (row >= 0 && row < n && column >= 0 && column < n) dist[row * n + column] = 0; });
+            // 前向：扫行 + 扫列，取上一行 + 左邻
+            for (let r = 0; r < n; r += 1) for (let c = 0; c < n; c += 1) {
+                const i = r * n + c; let v = dist[i];
+                if (r > 0) {
+                    v = Math.min(v, dist[i - n] + chamferAxis);
+                    if (c > 0) v = Math.min(v, dist[i - n - 1] + chamferDiag);
+                    if (c < n - 1) v = Math.min(v, dist[i - n + 1] + chamferDiag);
+                }
+                if (c > 0) v = Math.min(v, dist[i - 1] + chamferAxis);
+                dist[i] = v;
+            }
+            // 后向：取下一行 + 右邻
+            for (let r = n - 1; r >= 0; r -= 1) for (let c = n - 1; c >= 0; c -= 1) {
+                const i = r * n + c; let v = dist[i];
+                if (r < n - 1) {
+                    v = Math.min(v, dist[i + n] + chamferAxis);
+                    if (c > 0) v = Math.min(v, dist[i + n - 1] + chamferDiag);
+                    if (c < n - 1) v = Math.min(v, dist[i + n + 1] + chamferDiag);
+                }
+                if (c < n - 1) v = Math.min(v, dist[i + 1] + chamferAxis);
+                dist[i] = v;
+            }
+            return dist;
+        }
+
+        // 按距离整层填充：每层要么全取、要么不取，保证形状始终完整对称；最后返回 {walls, radius(格数)}
+        function growFromSeeds(seeds, cap) {
+            if (cap === 0) return { walls: [], radius: 0 };
+            const dist = fieldDistance(seeds);
+            const layers = new Map();
+            for (let row = 0; row < gridSize; row += 1) for (let column = 0; column < gridSize; column += 1) {
+                const d = dist[row * gridSize + column];
+                if (d >= chamferInf) continue;
+                if (!layers.has(d)) layers.set(d, []);
+                layers.get(d).push({ row, column });
+            }
+            const keys = [...layers.keys()].sort((a, b) => a - b);
+            const walls = [];
+            let taken = 0;
+            let lastKey = 0;
+            for (const key of keys) {
+                const layer = layers.get(key);
+                if (taken + layer.length > cap) break;
+                layer.forEach(cell => walls.push(makeWall(cell.row, cell.column)));
+                taken += layer.length;
+                lastKey = key;
+            }
+            // 兜底：骨架本身就超过上限时至少保留第一层的前 cap 个，避免整片空白
+            if (taken === 0 && keys.length) {
+                layers.get(keys[0]).slice(0, cap).forEach(cell => walls.push(makeWall(cell.row, cell.column)));
+                lastKey = keys[0];
+            }
+            return { walls, radius: Math.round(lastKey / chamferAxis) };
         }
 
         function renderSourceImage() {
             if (!state.image) return;
             const side = Math.max(state.image.naturalWidth, state.image.naturalHeight);
             sourceCanvas.width = 400; sourceCanvas.height = 400;
-            sourceContext.fillStyle = '#000000';
-            sourceContext.fillRect(0, 0, 400, 400);
+            // 边界填充改为透明：透明区域永远不会被识别为城墙（原先填黑会整片产墙）
+            sourceContext.clearRect(0, 0, 400, 400);
             sourceContext.save(); sourceContext.translate(200, 200);
             sourceContext.translate(Number(elements.shiftX.value) * 10, Number(elements.shiftY.value) * 10);
             sourceContext.rotate(Number(elements.imageRotation.value) * Math.PI / 180); sourceContext.scale(Number(elements.imageScale.value) / 100, Number(elements.imageScale.value) / 100);
@@ -1303,36 +1618,46 @@
         }
 
         function drawConnectionPreviews() {
+            // 窗口尺寸沿用参考版本（800x600），放大倍数 CONNECTION_SCALE 固定。
+            // 用与主画布一致的等距投影定位每个墙段，再按固定倍数缩放并把整体居中，避免参考版本“绕画布中心缩放导致墙段飞出顶部被裁切”的畸变。
+            const CONNECTION_SCALE = 16;
             const patterns = {
-                single: { walls: [[2, 2]], directed: false },
-                vertical: { walls: [[2, 2], [3, 2]], directed: true },
-                horizontal: { walls: [[2, 2], [2, 3]], directed: true },
-                upTriangle: { walls: [[2, 3], [3, 2], [3, 3]], directed: false },
-                downTriangle: { walls: [[2, 2], [2, 3], [3, 2]], directed: false },
-                cross: { walls: [[2, 3], [3, 2], [3, 3], [3, 4], [4, 3]], directed: false }
+                single: [[2, 2]],
+                col: [[1, 2], [2, 2], [3, 2]],
+                row: [[2, 1], [2, 2], [2, 3]],
+                v: [[2, 3], [3, 2], [3, 3]],
+                y: [[2, 3], [3, 2], [3, 3], [4, 3]],
+                cross: [[2, 3], [3, 2], [3, 3], [3, 4], [4, 3]]
             };
             document.querySelectorAll('[data-connection]').forEach(preview => {
                 const previewContext = preview.getContext('2d');
-                if (!previewViews.has(preview)) previewViews.set(preview, { zoom: 16, defaultZoom: 16, minZoom: 16, panX: 0, panY: 0 });
+                if (!previewViews.has(preview)) previewViews.set(preview, { zoom: CONNECTION_SCALE, defaultZoom: CONNECTION_SCALE, minZoom: CONNECTION_SCALE, panX: 0, panY: 0 });
                 const view = previewViews.get(preview);
-                previewContext.clearRect(0, 0, preview.width, preview.height); previewContext.save(); previewContext.translate(preview.width / 2 + view.panX, preview.height / 2 + view.panY); previewContext.scale(view.zoom, view.zoom); previewContext.translate(-preview.width / 2, -preview.height / 2);
-                const { walls, directed } = patterns[preview.dataset.connection];
-                const cells = walls.map(([row, column]) => ({ row: row + 19, column: column + 19 }));
-                const occupied = new Set(cells.map(cell => `${cell.column},${cell.row}`));
+                previewContext.clearRect(0, 0, preview.width, preview.height);
+                const cells = patterns[preview.dataset.connection].map(([row, column]) => ({ row: row + 19, column: column + 19 }));
+                const previewWidth = Number(elements.projectionX.value) / backgroundSize.width * preview.width;
+                const previewHeight = Number(elements.projectionY.value) / backgroundSize.height * preview.height;
+                const centerX = preview.width * Number(elements.centerX.value) / 100;
+                const centerY = preview.height * Number(elements.centerY.value) / 100;
+                const placed = cells.map(({ row, column }) => ({
+                    x: centerX + (column - row) * previewWidth / 2 / (gridSize - 1),
+                    y: centerY + (column + row - (gridSize - 1)) * previewHeight / 2 / (gridSize - 1)
+                }));
+                let cx = 0, cy = 0; placed.forEach(p => { cx += p.x; cy += p.y; }); cx /= placed.length; cy /= placed.length;
+                const wallW = 57.12 * preview.width / canvas.width, wallH = 39.84 * preview.height / canvas.height;
+                previewContext.save();
+                previewContext.translate(preview.width / 2, preview.height / 2);
+                previewContext.scale(view.zoom, view.zoom);
+                previewContext.translate(-cx, -cy);
+                // 背景与墙段共用同一投影坐标系（参考版做法）：drawImage 全拉伸铺满画布，随墙段一起被 transform 缩放平移，
+                // 保证草地与城墙格点对齐（墙位公式 previewX = projectionX / backgroundSize.width * preview.width 正是背景设计空间 -> 预览画布的映射）
                 if (backgroundImage.complete && backgroundImage.naturalWidth) previewContext.drawImage(backgroundImage, 0, 0, preview.width, preview.height);
-                cells.forEach(({ row, column }, index) => {
-                    const asset = connectionAsset(cells, row, column);
-                    const sprite = wallSprites[12][asset];
+                cells.forEach((cell, i) => {
+                    const asset = connectionAsset(cells, cell.row, cell.column);
+                    const sprite = wallSprites[state.wallLevel][asset];
                     if (!sprite?.complete || !sprite.naturalWidth) return;
-                    const previewWidth = Number(elements.projectionX.value) / backgroundSize.width * preview.width;
-                    const previewHeight = Number(elements.projectionY.value) / backgroundSize.height * preview.height;
-                    const centerX = preview.width * Number(elements.centerX.value) / 100;
-                    const centerY = preview.height * Number(elements.centerY.value) / 100;
-                    const baseX = centerX + (column - row) * previewWidth / 2 / (gridSize - 1), baseY = centerY + (column + row - (gridSize - 1)) * previewHeight / 2 / (gridSize - 1);
-                    const focusX = centerX + (21 - 21) * previewWidth / 2 / (gridSize - 1), focusY = centerY + (21 + 21 - (gridSize - 1)) * previewHeight / 2 / (gridSize - 1);
-                    const x = baseX, y = baseY;
-                    const wallWidth = 57.12 * preview.width / canvas.width, wallHeight = 39.84 * preview.height / canvas.height;
-                    previewContext.drawImage(sprite, x - wallWidth / 2, y - wallHeight / 2, wallWidth, wallHeight);
+                    const p = placed[i];
+                    previewContext.drawImage(sprite, p.x - wallW / 2, p.y - wallH / 2, wallW, wallH);
                 });
                 previewContext.restore(); updateViewportLabel(preview, view);
             });
@@ -1351,7 +1676,7 @@
             // The uploaded image is used only as a hidden sampling source. The final canvas contains the village and walls.
             const red = Number(elements.redWeight.value), green = Number(elements.greenWeight.value), blue = Number(elements.blueWeight.value), threshold = Number(elements.threshold.value), invert = elements.invert.checked;
             state.walls = state.demoWalls ? state.demoWalls.slice(0, state.limit) : [];
-            if (state.mode === 'draw') { state.walls = state.drawWalls.slice().sort((a, b) => a.row - b.row || a.column - b.column); }
+            if (state.mode === 'draw') { state.walls = state.drawWalls.slice(); }
             if (state.image && !state.demoWalls) {
                 renderSourceImage();
                 const pixels = sourceContext.getImageData(0, 0, sourceCanvas.width, sourceCanvas.height).data;
@@ -1360,12 +1685,17 @@
                     const x = Math.min(sourceCanvas.width - 1, Math.floor(offsetX + (column + .5) * side / gridSize));
                     const y = Math.min(sourceCanvas.height - 1, Math.floor(offsetY + (row + .5) * side / gridSize));
                     const index = (y * sourceCanvas.width + x) * 4;
+                    // 透明（栅格外/图片透明区）→ 始终不填充城墙
+                    if (pixels[index + 3] < 8) continue;
                     const gray = pixels[index] * red + pixels[index + 1] * green + pixels[index + 2] * blue;
                     const marked = invert ? gray >= threshold : gray < threshold;
-                    if (marked) state.walls.push({ row, column });
+                    if (marked) state.walls.push(makeWall(row, column));
                 }
                 state.walls = state.walls.slice(0, state.limit);
             }
+            // 统一层级排序：rank 升序 = 由远及近。裁剪已在生成顺序上完成，
+            // 排序只影响绘制次序，不影响"哪些墙被保留"，也不改动各自的 level。
+            state.walls.sort(compareWallsByRank);
             state.wallSet = new Set(state.walls.map(wall => `${wall.column},${wall.row}`));
             if (!elements.showWalls.checked) {
                 const projection = projectionMetrics();
@@ -1389,49 +1719,49 @@
                     }
                 }
 
-                // Row/column legend labels on all 4 edges
-                context.fillStyle = 'rgba(100,100,100,0.55)';
-                context.font = '9px "DM Mono", monospace';
+                // Row/column legend labels：每 6 格显示一个数字，加粗放大；只保留左下边（column=43 大菱形的左下边），不显示右上
+                context.fillStyle = 'rgba(60,60,60,0.8)';
+                context.font = 'bold 14px "DM Mono", monospace';
                 context.textAlign = 'center';
                 context.textBaseline = 'middle';
-                for (let i = 0; i < gridSize; i++) {
-                    // Row labels on left edge (column=0)
-                    let p = gridToCanvas(0, i);
-                    context.fillText(String(i), p.x - dx * 4, p.y);
-                    // Row labels on right edge (column=43)
-                    p = gridToCanvas(gridSize - 1, i);
+                for (let i = 0; i < gridSize; i += 6) {
+                    // Row labels on lower-left edge (column=43)，数字置于边外侧偏左
+                    const p = gridToCanvas(gridSize - 1, i);
                     context.fillText(String(i), p.x + dx * 4, p.y);
-                    // Column labels on top edge (row=0)
-                    p = gridToCanvas(i, 0);
-                    context.fillText(String(i), p.x, p.y - dy * 4);
-                    // Column labels on bottom edge (row=43)
-                    p = gridToCanvas(i, gridSize - 1);
-                    context.fillText(String(i), p.x, p.y + dy * 4);
                 }
 
-                // Wall diamonds at full cell size
+                // Wall diamonds：与灰色网格同朝向（边平行于等距网格线）、恰好一个格子大小的菱形，
+                // 相邻墙段的橙色菱形边贴边无缝铺满。中心相对格点做偏移以对齐 7 种墙片 PNG 的视觉中心：
+                // 偏移单位 dx = 半格宽、dy = 半格高（1 = 右/下移半格），实测右下各 +1 恰好对齐
+                const ORANGE_SHIFT_X = 0.3;
+                const ORANGE_SHIFT_Y = 2;
                 context.fillStyle = '#f28b2e'; context.globalAlpha = .92;
+                context.strokeStyle = '#f28b2e'; context.lineWidth = 1;
                 state.walls.forEach(({ row, column }) => {
                     const { x, y } = gridToCanvas(column, row);
+                    const ox = x + dx * ORANGE_SHIFT_X, oy = y + dy * ORANGE_SHIFT_Y;
                     context.beginPath();
-                    context.moveTo(x + dx, y - dy);
-                    context.lineTo(x + dx, y + dy);
-                    context.lineTo(x - dx, y + dy);
-                    context.lineTo(x - dx, y - dy);
+                    context.moveTo(ox, oy - dy * 2);
+                    context.lineTo(ox + dx * 2, oy);
+                    context.lineTo(ox, oy + dy * 2);
+                    context.lineTo(ox - dx * 2, oy);
                     context.closePath();
-                    context.fill();
+                    context.fill(); context.stroke();
                 });
-                context.globalAlpha = 1; context.restore(); const count = state.walls.length, percentage = count / (gridSize * gridSize) * 100; elements.wallCount.textContent = count; elements.statLimit.textContent = state.limit; elements.densityLabel.textContent = `${percentage.toFixed(1)}% 填充率`; return;
+                context.globalAlpha = 1; context.restore(); const count = state.walls.length, percentage = count / (gridSize * gridSize) * 100; elements.wallCount.textContent = count; elements.statLimit.textContent = state.mode === 'draw' ? '—' : state.limit; elements.densityLabel.textContent = `${percentage.toFixed(1)}% 填充率`; return;
             }
-            state.walls.forEach(({ row, column }) => {
-                const sprite = wallSprites[state.wallLevel][wallAssetFor(row, column)];
+            state.walls.forEach(wall => {
+                // 每段墙自带等级（绘制模式）；无等级的来源（文字/图片/测试）沿用全局等级
+                const level = wallSprites[wall.level] ? wall.level : state.wallLevel;
+                const sprite = wallSprites[level][wallAssetFor(wall.row, wall.column)];
+                const { row, column } = wall;
                 if (sprite && sprite.complete && sprite.naturalWidth) {
                     context.globalAlpha = state.dimWalls.has(`${column},${row}`) ? .2 : .92; placeWall(sprite, column, row);
                 } else { const { x, y } = gridToCanvas(column, row); context.globalAlpha = state.dimWalls.has(`${column},${row}`) ? .2 : 1; context.fillStyle = '#f46f54'; context.fillRect(x - wallWidth / 2, y - wallHeight / 2, wallWidth, wallHeight); }
             });
             context.globalAlpha = 1;
-            // Draw mode: hover highlight
-            if (state.mode === 'draw' && state.hoveredCell && state.interactionMode === 'brush') {
+            // Draw mode: hover highlight（跟随鼠标的复制预览激活时隐藏，避免与半透明预览重叠）
+            if (state.mode === 'draw' && state.hoveredCell && state.interactionMode === 'brush' && !state.clipboardGhost) {
                 const { row, column } = state.hoveredCell;
                 if (row >= 0 && row < gridSize && column >= 0 && column < gridSize) {
                     const { x, y } = gridToCanvas(column, row);
@@ -1475,10 +1805,52 @@
                 context.setLineDash([]);
                 context.restore();
             }
+            // 绘制模式：剪切 / 复制后，复制内容以 0.8 透明度跟随鼠标（仅当鼠标在视图内且悬停到某个格子时显示）
+            if (state.mode === 'draw' && state.clipboardGhost && state.clipboard && state.hoveredCell) {
+                const anchorRow = state.hoveredCell.row, anchorCol = state.hoveredCell.column;
+                context.save();
+                context.globalAlpha = 0.8;
+                state.clipboard.walls.forEach(w => {
+                    const tr = anchorRow + w.row, tc = anchorCol + w.column;
+                    if (tr < 0 || tr >= gridSize || tc < 0 || tc >= gridSize) return;
+                    const level = wallSprites[w.level] ? w.level : state.wallLevel;
+                    const sprite = wallSprites[level][wallAssetFor(tr, tc)];
+                    if (sprite && sprite.complete && sprite.naturalWidth) placeWall(sprite, tc, tr);
+                });
+                context.restore();
+            }
             context.restore();
             const count = state.walls.length, percentage = count / (gridSize * gridSize) * 100;
-            elements.wallCount.textContent = count; elements.statLimit.textContent = state.limit; elements.densityLabel.textContent = `${percentage.toFixed(1)}% 填充率`;
+            elements.wallCount.textContent = count;
+            // 绘制模式不按上限裁剪，HUD 不显示上限，避免出现无意义的 "/ 325"
+            elements.statLimit.textContent = state.mode === 'draw' ? '—' : state.limit;
+            elements.densityLabel.textContent = `${percentage.toFixed(1)}% 填充率`;
             drawRoiPreview();
+        }
+
+        // 棋盘格底：让"透明边界不填充城墙"这件事在 ROI 里可见
+        function drawTransparencyGrid(ctx, width, height, cell) {
+            ctx.save();
+            ctx.fillStyle = '#f0f2ee';
+            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = '#dde2da';
+            for (let y = 0; y < height; y += cell) {
+                for (let x = 0; x < width; x += cell) {
+                    if ((Math.floor(x / cell) + Math.floor(y / cell)) % 2 === 0) ctx.fillRect(x, y, cell, cell);
+                }
+            }
+            ctx.restore();
+        }
+
+        function drawRoiGrid(roiCtx, w, h) {
+            roiCtx.strokeStyle = 'rgba(244,111,84,0.35)';
+            roiCtx.lineWidth = 0.5;
+            for (let i = 0; i <= gridSize; i++) {
+                const gx = (i / gridSize) * w;
+                const gy = (i / gridSize) * h;
+                roiCtx.beginPath(); roiCtx.moveTo(gx, 0); roiCtx.lineTo(gx, h); roiCtx.stroke();
+                roiCtx.beginPath(); roiCtx.moveTo(0, gy); roiCtx.lineTo(w, gy); roiCtx.stroke();
+            }
         }
 
         function drawRoiPreview() {
@@ -1503,76 +1875,19 @@
             mask.hidden = true;
 
             if (state.mode === 'text') {
-                // --- 文字模式：渲染 440x440 文字栅格，网格覆盖全画布 ---
-                const raster = document.createElement('canvas');
-                raster.width = 440;
-                raster.height = 440;
-                const rCtx = raster.getContext('2d', { willReadFrequently: true });
-
-                rCtx.fillStyle = '#fff';
-                rCtx.fillRect(0, 0, 440, 440);
-                rCtx.fillStyle = '#111';
-                rCtx.textAlign = 'center';
-                rCtx.textBaseline = 'middle';
-
-                const value = [...(elements.textInput.value || 'COC')].slice(0, 8).join('');
-                let fontSize = 180;
-                rCtx.font = `900 ${fontSize}px Arial, "Microsoft YaHei", "Noto Sans CJK SC", sans-serif`;
-                while (rCtx.measureText(value).width > 400 && fontSize > 42) {
-                    fontSize -= 4;
-                    rCtx.font = `900 ${fontSize}px Arial, "Microsoft YaHei", "Noto Sans CJK SC", sans-serif"`;
-                }
-
-                rCtx.save();
-                rCtx.translate(220, 220);
-                rCtx.rotate(Number(elements.imageRotation.value) * Math.PI / 180);
-                rCtx.fillText(value, 0, 0);
-                rCtx.restore();
-
-                // 绘制到 ROI 画布
-                roiCtx.drawImage(raster, 0, 0, w, h);
-
-                // 44x44 网格线（覆盖全画布，与图片模式一致）
-                roiCtx.strokeStyle = 'rgba(244,111,84,0.35)';
-                roiCtx.lineWidth = 0.5;
-                for (let i = 0; i <= gridSize; i++) {
-                    const gx = (i / gridSize) * w;
-                    const gy = (i / gridSize) * h;
-                    roiCtx.beginPath();
-                    roiCtx.moveTo(gx, 0);
-                    roiCtx.lineTo(gx, h);
-                    roiCtx.stroke();
-                    roiCtx.beginPath();
-                    roiCtx.moveTo(0, gy);
-                    roiCtx.lineTo(w, gy);
-                    roiCtx.stroke();
-                }
-
-                // 计算采样区域参数，用红色边框标记
-                const scale = Number(elements.imageScale.value) / 100;
-                const shiftX = Number(elements.shiftX.value);
-                const shiftY = Number(elements.shiftY.value);
-                const sampleSize = 440 * scale;
-                const offsetX = 220 + shiftX * 10;
-                const offsetY = 220 + shiftY * 10;
-                const startX = Math.max(0, offsetX - sampleSize / 2);
-                const startY = Math.max(0, offsetY - sampleSize / 2);
-                const endX = Math.min(440, offsetX + sampleSize / 2);
-                const endY = Math.min(440, offsetY + sampleSize / 2);
-                const actualSizeX = endX - startX;
-                const actualSizeY = endY - startY;
-
-                const sx = (startX / 440) * w;
-                const sy = (startY / 440) * h;
-                const sw = (actualSizeX / 440) * w;
-                const sh = (actualSizeY / 440) * h;
-
-                // 采样区域红色边框（仅标记，不遮罩）
-                roiCtx.strokeStyle = '#f46f54';
-                roiCtx.lineWidth = 2;
-                roiCtx.strokeRect(sx, sy, sw, sh);
-
-                gridInfo.textContent = `${gridSize} × ${gridSize} 网格  |  采样 ${Math.round(actualSizeX)}×${Math.round(actualSizeY)}px`;
+                // --- 文字模式：ROI 直接显示「采样窗口」本身，窗口外的部分保持透明 ---
+                const raster = renderTextRaster();
+                const win = textSampleWindow();
+                drawTransparencyGrid(roiCtx, w, h, 10);
+                const windowSize = Math.max(1, win.sizeX);
+                const k = w / windowSize;
+                roiCtx.save();
+                roiCtx.translate(-win.startX * k, -win.startY * k);
+                roiCtx.scale(k, k);
+                roiCtx.drawImage(raster, 0, 0);
+                roiCtx.restore();
+                drawRoiGrid(roiCtx, w, h);
+                gridInfo.textContent = `${gridSize} × ${gridSize} 网格  |  采样 ${Math.round(win.sizeX)}×${Math.round(win.sizeY)}px`;
 
             } else if (state.mode === 'image' && state.image) {
                 // --- 图片模式：显示灰度化/反相化后的源图像 + 44x44 网格 ---
@@ -1582,8 +1897,8 @@
                 tempCanvas.height = 400;
                 const tempCtx = tempCanvas.getContext('2d', { willReadFrequently: true });
 
-                tempCtx.fillStyle = '#000000';
-                tempCtx.fillRect(0, 0, 400, 400);
+                // 边界保持透明（与 draw() 的采样口径一致）
+                tempCtx.clearRect(0, 0, 400, 400);
                 tempCtx.save();
                 tempCtx.translate(200, 200);
                 tempCtx.translate(Number(elements.shiftX.value) * 10, Number(elements.shiftY.value) * 10);
@@ -1602,30 +1917,21 @@
                 const invert = elements.invert.checked;
 
                 for (let i = 0; i < data.length; i += 4) {
+                    // 透明像素保持透明：既不参与阈值判断，也不会变成城墙
+                    if (data[i + 3] < 8) { data[i + 3] = 0; continue; }
                     const gray = data[i] * red + data[i + 1] * green + data[i + 2] * blue;
                     const val = invert ? (gray >= threshold ? 255 : 0) : (gray < threshold ? 255 : 0);
                     data[i] = data[i + 1] = data[i + 2] = val;
+                    data[i + 3] = 255;
                 }
                 tempCtx.putImageData(imageData, 0, 0);
 
-                // 绘制到 ROI 画布
+                // 绘制到 ROI 画布（棋盘格打底，透明边界可见）
+                drawTransparencyGrid(roiCtx, w, h, 10);
                 roiCtx.drawImage(tempCanvas, 0, 0, w, h);
 
                 // 44x44 网格线
-                roiCtx.strokeStyle = 'rgba(244,111,84,0.35)';
-                roiCtx.lineWidth = 0.5;
-                for (let i = 0; i <= gridSize; i++) {
-                    const gx = (i / gridSize) * w;
-                    const gy = (i / gridSize) * h;
-                    roiCtx.beginPath();
-                    roiCtx.moveTo(gx, 0);
-                    roiCtx.lineTo(gx, h);
-                    roiCtx.stroke();
-                    roiCtx.beginPath();
-                    roiCtx.moveTo(0, gy);
-                    roiCtx.lineTo(w, gy);
-                    roiCtx.stroke();
-                }
+                drawRoiGrid(roiCtx, w, h);
 
                 gridInfo.textContent = `${gridSize} × ${gridSize} 网格  |  ${invert ? '反相' : '正常'} 阈值=${threshold}`;
                 mask.hidden = true;
@@ -1670,29 +1976,104 @@
             const image = new Image(); image.onload = () => { state.image = image; state.demoWalls = null; state.dimWalls.clear(); elements.emptyState.hidden = true; elements.statusText.textContent = '图片已加载 / 实时'; elements.imageNote.textContent = `${image.naturalWidth} × ${image.naturalHeight} / ${file.name}`; draw(); URL.revokeObjectURL(image.src); }; image.src = URL.createObjectURL(file);
         }
 
-        function loadCocDemo() { state.mode = 'coc'; state.image = null; state.demoWalls = createTextWalls('COC'); state.dimWalls.clear(); state.wallLevel = 12; elements.wallLevel.value = '12'; elements.emptyState.hidden = true; elements.statusText.textContent = 'COC 演示 / 12 级墙'; elements.imageNote.textContent = '默认 COC 图案 / 逻辑网格'; draw(); }
+        const modeLabels = { text: '文字模式', image: '图片模式', test: '模板模式', coc: 'COC 演示' };
+
+        // 当前非绘制模式墙面的"指纹"：只有源真正变化时才重新导入，避免重复覆盖手绘结果
+        function wallSourceSignature(fromMode) {
+            const params = [elements.textInput.value, fontState.family, fontState.weight, fontState.style, fontState.align, elements.imageRotation.value, elements.imageScale.value, elements.shiftX.value, elements.shiftY.value, elements.threshold.value, elements.invert.checked ? 1 : 0, elements.capacity.value].join('|');
+            return `${fromMode}:${params}:${state.image ? elements.imageNote.textContent : 'no-image'}`;
+        }
+
+        // 从其它模式进入绘制模式时，把当前画布上的城墙复制进来（而不是清空）
+        function importWallsIntoDraw(fromMode, signature) {
+            const source = state.walls || [];
+            if (source.length === 0) return 0;
+            if (state.drawImportSignature === signature) return 0;
+            if (state.drawWalls.length > 0) {
+                const label = modeLabels[fromMode] || '当前模式';
+                if (!confirm(`绘制模式已有 ${state.drawWalls.length} 段城墙。\n是否用${label}的 ${source.length} 段城墙替换？`)) {
+                    state.drawImportSignature = signature;
+                    return 0;
+                }
+            }
+            const level = Number(document.getElementById('drawWallLevel').value) || state.wallLevel;
+            state.drawWalls = source.map(wall => makeWall(wall.row, wall.column, wall.level || level));
+            state.drawImportSignature = signature;
+            return state.drawWalls.length;
+        }
+
+        function syncTestMapTabs() {
+            document.querySelectorAll('[data-map]').forEach(tab => tab.classList.toggle('active', tab.dataset.map === state.testMap));
+        }
+
+        // 状态栏显示当前地图段数、膨胀半径，以及是否已填满 44×44
+        function describeTestWalls() {
+            const map = testMaps[state.testMap] || testMaps.border;
+            const total = state.demoWalls ? state.demoWalls.length : 0;
+            const full = total >= gridSize * gridSize;
+            const radius = state.testGrowRadius || 0;
+            const grow = radius > 0 ? ` · 膨胀 +${radius} 格` : '';
+            elements.statusText.textContent = `模板模式 / ${map.label} · ${total} 段${grow}${full ? ' · 已填满 44×44' : ''}`;
+        }
+
+        function selectTestMap(map) {
+            if (!testMaps[map]) return;
+            state.testMap = map;
+            syncTestMapTabs();
+            state.demoWalls = createTestWalls();
+            state.dimWalls.clear();
+            draw();
+            describeTestWalls();
+        }
+
+        // 剪贴板按钮组状态：唯一入口，同时决定显示 / 隐藏与各按钮禁用态
+        // 显示规则：选择工具激活期间常驻；切换其它工具 / 模式即隐藏
+        // 禁用规则：未复制/剪切（无跟随预览）时取消失效、复制/剪切生效；点击复制/剪切后反转——复制/剪切失效、取消生效
+        function updateClipboardTools() {
+            const bar = document.getElementById('clipboardTools');
+            bar.hidden = !(state.mode === 'draw' && state.drawMode === 'select');
+            const copyCutLocked = state.clipboardGhost;
+            document.getElementById('drawCopyBtn').disabled = copyCutLocked;
+            document.getElementById('drawCutBtn').disabled = copyCutLocked;
+            document.getElementById('drawDeselectBtn').disabled = !state.clipboardGhost;
+        }
+
+        // 单一入口切换绘制工具：画笔 / 橡皮 / 选择 / 平移
+        function setDrawTool(tool) {
+            state.drawMode = tool === 'eraser' ? 'erase' : tool === 'select' ? 'select' : 'draw';
+            state.isErasing = tool === 'eraser';
+            state.interactionMode = tool === 'pan' ? 'zoom' : 'brush';
+            state.selectionStart = null; state.selectionEnd = null; state.selectedWalls = [];
+            state.clipboardGhost = false;
+            updateClipboardTools();
+            document.querySelectorAll('[data-draw-tool]').forEach(btn => btn.classList.toggle('active', btn.dataset.drawTool === tool));
+            canvas.style.cursor = state.interactionMode === 'brush' ? 'crosshair' : 'grab';
+        }
+
+        // 模式说明文案：每个模式一句，写在同一位置（stage-hint），避免多处重复提示
+        const modeHints = {
+            text: '输入文字，生成部落战文字墙（44 × 44 网格）',
+            image: '上传阵型草图，按像素亮度识别城墙',
+            test: '预设阵型模板，校准城墙投影与连接形态',
+            draw: '手绘城墙，规划你的村庄防线（可混用多个等级）'
+        };
 
         function selectMode(mode) {
+            const fromMode = state.mode;
+            // 必须在 state.image 被清空之前取指纹，否则换图后签名不变
+            const fromSignature = wallSourceSignature(fromMode);
             state.mode = mode; state.image = null; state.dimWalls.clear();
             elements.modeTabs.forEach(tab => tab.classList.toggle('active', tab.dataset.mode === mode));
-            if (mode === 'coc') { mode = 'text'; state.mode = 'text'; state.demoWalls = createTextWalls(''); elements.modeHint.textContent = '默认 COC 图案，可直接调节菱形尺寸'; elements.statusText.textContent = 'COC 图案 / 就绪'; }
-            if (mode === 'text') { state.demoWalls = createTextWalls(elements.textInput.value); elements.modeHint.textContent = '输入文字后自动排版到 44×44 网格'; elements.statusText.textContent = '文字排版 / 就绪'; }
-            if (mode === 'test') { state.demoWalls = createTestWalls(); elements.modeHint.textContent = '四角 + 交替边框 + 随机二连/三连，用于校准菱形'; elements.statusText.textContent = '测试模式 / 就绪'; }
-            if (mode === 'image') { state.demoWalls = null; elements.modeHint.textContent = '图片模式：上传阵型草图后按像素识别'; elements.statusText.textContent = '图片模式 / 等待输入'; }
+            if (mode === 'text') { state.demoWalls = createTextWalls(); elements.statusText.textContent = '文字排版 / 就绪'; }
+            if (mode === 'test') { state.demoWalls = createTestWalls(); syncTestMapTabs(); describeTestWalls(); }
+            if (mode === 'image') { state.demoWalls = null; elements.statusText.textContent = '图片模式 / 等待阵型图'; }
             if (mode === 'draw') {
+                const imported = fromMode !== 'draw' ? importWallsIntoDraw(fromMode, fromSignature) : 0;
                 state.demoWalls = null;
-                state.interactionMode = 'brush';
-                state.drawMode = 'draw';
-                state.isErasing = false;
-                document.getElementById('brushToggle').classList.add('active');
-                document.getElementById('brushToggle').classList.remove('hidden-mode');
-                document.getElementById('drawToggleBrush').classList.add('active');
-                document.getElementById('drawToggleView').classList.remove('active');
-                setDrawToolsEnabled(true);
-                elements.modeHint.textContent = '绘制模式：点击网格绘制/擦除城墙，拖动鼠标连续绘制';
-                elements.statusText.textContent = '绘制模式 / 就绪';
+                setDrawTool('brush');
+                elements.statusText.textContent = imported ? `绘制模式 / 已复制 ${imported} 段城墙` : '绘制模式 / 就绪';
             }
-            // Reset draw state when leaving draw mode
+            // 离开绘制模式时复位交互状态
             if (mode !== 'draw') {
                 state.interactionMode = 'zoom';
                 state.hoveredCell = null;
@@ -1700,21 +2081,31 @@
                 state.selectionEnd = null;
                 state.selectedWalls = [];
                 state.isSelecting = false;
-                document.getElementById('brushToggle').classList.remove('active');
-                document.getElementById('brushToggle').classList.add('hidden-mode');
-                document.getElementById('clipboardTools').hidden = true;
+                state.clipboardGhost = false;
+                updateClipboardTools();
                 canvas.style.cursor = 'grab';
             }
+            elements.modeHint.textContent = modeHints[mode] || '';
             elements.dropZone.hidden = mode !== 'image';
-            elements.textInput.hidden = mode !== 'text';
-            elements.sourceParams.hidden = mode === 'test' || mode === 'draw';
+            elements.textParams.hidden = mode !== 'text';
             elements.testParams.hidden = mode !== 'test';
+            // 连接参考始终展示（不再限定模板模式）
+            document.getElementById('connectionPanel').hidden = false;
+            // 网格校准面板始终隐藏
+            document.getElementById('paramsPanel').hidden = true;
             elements.imageParams.hidden = mode !== 'image';
-            elements.connectionPanel.hidden = mode !== 'test';
             document.getElementById('drawPanel').hidden = mode !== 'draw';
-            document.getElementById('paramsPanel').hidden = mode === 'draw';
+            // 采样区与变换只服务于有"源"的模式，其余模式整体收起，不留空面板
+            const hasSource = mode === 'text' || mode === 'image';
+            document.getElementById('roiPanel').hidden = !hasSource;
+            document.getElementById('transformPanel').hidden = !hasSource;
+            elements.sourceParams.hidden = !hasSource;
+            // 绘制模式每段墙自带等级、且不受上限裁剪，故隐藏全局等级行与上限滑杆
+            document.getElementById('wallLevelRow').hidden = mode === 'draw';
             document.getElementById('capacityControl').hidden = mode === 'draw';
             elements.emptyState.hidden = mode !== 'image'; draw();
+            // 每次切换模式后面板显隐会变化，重新按可见面板连续编号
+            renumberPanels();
         }
 
         elements.fileInput.addEventListener('change', event => { selectMode('image'); loadImage(event.target.files[0]); });
@@ -1726,6 +2117,16 @@
         // Draw mode: pointer events for draw/erase/select
         canvas.addEventListener('pointerdown', event => {
             if (state.mode !== 'draw' || state.interactionMode !== 'brush') return;
+            // 复制 / 剪切后：跟随鼠标的半透明预览激活时，点击即粘贴到鼠标所在格子（可连续盖章，Esc 取消）
+            if (state.clipboardGhost && state.clipboard) {
+                const cell = screenToGrid(event.clientX, event.clientY);
+                if (cell) {
+                    const pasted = pasteAt(cell.row, cell.column);
+                    elements.statusText.textContent = `已粘贴 ${pasted} 个墙段 · 移动鼠标可再次放置（Esc 取消）`;
+                    draw();
+                }
+                return;
+            }
             if (state.drawMode === 'select') {
                 const cell = screenToGrid(event.clientX, event.clientY);
                 if (cell) { state.selectionStart = cell; state.selectionEnd = cell; state.isSelecting = true; }
@@ -1737,13 +2138,12 @@
             if (cell) {
                 const key = `${cell.column},${cell.row}`;
                 const existing = state.drawWalls.find(w => w.row === cell.row && w.column === cell.column);
-                const level = Number(document.getElementById('drawWallLevel').value);
-                state.wallLevel = level;
-                elements.wallLevel.value = level;
+                const level = Number(document.getElementById('drawWallLevel').value) || state.wallLevel;
                 if (state.isErasing) {
                     if (existing) { state.drawWalls = state.drawWalls.filter(w => !(w.row === cell.row && w.column === cell.column)); lastDrawnCell = key; }
                 } else {
-                    if (!existing) { state.drawWalls.push({ row: cell.row, column: cell.column }); lastDrawnCell = key; }
+                    // 等级固化在墙段上，之后切换等级不会影响已放置的墙
+                    if (!existing) { state.drawWalls.push(makeWall(cell.row, cell.column, level)); lastDrawnCell = key; }
                 }
                 state.hoveredCell = cell;
                 draw();
@@ -1765,13 +2165,11 @@
                     const key = `${cell.column},${cell.row}`;
                     if (key !== lastDrawnCell) {
                         const existing = state.drawWalls.find(w => w.row === cell.row && w.column === cell.column);
-                        const level = Number(document.getElementById('drawWallLevel').value);
-                        state.wallLevel = level;
-                        elements.wallLevel.value = level;
+                        const level = Number(document.getElementById('drawWallLevel').value) || state.wallLevel;
                         if (state.isErasing) {
                             if (existing) { state.drawWalls = state.drawWalls.filter(w => !(w.row === cell.row && w.column === cell.column)); lastDrawnCell = key; }
                         } else {
-                            if (!existing) { state.drawWalls.push({ row: cell.row, column: cell.column }); lastDrawnCell = key; }
+                            if (!existing) { state.drawWalls.push(makeWall(cell.row, cell.column, level)); lastDrawnCell = key; }
                         }
                         draw();
                     }
@@ -1796,12 +2194,24 @@
                         state.selectedWalls.push(w);
                     }
                 });
-                document.getElementById('clipboardTools').hidden = state.selectedWalls.length === 0;
+                updateClipboardTools();
                 draw();
                 return;
             }
             isDrawing = false;
             lastDrawnCell = null;
+        });
+
+        // Esc 取消跟随鼠标的复制 / 剪切预览
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && state.clipboardGhost) {
+                state.clipboardGhost = false;
+                if (state.mode === 'draw') {
+                    updateClipboardTools();
+                    elements.statusText.textContent = '已取消放置预览';
+                    draw();
+                }
+            }
         });
 
         // Non-draw mode click handler (dim wall)
@@ -1811,134 +2221,114 @@
         });
         document.getElementById('emptyUpload').addEventListener('click', () => elements.fileInput.click());
         elements.modeTabs.forEach(tab => tab.addEventListener('click', () => selectMode(tab.dataset.mode)));
-        elements.textInput.addEventListener('input', () => { if (state.mode === 'text') { state.demoWalls = createTextWalls(elements.textInput.value); draw(); } });
+        document.querySelectorAll('[data-map]').forEach(tab => tab.addEventListener('click', () => selectTestMap(tab.dataset.map)));
+        elements.textInput.addEventListener('input', () => { if (state.mode === 'text') { state.demoWalls = createTextWalls(); draw(); } });
+        elements.fontFamily.addEventListener('change', () => { fontState.family = elements.fontFamily.value; populateFontStyles(); if (state.mode === 'text') { state.demoWalls = createTextWalls(); draw(); } });
+        elements.fontWeight.addEventListener('change', () => { const [style, weight] = elements.fontWeight.value.split('|'); fontState.style = style; fontState.weight = weight; if (state.mode === 'text') { state.demoWalls = createTextWalls(); draw(); } });
+        elements.textAlign.addEventListener('change', () => { fontState.align = elements.textAlign.value; if (state.mode === 'text') { state.demoWalls = createTextWalls(); draw(); } });
+        elements.fontRescan.addEventListener('click', async () => {
+            elements.statusText.textContent = '正在读取系统字体…';
+            const fonts = await queryLocalFonts();
+            if (fonts) { populateFontFamilies(fonts); elements.statusText.textContent = `已读取 ${systemFonts.size} 个系统字体`; }
+            else elements.statusText.textContent = '当前浏览器不支持读取系统字体，已使用内置候选列表';
+            if (state.mode === 'text') { state.demoWalls = createTextWalls(); draw(); }
+        });
         ['dragenter', 'dragover'].forEach(name => elements.dropZone.addEventListener(name, event => { event.preventDefault(); elements.dropZone.style.background = '#eef6c5'; }));
         ['dragleave', 'drop'].forEach(name => elements.dropZone.addEventListener(name, event => { event.preventDefault(); elements.dropZone.style.background = ''; }));
         elements.dropZone.addEventListener('drop', event => loadImage(event.dataTransfer.files[0]));
         [elements.threshold, elements.imageScale, elements.imageRotation, elements.shiftX, elements.shiftY, elements.projectionX, elements.projectionY, elements.centerX, elements.centerY, elements.invert, elements.showWalls, elements.redWeight, elements.greenWeight, elements.blueWeight].forEach(input => input.addEventListener('input', () => { elements.thresholdOut.textContent = elements.threshold.value; elements.imageScaleOut.textContent = `${elements.imageScale.value}%`; elements.imageRotationOut.textContent = `${elements.imageRotation.value}°`; elements.shiftXOut.textContent = Number(elements.shiftX.value).toFixed(1); elements.shiftYOut.textContent = Number(elements.shiftY.value).toFixed(1); elements.projectionXOut.textContent = `${elements.projectionX.value}px / ${Math.round(Number(elements.projectionX.value) / backgroundSize.width * 100)}%`; elements.projectionYOut.textContent = `${elements.projectionY.value}px / ${Math.round(Number(elements.projectionY.value) / backgroundSize.height * 100)}%`; elements.centerXOut.textContent = `${Number(elements.centerX.value).toFixed(1)}%`; elements.centerYOut.textContent = `${Number(elements.centerY.value).toFixed(1)}%`; elements.redOut.textContent = Number(elements.redWeight.value).toFixed(3); elements.greenOut.textContent = Number(elements.greenWeight.value).toFixed(3); elements.blueOut.textContent = Number(elements.blueWeight.value).toFixed(3); if (state.mode === 'text') state.demoWalls = createTextWalls(elements.textInput.value); draw(); }));
-        elements.wallLevel.addEventListener('change', () => { state.wallLevel = Number(elements.wallLevel.value); draw(); });
-        elements.capacity.addEventListener('input', () => { state.limit = Number(elements.capacity.value); elements.capacityOut.textContent = state.limit; draw(); });
+        elements.wallLevel.addEventListener('change', () => { state.wallLevel = Number(elements.wallLevel.value); draw(); drawConnectionPreviews(); });
+        elements.capacity.addEventListener('input', () => { state.limit = Number(elements.capacity.value); elements.capacityOut.textContent = state.limit; if (state.mode === 'test') { state.demoWalls = createTestWalls(state.limit); state.dimWalls.clear(); } draw(); if (state.mode === 'test') describeTestWalls(); });
 
-        // Draw mode control events
-        document.getElementById('brushToggle').addEventListener('click', () => {
-            const btn = document.getElementById('brushToggle');
-            if (state.interactionMode === 'brush') {
-                state.interactionMode = 'zoom';
-                btn.classList.remove('active');
-                document.getElementById('drawToggleBrush').classList.remove('active');
-                document.getElementById('drawToggleView').classList.add('active');
-                canvas.style.cursor = 'grab';
-                setDrawToolsEnabled(false);
-            } else {
-                if (state.mode !== 'draw') return;
-                state.interactionMode = 'brush';
-                btn.classList.add('active');
-                document.getElementById('drawToggleView').classList.remove('active');
-                document.getElementById('drawToggleBrush').classList.add('active');
-                canvas.style.cursor = 'crosshair';
-                setDrawToolsEnabled(true);
-            }
-            state.selectionStart = null; state.selectionEnd = null; state.selectedWalls = [];
-            document.getElementById('clipboardTools').hidden = true;
-            draw();
+        document.querySelectorAll('[data-draw-tool]').forEach(btn => {
+            btn.addEventListener('click', () => { setDrawTool(btn.dataset.drawTool); draw(); });
         });
 
+        // 城墙等级：写入新画的墙段；同时同步全局等级，保证切回其它模式时一致
         document.getElementById('drawWallLevel').addEventListener('change', function() {
             const level = Number(this.value);
             state.wallLevel = level;
             elements.wallLevel.value = level;
             draw();
-        });
-
-        // Draw mode toggle (绘制城墙 ↔ 调整画面)
-        function setDrawToolsEnabled(enabled) {
-            document.querySelectorAll('[data-draw-tool]').forEach(btn => btn.disabled = !enabled);
-            document.querySelectorAll('#clipboardTools .draw-tool-btn').forEach(btn => btn.disabled = !enabled);
-        }
-
-        document.getElementById('drawToggleBrush').addEventListener('click', () => {
-            state.interactionMode = 'brush';
-            document.getElementById('drawToggleBrush').classList.add('active');
-            document.getElementById('drawToggleView').classList.remove('active');
-            document.getElementById('brushToggle').classList.add('active');
-            canvas.style.cursor = 'crosshair';
-            setDrawToolsEnabled(true);
-            draw();
-        });
-        document.getElementById('drawToggleView').addEventListener('click', () => {
-            state.interactionMode = 'zoom';
-            document.getElementById('drawToggleView').classList.add('active');
-            document.getElementById('drawToggleBrush').classList.remove('active');
-            document.getElementById('brushToggle').classList.remove('active');
-            canvas.style.cursor = 'grab';
-            setDrawToolsEnabled(false);
-            draw();
-        });
-
-        document.querySelectorAll('[data-draw-tool]').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const tool = this.dataset.drawTool;
-                document.querySelectorAll('[data-draw-tool]').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                if (tool === 'brush') { state.drawMode = 'draw'; state.isErasing = false; state.selectionStart = null; state.selectionEnd = null; state.selectedWalls = []; document.getElementById('clipboardTools').hidden = true; }
-                if (tool === 'eraser') { state.drawMode = 'erase'; state.isErasing = true; state.selectionStart = null; state.selectionEnd = null; state.selectedWalls = []; document.getElementById('clipboardTools').hidden = true; }
-                if (tool === 'select') { state.drawMode = 'select'; state.isErasing = false; state.interactionMode = 'brush'; document.getElementById('brushToggle').classList.add('active'); }
-                draw();
-            });
+            drawConnectionPreviews();
         });
 
         document.getElementById('drawClearBtn').addEventListener('click', () => {
             if (state.drawWalls.length === 0) return;
             if (confirm('确定要清空所有绘制的城墙吗？')) {
                 state.drawWalls = []; state.selectedWalls = []; state.selectionStart = null; state.selectionEnd = null;
-                document.getElementById('clipboardTools').hidden = true;
+                state.drawImportSignature = null;
+                updateClipboardTools();
                 draw();
             }
         });
 
-        document.getElementById('drawCopyBtn').addEventListener('click', () => {
-            if (state.selectedWalls.length === 0) return;
-            const minRow = Math.min(...state.selectedWalls.map(w => w.row));
-            const minCol = Math.min(...state.selectedWalls.map(w => w.column));
-            state.clipboard = { walls: state.selectedWalls.map(w => ({ row: w.row - minRow, column: w.column - minCol })), offsetRow: minRow, offsetColumn: minCol, level: state.wallLevel };
-            elements.statusText.textContent = `已复制 ${state.clipboard.walls.length} 个墙段`;
-        });
+        // 把剪贴板内容偏移粘贴到 (anchorRow, anchorCol)，返回实际新增段数（越界夹紧，与已有墙段去重）
+        function pasteAt(anchorRow, anchorCol) {
+            if (!state.clipboard || state.clipboard.walls.length === 0) return 0;
+            const existing = new Set(state.drawWalls.map(w => `${w.column},${w.row}`));
+            let pasted = 0;
+            state.clipboard.walls.forEach(w => {
+                const r = Math.min(gridSize - 1, Math.max(0, anchorRow + w.row));
+                const c = Math.min(gridSize - 1, Math.max(0, anchorCol + w.column));
+                const key = `${c},${r}`;
+                if (!existing.has(key)) { state.drawWalls.push(makeWall(r, c, w.level || state.wallLevel)); existing.add(key); pasted++; }
+            });
+            return pasted;
+        }
 
-        document.getElementById('drawCutBtn').addEventListener('click', () => {
-            if (state.selectedWalls.length === 0) return;
+        document.getElementById('drawCopyBtn').addEventListener('click', () => {
+            // 跟随预览已激活或无选中内容时复制失效
+            if (state.clipboardGhost || state.selectedWalls.length === 0) return;
             const minRow = Math.min(...state.selectedWalls.map(w => w.row));
             const minCol = Math.min(...state.selectedWalls.map(w => w.column));
-            state.clipboard = { walls: state.selectedWalls.map(w => ({ row: w.row - minRow, column: w.column - minCol })), offsetRow: minRow, offsetColumn: minCol, level: state.wallLevel };
-            const selectedSet = new Set(state.selectedWalls.map(w => `${w.column},${w.row}`));
-            state.drawWalls = state.drawWalls.filter(w => !selectedSet.has(`${w.column},${w.row}`));
-            state.selectedWalls = []; state.selectionStart = null; state.selectionEnd = null;
-            document.getElementById('clipboardTools').hidden = true;
-            elements.statusText.textContent = `已剪切 ${state.clipboard.walls.length} 个墙段`;
+            state.clipboard = { walls: state.selectedWalls.map(w => ({ row: w.row - minRow, column: w.column - minCol, level: w.level || state.wallLevel })), offsetRow: minRow, offsetColumn: minCol };
+            // 复制后激活跟随鼠标的半透明预览，移动鼠标到目标位置即可点击放置；此时复制/剪切禁用、取消生效
+            state.clipboardGhost = true;
+            updateClipboardTools();
+            elements.statusText.textContent = `已复制 ${state.clipboard.walls.length} 个墙段 · 移动鼠标到目标位置，点击放置（Esc 取消）`;
             draw();
         });
 
-        document.getElementById('drawPasteBtn').addEventListener('click', () => {
-            if (!state.clipboard || state.clipboard.walls.length === 0) return;
-            const pasteOffsetRow = state.clipboard.offsetRow + 5;
-            const pasteOffsetCol = state.clipboard.offsetColumn + 5;
-            const newWalls = state.clipboard.walls.map(w => ({ row: Math.min(gridSize - 1, Math.max(0, w.row + pasteOffsetRow)), column: Math.min(gridSize - 1, Math.max(0, w.column + pasteOffsetCol)) }));
-            const existingSet = new Set(state.drawWalls.map(w => `${w.column},${w.row}`));
-            let pasted = 0;
-            newWalls.forEach(w => { if (!existingSet.has(`${w.column},${w.row}`)) { state.drawWalls.push(w); pasted++; } });
-            elements.statusText.textContent = `已粘贴 ${pasted} 个墙段`;
-            state.clipboard.offsetRow = pasteOffsetRow;
-            state.clipboard.offsetColumn = pasteOffsetCol;
+        document.getElementById('drawCutBtn').addEventListener('click', () => {
+            // 跟随预览已激活或无选中内容时剪切失效
+            if (state.clipboardGhost || state.selectedWalls.length === 0) return;
+            const minRow = Math.min(...state.selectedWalls.map(w => w.row));
+            const minCol = Math.min(...state.selectedWalls.map(w => w.column));
+            state.clipboard = { walls: state.selectedWalls.map(w => ({ row: w.row - minRow, column: w.column - minCol, level: w.level || state.wallLevel })), offsetRow: minRow, offsetColumn: minCol };
+            const selectedSet = new Set(state.selectedWalls.map(w => `${w.column},${w.row}`));
+            state.drawWalls = state.drawWalls.filter(w => !selectedSet.has(`${w.column},${w.row}`));
+            state.selectedWalls = []; state.selectionStart = null; state.selectionEnd = null;
+            // 剪切后同样激活跟随预览：相当于"移动"操作；按钮组保持显示（复制/剪切禁用、取消生效）
+            state.clipboardGhost = true;
+            updateClipboardTools();
+            elements.statusText.textContent = `已剪切 ${state.clipboard.walls.length} 个墙段 · 移动鼠标到目标位置，点击放置（Esc 取消）`;
             draw();
         });
 
         document.getElementById('drawDeselectBtn').addEventListener('click', () => {
             state.selectedWalls = []; state.selectionStart = null; state.selectionEnd = null;
-            document.getElementById('clipboardTools').hidden = true;
+            state.clipboardGhost = false;
+            updateClipboardTools();
+            elements.statusText.textContent = '已取消选择与放置预览';
             draw();
         });
-        document.getElementById('clearButton').addEventListener('click', () => { state.image = null; state.demoWalls = null; state.dimWalls.clear(); state.drawWalls = []; elements.fileInput.value = ''; selectMode('image'); elements.imageNote.textContent = '暂无源图片 / 等待输入'; });
+        document.getElementById('clearButton').addEventListener('click', () => { state.image = null; state.demoWalls = null; state.dimWalls.clear(); state.drawWalls = []; state.drawImportSignature = null; elements.fileInput.value = ''; selectMode('image'); elements.imageNote.textContent = '暂无阵型图 / 等待输入'; });
         document.getElementById('exportButton').addEventListener('click', () => { const link = document.createElement('a'); link.download = 'coc-wall-layout.png'; link.href = canvas.toDataURL('image/png'); link.click(); });
+
+        // 面板序号按组件层级自动写入：侧栏面板 DOM 顺序 + 连接参考，避免写死导致重复 / 错序
+        function renumberPanels() {
+            const panels = [
+                ...document.querySelectorAll('.rail .panel'),
+                ...document.querySelectorAll('.connection-panel')
+            ].filter(panel => !panel.hidden);
+            const heads = panels.map(panel => panel.querySelector('.panel-head')).filter(Boolean);
+            heads.forEach((head, index) => { const tag = head.querySelector('i'); if (tag) tag.textContent = String(index + 1).padStart(2, '0'); });
+        }
+
+        // 先切模式（selectMode 末尾会按可见面板重新编号）
         selectMode('text');
+        initFonts();
         drawConnectionPreviews();
         setupViewport(canvas, mainView, draw);
         setupViewport(document.getElementById('roiPreview'), roiView, drawRoiPreview);
